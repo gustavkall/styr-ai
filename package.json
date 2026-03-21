@@ -1,0 +1,10 @@
+{
+  "name": "{{REPO_NAME}}",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2"
+  },
+  "scripts": {
+    "seed": "node scripts/seed.js"
+  }
+}
