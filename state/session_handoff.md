@@ -5,7 +5,7 @@
 
 ## LAST SESSION
 - **Date:** 2026-03-21
-- **Summary:** Initial project setup. Scaffold created with persistent memory infrastructure.
+- **Summary:** Session boot verifierad. Lade till hälsning i system_rules.md. Projektet saknar fortfarande syfte/beskrivning.
 
 ---
 
@@ -14,6 +14,7 @@
 | What | File | Status |
 |------|------|--------|
 | Project scaffold | all | ✅ Created |
+| Hälsning i system_rules | governance/system_rules.md | ✅ "Hej på dig styr.ai" |
 
 ---
 
@@ -34,6 +35,7 @@
 
 ## NEXT SESSION STARTS WITH
 
-1. `GET /api/state` for quick boot
-2. Fetch supplementary GitHub files
-3. Continue with work_queue.md
+1. Definiera projektets syfte och beskrivning
+2. SETUP-001: Supabase tables
+3. SETUP-002: Vercel deploy
+4. SETUP-003: Seed initial data

@@ -20,4 +20,4 @@
 
 ## PROJECT-SPECIFIC RULES
 
-*Add domain-specific rules here as the project evolves.*
+Hej på dig styr.ai
