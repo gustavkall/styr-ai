@@ -1,4 +1,4 @@
--- {{PROJECT_NAME}} — Persistent Memory Tables
+-- styr-ai — Persistent Memory Tables
 -- Run in Supabase SQL Editor (https://supabase.com/dashboard → SQL Editor)
 
 -- 1. Sessions — stores session handoff data for cross-session continuity

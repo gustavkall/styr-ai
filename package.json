@@ -1,5 +1,5 @@
 {
-  "name": "{{REPO_NAME}}",
+  "name": "styr-ai",
   "private": true,
   "dependencies": {
     "@supabase/supabase-js": "^2"

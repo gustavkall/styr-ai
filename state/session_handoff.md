@@ -1,10 +1,10 @@
-# {{PROJECT_NAME}} — SESSION HANDOFF
+# styr-ai — SESSION HANDOFF
 *Updated automatically at end of every session. Read at next session start.*
 
 ---
 
 ## LAST SESSION
-- **Date:** {{DATE}}
+- **Date:** 2026-03-21
 - **Summary:** Initial project setup. Scaffold created with persistent memory infrastructure.
 
 ---

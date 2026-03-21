@@ -1,4 +1,4 @@
-# {{PROJECT_NAME}} — WORK QUEUE
+# styr-ai — WORK QUEUE
 *Prioritized list. Updated by Claude at session end. Max one ACTIVE item.*
 
 ---

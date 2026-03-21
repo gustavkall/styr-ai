@@ -1,4 +1,4 @@
-# {{PROJECT_NAME}} — Architecture
+# styr-ai — Architecture
 
 ## Overview
 *Describe the system architecture here as it evolves.*

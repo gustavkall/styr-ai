@@ -1,4 +1,4 @@
-# {{PROJECT_NAME}} — Learnings
+# styr-ai — Learnings
 *What was learned and why. Updated after each session with new insights.*
 
 ---

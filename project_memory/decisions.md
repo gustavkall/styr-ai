@@ -1,4 +1,4 @@
-# {{PROJECT_NAME}} — Decision Log
+# styr-ai — Decision Log
 *Cumulative log of architectural and design decisions. Append-only.*
 
 ---

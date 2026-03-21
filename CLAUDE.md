@@ -2,11 +2,11 @@
 
 This file provides guidance to Claude Code when working with this repository.
 
-## What is {{PROJECT_NAME}}
+## What is styr-ai
 
-{{DESCRIPTION}}
+styr-ai — built with claude-memory-scaffold
 
-Live: {{VERCEL_URL}}
+Live: https://styr-ai.vercel.app
 
 ## Development Commands
 
@@ -27,15 +27,15 @@ python3 -m http.server 8080
 
 ### Step 1: Quick boot via API (primary)
 Fetch the Vercel API endpoint for full system state in one call:
-- `GET {{VERCEL_URL}}/api/state`
+- `GET https://styr-ai.vercel.app/api/state`
 This returns: last session summary, all active decisions, all learnings, and project metadata.
 
 ### Step 2: Supplementary files (for rules, architecture, work queue)
 Fetch these files from GitHub for context not in API:
-1. https://raw.githubusercontent.com/{{GITHUB_USER}}/{{REPO_NAME}}/main/governance/system_rules.md
-2. https://raw.githubusercontent.com/{{GITHUB_USER}}/{{REPO_NAME}}/main/state/work_queue.md
-3. https://raw.githubusercontent.com/{{GITHUB_USER}}/{{REPO_NAME}}/main/project_memory/architecture.md
-4. https://raw.githubusercontent.com/{{GITHUB_USER}}/{{REPO_NAME}}/main/project_memory/decisions.md
+1. https://raw.githubusercontent.com/gustavkall/styr-ai/main/governance/system_rules.md
+2. https://raw.githubusercontent.com/gustavkall/styr-ai/main/state/work_queue.md
+3. https://raw.githubusercontent.com/gustavkall/styr-ai/main/project_memory/architecture.md
+4. https://raw.githubusercontent.com/gustavkall/styr-ai/main/project_memory/decisions.md
 
 ### Step 3: Determine next action
 From API state + work queue: current system state, active/blocked work, and the exact next task.

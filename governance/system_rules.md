@@ -1,4 +1,4 @@
-# System Rules — {{PROJECT_NAME}}
+# System Rules — styr-ai
 *Immutable unless explicitly changed via decisions.md*
 
 ---

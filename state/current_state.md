@@ -1,4 +1,4 @@
-# {{PROJECT_NAME}} — CURRENT STATE
+# styr-ai — CURRENT STATE
 *Updated by Claude at end of every session. Source of truth for operational state.*
 
 ---
@@ -6,11 +6,11 @@
 ## SYSTEM STATUS
 | Parameter | Value |
 |-----------|-------|
-| Date | {{DATE}} |
+| Date | 2026-03-21 |
 | Version | v1 |
-| Repo | github.com/{{GITHUB_USER}}/{{REPO_NAME}} |
-| Live URL | {{VERCEL_URL}} |
-| API endpoint | {{VERCEL_URL}}/api/state |
+| Repo | github.com/gustavkall/styr-ai |
+| Live URL | https://styr-ai.vercel.app |
+| API endpoint | https://styr-ai.vercel.app/api/state |
 | Hosting | Vercel |
 | Branch | main |
 | Status | setup |

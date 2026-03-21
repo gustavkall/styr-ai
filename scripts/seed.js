@@ -43,7 +43,7 @@ async function seed() {
   });
   console.log(e2 ? '✗ Learning: ' + e2.message : '✓ Learning: Persistent memory architecture');
 
-  console.log('\n✅ Seed complete. Test with: curl {{VERCEL_URL}}/api/state');
+  console.log('\n✅ Seed complete. Test with: curl https://styr-ai.vercel.app/api/state');
 }
 
 seed().catch(e => { console.error('Seed failed:', e.message); process.exit(1); });
