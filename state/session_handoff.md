@@ -4,8 +4,8 @@
 ---
 
 ## LAST SESSION
-- **Date:** 2026-03-21
-- **Summary:** Session boot verifierad. Lade till hälsning i system_rules.md. Projektet saknar fortfarande syfte/beskrivning.
+- **Date:** 2026-03-23
+- **Summary:** VISION-001–005 work items definierade. Diskuterade affärsmodell (subscription), moat (ackumulerat minne, autonom execution, cross-project learnings), och första deploy (landing + GitHub OAuth + dashboard). Gustav vill tänka igenom planen innan build.
 
 ---
 
@@ -13,8 +13,10 @@
 
 | What | File | Status |
 |------|------|--------|
-| Project scaffold | all | ✅ Created |
-| Hälsning i system_rules | governance/system_rules.md | ✅ "Hej på dig styr.ai" |
+| VISION work items (5st) | state/work_queue.md | ✅ VISION-001–005 |
+| Affärsmodell diskussion | — | 📝 Subscription, free/pro tier |
+| Moat-analys | — | 📝 Ackumulerat minne, autonom exec, cross-project |
+| Första deploy-förslag | — | 📝 Landing + OAuth + dashboard, avvaktar beslut |
 
 ---
 
@@ -30,12 +32,14 @@
 *Why were decisions made this session? Document reasoning, not just results.*
 
 - **Scaffold from TRADESYS:** Proven persistent memory pattern — Supabase + Vercel API + state files + Claude auto-memory = ~95% session continuity.
+- **Subscription > one-time:** Värdet växer med tid (ackumulerat minne). Infra kostar per användare. Autonom execution kostar per körning (Claude API).
+- **Avvakta build:** Gustav vill tänka igenom plan och syfte innan vi bygger sajt/app. Rätt beslut — VISION-001 (goals layer) borde komma före deploy.
 
 ---
 
 ## NEXT SESSION STARTS WITH
 
-1. Definiera projektets syfte och beskrivning
-2. SETUP-001: Supabase tables
-3. SETUP-002: Vercel deploy
-4. SETUP-003: Seed initial data
+1. Gustav fattar beslut om projektplan och riktning
+2. VISION-001: Goals layer (definierar syfte)
+3. SETUP-001–003: Infra (Supabase + Vercel + seed)
+4. Första deploy: landing + GitHub OAuth + dashboard

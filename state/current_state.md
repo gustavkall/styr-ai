@@ -6,7 +6,7 @@
 ## SYSTEM STATUS
 | Parameter | Value |
 |-----------|-------|
-| Date | 2026-03-21 (session 1) |
+| Date | 2026-03-23 |
 | Version | v1 |
 | Repo | github.com/gustavkall/styr-ai |
 | Live URL | https://styr-ai.vercel.app |
@@ -19,7 +19,7 @@
 ---
 
 ## ACTIVE WORK
-**Status:** `setup` — initial project scaffold
+**Status:** `planning` — VISION items definierade, avvaktar Gustavs beslut om riktning
 
 ---
 
