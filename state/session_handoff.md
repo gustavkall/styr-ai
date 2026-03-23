@@ -5,7 +5,7 @@
 
 ## LAST SESSION
 - **Date:** 2026-03-23
-- **Summary:** Global session close utan aktiv arbetsdata. Läste state från alla repos, skrev global_status.md. Ingen ny kod eller beslut.
+- **Summary:** Global session close. Läste state från alla repos. Ingen ny kod, inga beslut. Alla underprojekt i scaffold-läge utom TRADESYS (v37 live).
 
 ---
 
@@ -22,19 +22,19 @@
 
 - **System:** v1 scaffold
 - **Hosting:** Vercel (pending deploy)
-- **Blockers:** Supabase setup needed, Gustav-beslut om riktning
+- **Blockers:** Supabase setup behövs för styr-ai, savage-roar, min-analytiker, adminassistent
 
 ---
 
 ## DECISIONS & WHY
 
-- **Ingen ny data:** Session öppnades direkt med global session close. Rätt att bara läsa + skriva state utan att fabricera sessiondata.
+- Ingen ny aktivitet denna session. Direkt global session close.
 
 ---
 
 ## NEXT SESSION STARTS WITH
 
 1. Gustav fattar beslut om projektplan och riktning
-2. VISION-001: Goals layer
-3. SETUP-001–003: Infra (Supabase + Vercel + seed)
-4. Batch-lösa Supabase för savage-roar, min-analytiker, adminassistent samtidigt
+2. SETUP-001–003: Supabase + Vercel + seed (batch för alla scaffold-projekt)
+3. VISION-001: Goals layer
+4. VISION-004: Autonomigränser
