@@ -63,8 +63,18 @@ async function runClaudeAgent(systemPrompt, userPrompt) {
       messages: [{ role: 'user', content: userPrompt }],
     }),
   });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Anthropic API error ${res.status}: ${err}`);
+  }
   const data = await res.json();
+  console.log('Anthropic response:', JSON.stringify(data).slice(0, 500));
   return data.content?.[0]?.text || '';
+}
+
+function stripJsonFences(raw) {
+  // Ta bort ```json ... ``` eller ``` ... ``` wrappers
+  return raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
 }
 
 async function main() {
@@ -86,17 +96,23 @@ Du skriver alltid på svenska. Du är koncis och direkt.`;
     .map(([repo, s]) => `## ${repo}\n### session_handoff\n${s.handoff || '(ej tillgänglig)'}\n### work_queue\n${s.queue || '(ej tillgänglig)'}`)
     .join('\n\n---\n\n');
 
-  const userPrompt = `Här är aktuell state för alla projekt:\n\n${stateBlob}\n\nUtför följande i ordning och returnera resultatet som ett JSON-objekt med dessa nycklar:\n\n1. "global_status": Uppdaterad global_status.md i markdown-format. Tabell med projekt, status, blockers, nästa steg.\n2. "work_queue_additions": Array med nya work items som saknas baserat på goals.md. Format: [{id, title, priority, description}]. Tom array om inget saknas.\n3. "autonomous_action": Beskriv om det finns ett READY-item i styr-ai work_queue som systemet får exekvera autonomt enligt system_rules.md. Om ja: vad är åtgärden och resultatet. Om nej: null.\n4. "report": Rapport till Gustav. Max 300 ord. Vad gjordes, vad blockerar, vad systemet ser som Gustav kanske inte ser, nästa prioritering.\n\nReturnera ENDAST giltigt JSON. Inga kodblock, inga inledningar.`;
+  const userPrompt = `Här är aktuell state för alla projekt:\n\n${stateBlob}\n\nUtför följande i ordning och returnera resultatet som ett JSON-objekt med dessa nycklar:\n\n1. "global_status": Uppdaterad global_status.md i markdown-format. Tabell med projekt, status, blockers, nästa steg.\n2. "work_queue_additions": Array med nya work items som saknas baserat på goals.md. Format: [{id, title, priority, description}]. Tom array om inget saknas.\n3. "autonomous_action": Beskriv om det finns ett READY-item i styr-ai work_queue som systemet får exekvera autonomt enligt system_rules.md. Om ja: vad är åtgärden och resultatet. Om nej: null.\n4. "report": Rapport till Gustav. Max 300 ord. Vad gjordes, vad blockerar, vad systemet ser som Gustav kanske inte ser, nästa prioritering.\n\nReturnera ENDAST giltigt JSON utan kodblock eller inledning. Börja direkt med { och avsluta med }.`;
 
   console.log('Calling Claude...');
   const raw = await runClaudeAgent(systemPrompt, userPrompt);
+  console.log('Raw response length:', raw.length);
+
+  const cleaned = stripJsonFences(raw);
 
   let result;
   try {
-    result = JSON.parse(raw);
+    result = JSON.parse(cleaned);
   } catch (e) {
-    console.error('Failed to parse Claude response:', raw);
-    fs.writeFileSync('state/autonomous_report.md', `# styr-ai Autonomous Report\n*${new Date().toISOString()}*\n\n## Raw output (parse failed)\n\n${raw}`);
+    console.error('JSON parse failed. Raw:', raw.slice(0, 1000));
+    fs.writeFileSync(
+      'state/autonomous_report.md',
+      `# styr-ai Autonomous Report\n*${new Date().toISOString()}*\n\n## Parse failed\n\n\`\`\`\n${raw.slice(0, 3000)}\n\`\`\``
+    );
     process.exit(0);
   }
 
@@ -136,6 +152,10 @@ Du skriver alltid på svenska. Du är koncis och direkt.`;
 }
 
 main().catch((err) => {
-  console.error('Agent error:', err);
+  console.error('Agent fatal error:', err);
+  fs.writeFileSync(
+    'state/autonomous_report.md',
+    `# styr-ai Autonomous Report\n*${new Date().toISOString()}*\n\n## Fatal error\n\n${err.message}\n\n${err.stack}`
+  );
   process.exit(1);
 });
