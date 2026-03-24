@@ -96,3 +96,10 @@
 **Priority:** HIGH
 **Project:** tradesys1337
 **Description:** VIXY≠VIX i polygon-backtest.js. VIXY ~15 ≈ VIX ~20, VIXY ~25 ≈ VIX ~30. Kalibrera om trösklarna eller ersätt med manuell regime-input (se model_architecture_brief.md).
+
+<!-- Auto-added 2026-03-24T13:17:51.469Z -->
+
+### WARNER-AUTOMATION-001 — Automatisk deadline-countdown Warner
+**Priority:** MAX
+**Project:** savage-roar-music
+**Description:** GitHub Actions som beräknar dagar kvar till 22 maj, flaggar vid 30/14/7 dagar, uppdaterar savage-roar work_queue automatiskt. Kritisk juridisk deadline.
