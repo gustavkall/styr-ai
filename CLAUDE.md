@@ -1,5 +1,6 @@
 # CLAUDE.md — styr-ai
 *Meta-system för persistent memory och övervakning av alla Gustavs projekt.*
+*Uppdateras vid session handoff om systemet förändrats strukturellt.*
 
 ---
 
@@ -14,6 +15,7 @@ Det övervakar, analyserar, prioriterar och exekverar inom definierade autonomig
 - `project_memory/goals.md` — systemets syfte och mål
 - `governance/system_rules.md` — vad som får göras autonomt
 - `project_memory/next_session_brief.md` — om den finns: specifika instruktioner för denna session
+- `governance/architecture_changelog.md` — om CLAUDE.md kan vara inaktuell
 
 ---
 
@@ -40,6 +42,7 @@ Läs dessa filer från repot:
 4. `governance/system_rules.md`
 5. `project_memory/cross_project_learnings.md`
 6. `project_memory/next_session_brief.md` — om den finns, följ instruktionerna där
+7. `governance/architecture_changelog.md` — kontrollera om CLAUDE.md behöver uppdateras
 
 ### Steg 2: Underprojektens state
 För varje underprojekt, läs:
@@ -74,9 +77,12 @@ Den läser alla projekt, analyserar gaps mot `goals.md`, skriver rapport till `s
 5. Uppdatera `project_memory/projects_registry.md` — om status ändrats
 6. Ta bort `project_memory/next_session_brief.md` om den följts — den är förbrukad
 7. Skriv `state/global_status.md` — samlad projektstatus
-8. Commit och push:
+8. **Kontrollera om CLAUDE.md behöver uppdateras** — om nya filer, verktyg eller protokoll tillkommit
+   sedan senaste CLAUDE.md-uppdatering, logga i `governance/architecture_changelog.md`
+   och uppdatera CLAUDE.md
+9. Commit och push:
    ```bash
-   git add state/ project_memory/ && git commit -m "state: session handoff YYYY-MM-DD" && git push
+   git add state/ project_memory/ governance/ CLAUDE.md && git commit -m "state: session handoff YYYY-MM-DD" && git push
    ```
 
 ---
@@ -101,6 +107,7 @@ Se `governance/system_rules.md` för fullständig lista. Kortversion:
 
 ```
 governance/system_rules.md               — Autonomigränser
+governance/architecture_changelog.md    — Log när systemet förändrats strukturellt
 state/session_handoff.md                 — Senaste session
 state/work_queue.md                      — Prioriterad tasklista
 state/global_status.md                   — Samlad projektstatus
@@ -126,4 +133,5 @@ infra:  deploy, CI/CD
 docs:   dokumentation
 agent:  automatisk agent-körning
 brief:  ny/uppdaterad session-brief
+chore:  CLAUDE.md eller architecture_changelog uppdatering
 ```
