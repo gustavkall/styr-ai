@@ -1,101 +1,129 @@
-# CLAUDE.md
+# CLAUDE.md — styr-ai
+*Meta-system för persistent memory och övervakning av alla Gustavs projekt.*
 
-This file provides guidance to Claude Code when working with this repository.
+---
 
-## What is styr-ai
+## Vad är styr-ai
 
-Meta-system for persistent memory across all Gustav Kalls projekt. styr-ai ar "modern" — den overvakar, aggregerar learnings, och haller projektregistret uppdaterat. Alla underprojekt rapporterar hit.
+styr-ai är ett autonomt meta-system som sitter ovanför alla underprojekt.
+Det övervakar, analyserar, prioriterar och exekverar inom definierade autonomigränser.
 
-### Underprojekt
+**Syfte:** Ge Gustav maximal leverage — han godkänner riktning och scope, systemet exekverar och rapporterar.
+
+**Läs alltid vid boot:**
+- `project_memory/goals.md` — systemets syfte och mål
+- `governance/system_rules.md` — vad som får göras autonomt
+- `project_memory/next_session_brief.md` — om den finns: specifika instruktioner för denna session
+
+---
+
+## Underprojekt
+
 | Projekt | Repo | Syfte |
 |---------|------|-------|
-| Savage Roar Music | gustavkall/savage-roar-music | Musiklabel, Warner-tvist, Vali Miron |
-| TRADESYS | gustavkall/tradesys1337 | Trading dashboard |
-| Min Analytiker | gustavkall/min-analytiker | Intradagsanalytiker, TradeSys |
-| Adminassistent | gustavkall/adminassistent | Executive assistant, Savage Roar AB |
+| Savage Roar Music | gustavkall/savage-roar-music | Musiklabel, Warner-tvist, Vali Miron, G3ox_em |
+| TRADESYS | gustavkall/tradesys1337 | Trading dashboard v37, model-kalibrering |
+| Min Analytiker | gustavkall/min-analytiker | Intradagsanalytiker kopplad till TRADESYS |
+| Adminassistent | gustavkall/adminassistent | Executive assistant, Savage Roar AB, Execute Media, Alliance |
 
-## Development Commands
+Varje underprojekt har `project_memory/project_context.md` — läs den för att förstå projektets egna mål.
 
-```bash
-# Local dev server
-python3 -m http.server 8080
+---
 
-# Deploy: push to main → Vercel auto-deploys (~15s)
+## Session Boot Protocol (OBLIGATORISK — kör automatiskt)
 
-# Supabase setup (run once)
-# 1. Create Supabase project
-# 2. Run scripts/setup-supabase.sql in SQL Editor
-# 3. Add SUPABASE_URL + SUPABASE_ANON_KEY to Vercel env vars
-# 4. Run: source .env && node scripts/seed.js
-```
+### Steg 1: styr-ai state
+Läs dessa filer från repot:
+1. `state/session_handoff.md`
+2. `state/work_queue.md`
+3. `project_memory/goals.md`
+4. `governance/system_rules.md`
+5. `project_memory/cross_project_learnings.md`
+6. `project_memory/next_session_brief.md` — om den finns, följ instruktionerna där
 
-## Session Boot Protocol (MANDATORY — do this automatically on session start)
-
-### Step 1: Quick boot via API (primary)
-Fetch the Vercel API endpoint for full system state in one call:
-- `GET https://styr-ai.vercel.app/api/state`
-This returns: last session summary, all active decisions, all learnings, and project metadata.
-
-### Step 2: styr-ai egna filer
-1. https://raw.githubusercontent.com/gustavkall/styr-ai/main/governance/system_rules.md
-2. https://raw.githubusercontent.com/gustavkall/styr-ai/main/state/work_queue.md
-3. https://raw.githubusercontent.com/gustavkall/styr-ai/main/project_memory/architecture.md
-4. https://raw.githubusercontent.com/gustavkall/styr-ai/main/project_memory/decisions.md
-5. https://raw.githubusercontent.com/gustavkall/styr-ai/main/project_memory/projects_registry.md
-6. https://raw.githubusercontent.com/gustavkall/styr-ai/main/project_memory/cross_project_learnings.md
-
-### Step 3: Las underprojektens state (for overblick)
-For varje projekt i registret, las:
+### Steg 2: Underprojektens state
+För varje underprojekt, läs:
+- `project_memory/project_context.md` — projektets syfte och mål (PRIMÄR)
 - `state/session_handoff.md` — senaste session
 - `state/work_queue.md` — aktiva tasks
-- `project_memory/learnings.md` — nya insikter
 
-### Step 4: Aggregera och agera
-1. Sammanfatta status over alla projekt
-2. Identifiera cross-project patterns och learnings
-3. Uppdatera `cross_project_learnings.md` om nya insikter hittats
-4. Foreslana nasta steg baserat pa hela bilden
+### Steg 3: Aggregera
+1. Sammanfatta status per projekt mot PROJEKTETS EGNA MÅL
+2. Identifiera cross-project patterns, synergier, konflikter
+3. Föreslå prioritering baserat på `goals.md`
+4. Flagga om något kräver Gustavs uppmärksamhet
 
-## Commit Conventions
+---
 
-```
-feat:  new feature
-fix:   bug fix
-state: session handoff / state update
-infra: deploy config, CI/CD
-docs:  documentation
-```
+## Autonomous Agent
 
-## Session Handoff Protocol (MANDATORY)
+Agenten (`scripts/autonomous-agent.js`) körs automatiskt vid varje push till main via GitHub Actions.
+Den läser alla projekt, analyserar gaps mot `goals.md`, skriver rapport till `state/autonomous_report.md`.
 
-At the end of every session, **without being asked**, perform the following:
+**Hämta senaste rapport:** `state/autonomous_report.md`
+**Secret som krävs:** `ANTHROPIC_API_KEY` i GitHub repo secrets
 
-1. **Update `state/session_handoff.md`** — What was done, decisions & reasoning, next steps.
-2. **Update `state/current_state.md`** — Date, version, system status.
-3. **Update `state/work_queue.md`** — Mark completed, reprioritize.
-4. **Update `project_memory/learnings.md`** — New insights or calibrations from this session.
-5. **Update `project_memory/decisions.md`** — Decisions made with reasoning.
-6. **Update `project_memory/cross_project_learnings.md`** — Nya cross-project insikter fran denna session.
-7. **Update `project_memory/projects_registry.md`** — Om nya projekt skapats eller status andrats.
-6. **Save session to Supabase** — Run node script to save session summary, changes, decisions, next_steps to Supabase `sessions` table. Also update any `decisions` rows.
-7. **Commit and push state**:
+---
+
+## Session Handoff Protocol (OBLIGATORISK — kör automatiskt vid sessionslut)
+
+1. Uppdatera `state/session_handoff.md` — vad gjordes, beslut, nästa steg
+2. Uppdatera `state/work_queue.md` — markera klart, omprioritera
+3. Uppdatera `project_memory/decisions.md` — beslut med motivering
+4. Uppdatera `project_memory/cross_project_learnings.md` — nya insikter
+5. Uppdatera `project_memory/projects_registry.md` — om status ändrats
+6. Ta bort `project_memory/next_session_brief.md` om den följts — den är förbrukad
+7. Skriv `state/global_status.md` — samlad projektstatus
+8. Commit och push:
    ```bash
    git add state/ project_memory/ && git commit -m "state: session handoff YYYY-MM-DD" && git push
    ```
 
-This is not optional. Every session ends with a state handoff commit + Supabase save. No exceptions.
+---
 
-## Governance & Repo Structure
+## Vad styr-ai FÅR göra autonomt
+Se `governance/system_rules.md` för fullständig lista. Kortversion:
+- Läsa alla repos
+- Skriva state-filer och work_queue
+- Lägga till work items baserat på gap-analys
+- Commita till feature-branch (ej main direkt)
+
+## Vad styr-ai INTE FÅR göra utan godkännande
+- Merga till main
+- Skicka mail eller meddelanden
+- Köpa, betala, transagera
+- Starta nya projekt
+- Ändra `goals.md` eller `system_rules.md`
+
+---
+
+## Repo-struktur
 
 ```
-governance/system_rules.md     — Immutable rules (change only via decisions.md)
-state/current_state.md         — Operational state, updated end-of-session
-state/work_queue.md            — Prioritized tasks (max 1 ACTIVE)
-state/session_handoff.md       — Last session context + next steps
-project_memory/architecture.md — Stable architecture docs
-project_memory/decisions.md    — Cumulative decision log
-project_memory/learnings.md    — What was learned and why
-api/state.js                   — Vercel serverless: GET /api/state → full state JSON
-scripts/setup-supabase.sql     — SQL schema for persistent memory tables
-scripts/seed.js                — Seeds Supabase from markdown files
+governance/system_rules.md               — Autonomigränser
+state/session_handoff.md                 — Senaste session
+state/work_queue.md                      — Prioriterad tasklista
+state/global_status.md                   — Samlad projektstatus
+state/autonomous_report.md               — Senaste agent-rapport
+project_memory/goals.md                  — Systemets syfte och mål (VISION-001)
+project_memory/projects_registry.md     — Alla registrerade projekt
+project_memory/cross_project_learnings.md — Aggregerade insikter
+project_memory/decisions.md             — Beslutlogg
+project_memory/next_session_brief.md    — Specifika instruktioner för nästa session
+scripts/autonomous-agent.js              — Autonom agent (VISION-005)
+.github/workflows/autonomous-agent.yml  — GitHub Actions trigger
+```
+
+---
+
+## Commit-konventioner
+
+```
+feat:   ny funktionalitet
+fix:    buggfix
+state:  session handoff / state-uppdatering
+infra:  deploy, CI/CD
+docs:   dokumentation
+agent:  automatisk agent-körning
+brief:  ny/uppdaterad session-brief
 ```
