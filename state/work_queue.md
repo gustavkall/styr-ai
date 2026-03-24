@@ -78,3 +78,21 @@
 | VISION-004 | Autonomigränser | 2026-03-24 | ✅ governance/system_rules.md skriven |
 | VISION-005 | Autonom execution | 2026-03-24 | ✅ autonomous-agent.js + workflow live |
 | VISION-002 | Gap-analys i agent | 2026-03-24 | ✅ Inbyggt i autonomous-agent.js |
+
+
+<!-- Auto-added 2026-03-24T13:16:32.588Z -->
+
+### DEADLINE-004 — Warner deadline countdown
+**Priority:** MAX
+**Project:** savage-roar-music
+**Description:** Cure period löper ut 22 maj 2026 — 59 dagar kvar. GitHub Actions som beräknar dagar kvar, eskalerar automatiskt vid 30/14/7 dagar, uppdaterar savage-roar work_queue prioritet. Inget annat är viktigare just nu.
+
+### VALUE-001 — Scaffold audit — bygg eller kill
+**Priority:** HIGH
+**Project:** styr-ai
+**Description:** Formellt beslut: bygg färdigt min-analytiker + adminassistent ELLER avveckla. Tre scaffold-projekt drar fokus och kontext utan att generera värde. Gustav beslutar, systemet exekverar.
+
+### MODEL-001 — VIXY calibration fix
+**Priority:** HIGH
+**Project:** tradesys1337
+**Description:** VIXY≠VIX i polygon-backtest.js. VIXY ~15 ≈ VIX ~20, VIXY ~25 ≈ VIX ~30. Kalibrera om trösklarna eller ersätt med manuell regime-input (se model_architecture_brief.md).
