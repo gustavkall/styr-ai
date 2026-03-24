@@ -1,77 +1,72 @@
 # styr-ai — SESSION HANDOFF
-*Updated automatically at end of every session. Read at next session start.*
+*Global session close: 2026-03-24*
 
 ---
 
-## LAST SESSION
-- **Date:** 2026-03-24
-- **Summary:** Stor session. VISION-001/004/005/002 klara. Fyra agenter byggda och live. 6-modells-arkitektur designad. Top gainers agent v2 med full pre-move analys. CLAUDE.md + governance uppdaterat.
+## DENNA SESSION
+
+### Byggt
+- 5 agenter live: autonomous, coo, market-regime, top-gainers v2, memory-integrity
+- COO-agent: orchestrerar allt, skriver daily_briefing.md 06:00 CET
+- Top gainers v2: full pre-move analys (25d OHLCV, alla indikatorer, macro, nyheter, fundamentals, case-filer)
+- Memory integrity agent: söndagar 04:00, kontrollerar minneshälsa
+- Approvals-system: governance/approvals.md
+- Architecture changelog: governance/architecture_changelog.md
+- Position tracker brief: tradesys1337/project_memory/position_tracker_brief.md
+- Proaktiv förbättringsregel: alla CLAUDE.md uppdaterade
+- URL-first arkitektur: Project Instructions pekar på CLAUDE.md i repo
+- work_queue rengjord och deduplicerad
+
+### Beslut
+- 6 separata modeller: ENTRY/PASS/SIZE/HOLD/ADD/EXIT-v1
+- VIX är manuellt filter — Gustav sätter regim
+- min-analytiker sammanslått med TRADESYS
+- Warner-deadline nedprioriterad — Gustav hanterar personligen
+- Top gainers fas 2 (predictive) — väntar på case-filer från agenten
+- Position tracker — byggs efter EXIT-v1
+- push_files blockeras på .github/workflows/ — måste göras via GitHub UI
 
 ---
 
-## VAD SOM BYGGDES
-
-| Vad | Fil | Status |
-|-----|-----|--------|
-| goals.md | project_memory/goals.md | ✅ |
-| system_rules.md | governance/system_rules.md | ✅ |
-| autonomous-agent.js | scripts/autonomous-agent.js | ✅ Live, cron 03:00 CET |
-| market-regime-agent.js | scripts/market-regime-agent.js | ✅ Live, 08:00 CET vardagar |
-| top-gainers-agent.js v2 | scripts/top-gainers-agent.js | ✅ Live, 22:30 CET vardagar |
-| memory-integrity-agent.js | scripts/memory-integrity-agent.js | ✅ Live, 04:00 CET söndagar |
-| approvals.md | governance/approvals.md | ✅ |
-| architecture_changelog.md | governance/architecture_changelog.md | ✅ |
-| CLAUDE.md | CLAUDE.md | ✅ Uppdaterad |
-| project_context.md ×4 | alla underprojekt | ✅ Berikat med full kontext |
-| model_architecture_brief.md | tradesys1337/project_memory/ | ✅ 6-modells-arkitektur |
-| next_session_brief.md | tradesys1337/project_memory/ | ✅ CC-instruktioner |
-
----
-
-## AGENTS LIVE
-
-| Agent | Trigger | Output |
-|-------|---------|--------|
-| autonomous-agent | 03:00 CET natt | state/autonomous_report.md |
-| market-regime-agent | 08:00 CET vardagar | tradesys1337/state/market_regime.md |
-| top-gainers-agent v2 | 22:30 CET vardagar | tradesys1337/state/top_gainers_report.md + case-filer |
-| memory-integrity-agent | 04:00 CET söndagar | state/memory_integrity_report.md |
-
-## SECRETS PÅ PLATS (styr-ai repo)
-- ANTHROPIC_API_KEY ✅
-- POLYGON_KEY ✅
-- ALPHA_VANTAGE_KEY ✅
-
----
-
-## BESLUT
-
-- **6 separata modeller** istället för en enda score: ENTRY/PASS/SIZE/HOLD/ADD/EXIT
-- **VIX är manuellt filter** — Gustav sätter regim, modellerna beräknar inte autonomt
-- **min-analytiker sammanslått med TRADESYS** — agenter körs från styr-ai, output till tradesys1337
-- **adminassistent** — ska byggas som interaktivt EA-system (mail, kalender, presentationer)
-- **Warner-deadline** nedprioriterad — Gustav hanterar dialogen personligen
-- **Top gainers fas 2** (predictive) — väntar på att case-filer byggs upp över tid
-- **push_files blockeras** av GitHub MCP på .github/workflows/ — använd GitHub UI
-- **Rapport hämtas** via Claude.ai: skriv "visa senaste rapport"
-
----
-
-## NÄSTA SESSION STARTAR MED
+## NÄSTA SESSION
 
 ### Claude.ai styr-ai:
-1. `session boot` — läser alla state-filer
-2. Verifiera att agenter kört korrekt (kolla Actions-fliken)
+```
+session boot
+```
+Läser daily_briefing.md (om COO kört), sedan full state.
 
 ### CC i ~/tradesys1337:
-1. `session boot` — läser next_session_brief.md automatiskt
-2. Följ instruktionerna i next_session_brief.md
-3. Startprompt för ENTRY-v1:
+```bash
+cd ~/tradesys1337 && claude
+session boot
+```
+Läser next_session_brief.md automatiskt. Följ instruktionerna.
 
+Startprompt för ENTRY-v1:
 ```
 Läs project_memory/next_session_brief.md och project_memory/model_architecture_brief.md
 
-Bygger ENTRY-v1. Analysera case-filer i project_memory/score_cases/
+Vi bygger ENTRY-v1. Analysera case-filer i project_memory/score_cases/
 och identifiera vilka komponenter som bäst predicerar CORRECT_BUY vs FALSE_BUY.
 Visa förslag på calcEntryScore() som ekvation/tabell INNAN du kodar något.
 ```
+
+---
+
+## AGENT-SCHEMA
+
+| Tid | Agent | Output |
+|-----|-------|--------|
+| 03:00 CET natt | autonomous-agent | state/autonomous_report.md |
+| 06:00 CET vardagar | coo-agent | state/daily_briefing.md |
+| 08:00 CET vardagar | market-regime-agent | tradesys1337/state/market_regime.md |
+| 22:30 CET vardagar | top-gainers-agent v2 | tradesys1337/state/top_gainers_report.md |
+| 04:00 CET söndagar | memory-integrity-agent | state/memory_integrity_report.md |
+
+**Secrets på plats:** ANTHROPIC_API_KEY, POLYGON_KEY, ALPHA_VANTAGE_KEY
+
+---
+
+## KRITISKA DATUM
+- **22 maj 2026:** Warner cure period (59 dagar) — Gustav hanterar
