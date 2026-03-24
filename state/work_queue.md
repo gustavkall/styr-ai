@@ -59,3 +59,15 @@
 **Priority:** MEDIUM
 **Project:** styr-ai
 **Description:** Designa hur tradesys1337 och min-analytiker ska dela data. Centraliserad Supabase-arkitektur för alla projekt.
+
+<!-- Auto-added by agent 2026-03-24T10:02:21.475Z -->
+
+### DEADLINE-001 — Deadline radar system
+**Priority:** HIGH
+**Project:** styr-ai
+**Description:** Automatisk bevakning av juridiska deadlines, kontraktsfrister och kritiska datum. Eskalerar prioritet när deadlines närmar sig.
+
+### INTEGRATION-001 — Cross-project API design
+**Priority:** MEDIUM
+**Project:** styr-ai
+**Description:** Designa hur tradesys1337 och min-analytiker ska dela data. Centraliserad Supabase-arkitektur för alla projekt.
