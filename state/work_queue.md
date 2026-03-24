@@ -105,3 +105,20 @@
 **Priority:** MEDIUM
 **Project:** tradesys1337
 **Description:** GitHub Actions workflow som verifierar scanners 15:25 CET, rapporterar status. Automatisera WQ-008.
+
+<!-- Auto-added 2026-03-24T13:06:07.463Z -->
+
+### DEADLINE-003 — Automated deadline radar för alla projekt
+**Priority:** MAX
+**Project:** styr-ai
+**Description:** GitHub Actions som bevakar kritiska datum över alla projekt. Warner 22 maj, men designat för framtida deadlines också.
+
+### VALUE-002 — Scaffold audit — bygg eller kill decision
+**Priority:** HIGH
+**Project:** styr-ai
+**Description:** Avgöra om min-analytiker och adminassistent ska byggas färdigt eller avvecklas. Tre scaffold-projekt ger noll värde.
+
+### MODEL-002 — VIXY calibration fix
+**Priority:** HIGH
+**Project:** tradesys1337
+**Description:** Korrigera VIXY≠VIX mapping i polygon-backtest.js. VIXY ~15≈VIX ~20, VIXY ~25≈VIX ~30
