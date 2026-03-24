@@ -1,6 +1,26 @@
 # CLAUDE.md — styr-ai
 *Meta-system för persistent memory och övervakning av alla Gustavs projekt.*
-*Uppdateras vid session handoff om systemet förändrats strukturellt.*
+
+> **VIKTIGT:** Claude.ai Project Instructions för detta projekt innehåller bara en URL-referens hit.
+> Alla faktiska instruktioner finns i denna fil. När systemet förändras uppdateras denna fil —
+> Project Instructions i UI behöver aldrig ändras igen.
+
+---
+
+## Flaggningsregel — OBLIGATORISK
+
+**Om denna session skapar något som påverkar:**
+- Boot-sekvensen (nya filer som ska läsas)
+- Nya agenter eller workflows
+- Nya protokoll eller autonomigränser
+- Strukturella förändringar i repot
+
+**Gör då alltid:**
+1. Uppdatera denna fil (CLAUDE.md)
+2. Logga i `governance/architecture_changelog.md`
+3. Meddela Gustav explicit i slutet av sessionen: *"CLAUDE.md har uppdaterats med: [vad]"*
+
+Detta ersätter behovet av att manuellt uppdatera Project Instructions i Claude.ai UI.
 
 ---
 
@@ -14,8 +34,8 @@ Det övervakar, analyserar, prioriterar och exekverar inom definierade autonomig
 **Läs alltid vid boot:**
 - `project_memory/goals.md` — systemets syfte och mål
 - `governance/system_rules.md` — vad som får göras autonomt
-- `state/daily_briefing.md` — dagens briefing från COO-agenten (om den finns)
-- `project_memory/next_session_brief.md` — om den finns: specifika instruktioner för denna session
+- `state/daily_briefing.md` — COO-agentens dagliga briefing (om den finns)
+- `project_memory/next_session_brief.md` — om den finns: specifika instruktioner
 - `governance/architecture_changelog.md` — om CLAUDE.md kan vara inaktuell
 
 ---
@@ -44,41 +64,39 @@ Varje underprojekt har `project_memory/project_context.md` — läs den för pro
 | 22:30 vardagar | top-gainers-agent | `tradesys1337/state/top_gainers_report.md` + case-filer |
 | 04:00 söndagar | memory-integrity-agent | `state/memory_integrity_report.md` |
 
-**Secrets som krävs:** `ANTHROPIC_API_KEY`, `POLYGON_KEY`, `ALPHA_VANTAGE_KEY`
+**Secrets:** `ANTHROPIC_API_KEY`, `POLYGON_KEY`, `ALPHA_VANTAGE_KEY`
 
 ---
 
 ## Session Boot Protocol (OBLIGATORISK — kör automatiskt)
 
 ### Steg 1: styr-ai state
-Läs dessa filer från repot:
-1. `state/daily_briefing.md` — COO-agentens dagliga briefing (PRIMÄR — läs först)
+1. `state/daily_briefing.md` — COO-briefing (PRIMÄR — läs först)
 2. `state/session_handoff.md`
 3. `state/work_queue.md`
 4. `project_memory/goals.md`
 5. `governance/system_rules.md`
 6. `project_memory/cross_project_learnings.md`
-7. `project_memory/next_session_brief.md` — om den finns, följ instruktionerna där
-8. `governance/architecture_changelog.md` — kontrollera om CLAUDE.md behöver uppdateras
+7. `project_memory/next_session_brief.md` — om den finns, följ instruktionerna
+8. `governance/architecture_changelog.md` — kontrollera om CLAUDE.md är aktuell
 
 ### Steg 2: Underprojektens state
-För varje underprojekt, läs:
-- `project_memory/project_context.md` — projektets syfte och mål (PRIMÄR)
-- `state/session_handoff.md` — senaste session
-- `state/work_queue.md` — aktiva tasks
+För varje underprojekt:
+- `project_memory/project_context.md` — projektets egna mål (PRIMÄR)
+- `state/session_handoff.md`
+- `state/work_queue.md`
 
-### Steg 3: Aggregera
-1. Sammanfatta status per projekt mot PROJEKTETS EGNA MÅL
-2. Identifiera cross-project patterns, synergier, konflikter
-3. Föreslå prioritering baserat på `goals.md`
-4. Flagga om något kräver Gustavs uppmärksamhet
+### Steg 3: Aggregera och presentera
+1. Status per projekt mot PROJEKTETS EGNA MÅL
+2. Cross-project patterns, synergier, konflikter
+3. Prioritering baserat på `goals.md`
+4. Flagga vad som kräver Gustavs uppmärksamhet
 
 ---
 
-## Godklänna agent-förslag
+## Godkänna agent-förslag
 
 COO-agenten eskalerar beslut till `governance/approvals.md`.
-Skriv där för att godkänna eller avvisa:
 ```
 APPROVE: ITEM-ID
 REJECT: ITEM-ID
@@ -88,13 +106,13 @@ REJECT: ITEM-ID
 
 ## Session Handoff Protocol (OBLIGATORISK — kör automatiskt vid sessionslut)
 
-1. Uppdatera `state/session_handoff.md` — vad gjordes, beslut, nästa steg
-2. Uppdatera `state/work_queue.md` — markera klart, omprioritera
-3. Uppdatera `project_memory/decisions.md` — beslut med motivering
-4. Uppdatera `project_memory/cross_project_learnings.md` — nya insikter
+1. Uppdatera `state/session_handoff.md`
+2. Uppdatera `state/work_queue.md`
+3. Uppdatera `project_memory/decisions.md`
+4. Uppdatera `project_memory/cross_project_learnings.md`
 5. Ta bort `project_memory/next_session_brief.md` om den följts
-6. Skriv `state/global_status.md` — samlad projektstatus
-7. Kontrollera om CLAUDE.md behöver uppdateras — logga i `governance/architecture_changelog.md`
+6. Skriv `state/global_status.md`
+7. **Kontrollera flaggningsregeln** — uppdatera CLAUDE.md om strukturellt nytt tillkommit
 8. Commit och push:
    ```bash
    git add state/ project_memory/ governance/ CLAUDE.md && git commit -m "state: session handoff YYYY-MM-DD" && git push
@@ -102,7 +120,7 @@ REJECT: ITEM-ID
 
 ---
 
-## Autonomigränser (kortversion)
+## Autonomigränser
 
 Får autonomt: läsa allt, skriva state-filer, lägga till work items, commita till feature-branch.
 Kräver godkännande: merga till main, skicka mail, transagera, starta projekt, ändra goals.md/system_rules.md.
@@ -112,39 +130,31 @@ Kräver godkännande: merga till main, skicka mail, transagera, starta projekt, 
 ## Repo-struktur
 
 ```
-governance/system_rules.md               — Autonomigränser
-governance/architecture_changelog.md    — Log när systemet förändrats strukturellt
-governance/approvals.md                 — Gustav godkänner/avvisar här
-state/daily_briefing.md                  — COO-agentens dagliga briefing (läs varje morgon)
-state/session_handoff.md                 — Senaste session
-state/work_queue.md                      — Prioriterad tasklista
-state/global_status.md                   — Samlad projektstatus
-state/autonomous_report.md               — Senaste autonomous-agent rapport
-state/market_regime_latest.md            — Senaste regimbedömning
-state/top_gainers_latest.md             — Senaste top gainers summary
-state/memory_integrity_report.md        — Minneshälsa (söndagar)
-project_memory/goals.md                  — Systemets syfte och mål
-project_memory/cross_project_learnings.md — Aggregerade insikter
-project_memory/decisions.md             — Beslutlogg
-project_memory/next_session_brief.md    — Specifika instruktioner för nästa session
-scripts/autonomous-agent.js              — Gap-analys, rapport
-scripts/coo-agent.js                     — Orchestrerar allt, daily briefing
-scripts/market-regime-agent.js           — SPY/VIXY/HYG regime
-scripts/top-gainers-agent.js             — Post-mortem + case-filer
-scripts/memory-integrity-agent.js        — Minneshälsa
+governance/system_rules.md
+governance/architecture_changelog.md
+governance/approvals.md
+state/daily_briefing.md           — läs varje morgon
+state/session_handoff.md
+state/work_queue.md
+state/global_status.md
+state/autonomous_report.md
+state/market_regime_latest.md
+state/top_gainers_latest.md
+state/memory_integrity_report.md
+project_memory/goals.md
+project_memory/cross_project_learnings.md
+project_memory/decisions.md
+project_memory/next_session_brief.md
+scripts/autonomous-agent.js
+scripts/coo-agent.js
+scripts/market-regime-agent.js
+scripts/top-gainers-agent.js
+scripts/memory-integrity-agent.js
 ```
 
 ---
 
 ## Commit-konventioner
-
 ```
-feat:   ny funktionalitet
-fix:    buggfix
-state:  session handoff / state-uppdatering
-agent:  automatisk agent-körning
-coo:    COO-agent körning
-brief:  ny/uppdaterad session-brief
-docs:   dokumentation
-chore:  CLAUDE.md eller architecture_changelog uppdatering
+feat / fix / state / agent / coo / brief / docs / chore
 ```
