@@ -1,17 +1,47 @@
 # styr-ai — WORK QUEUE
 *Prioritized list. Updated by Claude at session end. Max one ACTIVE item.*
+*Agent lägger bara till items som inte redan finns (ID-check).*
 
 ---
 
 ## ACTIVE
-*(nothing active)*
+
+### DEADLINE-004 — Warner deadline countdown
+**Priority:** MAX
+**Project:** savage-roar-music
+**Description:** Cure period löper ut 22 maj 2026 — 59 dagar kvar. GitHub Actions som beräknar dagar kvar, eskalerar automatiskt vid 30/14/7 dagar, uppdaterar savage-roar work_queue prioritet. Inget annat är viktigare just nu.
 
 ---
 
 ## READY — PRIORITY ORDER
 
-### VISION-002 — Proaktiv prioritering
+### VALUE-001 — Scaffold audit — bygg eller kill
 **Priority:** HIGH
+**Project:** styr-ai
+**Description:** Formellt beslut: bygg färdigt min-analytiker + adminassistent ELLER avveckla. Tre scaffold-projekt drar fokus och kontext utan att generera värde. Gustav beslutar, systemet exekverar.
+
+### AGENT-001 — Fixa agent-deduplicering
+**Priority:** HIGH
+**Project:** styr-ai
+**Description:** Agent appendar samma work items upprepade gånger. Lägg till ID-check i autonomous-agent.js: läs befintlig work_queue, skippa items med ID som redan finns.
+
+### AGENT-002 — Ändra agent-trigger från push till cron
+**Priority:** HIGH
+**Project:** styr-ai
+**Description:** Agenten triggar på varje push — inklusive sina egna commits — vilket skapar en loop. Ändra till cron (natt 03:00 CET) + manuell dispatch. Push-trigger behålls bara för hotfix-brancharna.
+
+### AGENT-003 — Approvals-system
+**Priority:** HIGH
+**Project:** styr-ai
+**Description:** Gustav ska kunna godkänna/avvisa agent-förslag utan att öppna en chat. Lösning: governance/approvals.md där Gustav skriver APPROVE: ID eller REJECT: ID. Agenten läser filen och agerar.
+
+### MODEL-001 — VIXY calibration fix
+**Priority:** HIGH
+**Project:** tradesys1337
+**Description:** VIXY≠VIX i polygon-backtest.js. VIXY ~15 ≈ VIX ~20, VIXY ~25 ≈ VIX ~30. Kalibrera om trösklarna eller ersätt med manuell regime-input (se model_architecture_brief.md).
+
+### VISION-002 — Proaktiv prioritering
+**Priority:** MEDIUM
 **Description:** System som föreslår work items som inte finns på listan men borde — baserat på goals layer och nuvarande state.
 **Dependencies:** VISION-001 ✅
 
@@ -20,16 +50,15 @@
 **Description:** Externa signaler korrelerade mot nuvarande arbete. Systemet ser mönster användaren inte ser i stunden.
 **Dependencies:** VISION-001 ✅, VISION-002
 
-### VISION-005 — Autonom execution
-**Priority:** MAX
-**Description:** GitHub Actions + Claude API. Systemet jobbar inom definierade ramar, committar, rapporterar när du vaknar.
-**Dependencies:** VISION-004 ✅
-**Next step:** Designa GitHub Actions workflow + Claude API-anrop + rapporteringsformat
+### MORNING-001 — TRADESYS morning verification
+**Priority:** MEDIUM
+**Project:** tradesys1337
+**Description:** GitHub Actions workflow som verifierar scanners 15:25 CET, rapporterar status. Automatiserar WQ-008.
 
 ### SETUP-001 — Supabase tables
-**Priority:** LOW (avvaktar tills faktiskt behov uppstår)
+**Priority:** LOW
 **Description:** Run scripts/setup-supabase.sql in Supabase SQL Editor. Add env vars to Vercel.
-**Note:** GitHub persistent memory räcker. Supabase ger ingen extra nytta just nu.
+**Note:** GitHub persistent memory räcker. Avvaktar tills faktiskt behov uppstår.
 
 ### SETUP-002 — First deploy
 **Priority:** LOW
@@ -47,90 +76,5 @@
 |----|------|------|--------|
 | VISION-001 | Goals layer | 2026-03-24 | ✅ project_memory/goals.md skriven |
 | VISION-004 | Autonomigränser | 2026-03-24 | ✅ governance/system_rules.md skriven |
-
-
-<!-- Auto-added by agent 2026-03-24T09:59:50.524Z -->
-### DEADLINE-001 — Deadline radar system
-**Priority:** HIGH
-**Project:** styr-ai
-**Description:** Automatisk bevakning av juridiska deadlines, kontraktsfrister och kritiska datum. Eskalerar prioritet när deadlines närmar sig.
-
-### INTEGRATION-001 — Cross-project API design
-**Priority:** MEDIUM
-**Project:** styr-ai
-**Description:** Designa hur tradesys1337 och min-analytiker ska dela data. Centraliserad Supabase-arkitektur för alla projekt.
-
-<!-- Auto-added by agent 2026-03-24T10:02:21.475Z -->
-
-### DEADLINE-001 — Deadline radar system
-**Priority:** HIGH
-**Project:** styr-ai
-**Description:** Automatisk bevakning av juridiska deadlines, kontraktsfrister och kritiska datum. Eskalerar prioritet när deadlines närmar sig.
-
-### INTEGRATION-001 — Cross-project API design
-**Priority:** MEDIUM
-**Project:** styr-ai
-**Description:** Designa hur tradesys1337 och min-analytiker ska dela data. Centraliserad Supabase-arkitektur för alla projekt.
-
-<!-- Auto-added by agent 2026-03-24T10:20:01.527Z -->
-
-### DEADLINE-002 — Warner-deadline tracking system
-**Priority:** HIGH
-**Project:** savage-roar-music
-**Description:** Automatiskt system som bevakar 22 maj deadline, eskalerar 30/14/7 dagar före. GitHub Actions + Claude API notification.
-
-### VALUE-001 — Project value audit
-**Priority:** MEDIUM
-**Project:** styr-ai
-**Description:** Analysera om min-analytiker och adminassistent ska byggas färdigt eller avvecklas. Tre scaffold-projekt ger ingen ROI.
-
-### MORNING-001 — TRADESYS morning verification
-**Priority:** MEDIUM
-**Project:** tradesys1337
-**Description:** GitHub Actions workflow som verifierar scanners 15:25 CET, rapporterar status. Automatisera WQ-008.
-
-<!-- Auto-added 2026-03-24T11:03:08.741Z -->
-
-### DEADLINE-002 — Warner-deadline tracking system
-**Priority:** HIGH
-**Project:** savage-roar-music
-**Description:** Automatiskt system som bevakar 22 maj deadline, eskalerar 30/14/7 dagar före. GitHub Actions + Claude API notification.
-
-### VALUE-001 — Project value audit
-**Priority:** MEDIUM
-**Project:** styr-ai
-**Description:** Analysera om min-analytiker och adminassistent ska byggas färdigt eller avvecklas. Tre scaffold-projekt ger ingen ROI.
-
-### MORNING-001 — TRADESYS morning verification
-**Priority:** MEDIUM
-**Project:** tradesys1337
-**Description:** GitHub Actions workflow som verifierar scanners 15:25 CET, rapporterar status. Automatisera WQ-008.
-
-<!-- Auto-added 2026-03-24T13:06:07.463Z -->
-
-### DEADLINE-003 — Automated deadline radar för alla projekt
-**Priority:** MAX
-**Project:** styr-ai
-**Description:** GitHub Actions som bevakar kritiska datum över alla projekt. Warner 22 maj, men designat för framtida deadlines också.
-
-### VALUE-002 — Scaffold audit — bygg eller kill decision
-**Priority:** HIGH
-**Project:** styr-ai
-**Description:** Avgöra om min-analytiker och adminassistent ska byggas färdigt eller avvecklas. Tre scaffold-projekt ger noll värde.
-
-### MODEL-002 — VIXY calibration fix
-**Priority:** HIGH
-**Project:** tradesys1337
-**Description:** Korrigera VIXY≠VIX mapping i polygon-backtest.js. VIXY ~15≈VIX ~20, VIXY ~25≈VIX ~30
-
-<!-- Auto-added 2026-03-24T13:11:26.733Z -->
-
-### DEADLINE-004 — Warner deadline countdown automation
-**Priority:** MAX
-**Project:** savage-roar-music
-**Description:** GitHub Actions som beräknar dagar kvar till 22 maj, eskalerar automatiskt vid 30/14/7 dagar. Uppdaterar savage-roar work_queue prioritet.
-
-### VALUE-003 — Kill decision för scaffold-projekt
-**Priority:** HIGH
-**Project:** styr-ai
-**Description:** Formellt beslut: bygg färdigt min-analytiker + adminassistent ELLER avveckla. Tre scaffold-projekt dränerar fokus från värdeskapande arbete.
+| VISION-005 | Autonom execution | 2026-03-24 | ✅ autonomous-agent.js + workflow live |
+| VISION-002 | Gap-analys i agent | 2026-03-24 | ✅ Inbyggt i autonomous-agent.js |
