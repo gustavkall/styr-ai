@@ -1,38 +1,29 @@
 # styr-ai Autonomous Report
-*2026-03-24T13:11:26.733Z*
+*2026-03-24T13:16:32.588Z*
 
 ## Rapport
-**KRITISK PRIORITERING BEHÖVS**
+**KRITISK SITUATION:** Warner-tvisten har 59 dagar kvar till cure period-slutet (22 maj). Detta är den enda deadline som faktiskt kan förstöra ett bolag om den missas. Kräver omedelbar automatisk bevakning.
 
-Tre av fem projekt levererar noll värde (scaffold-läge). Samtidigt närmar sig Warner-deadline (22 maj, 58 dagar) utan operativt bevakningssystem.
+**SCAFFOLD-PROBLEM:** Tre av fyra projekt är antingen scaffolds utan värde (min-analytiker, adminassistent) eller har tekniska blockers (TRADESYS model calibration). Systemet bygger projekt men levererar inte värde.
 
-**Omedelbar handling:**
-1. **savage-roar-music:** Bygg Supabase-infrastrukturen NU. Detta är det enda projektet med extern deadline och verkliga konsekvenser.
-2. **tradesys1337:** Fixa VIXY≠VIX mapping som förstör regimbedömningen, implementera sedan model v2.
-3. **Scaffold audit:** Formellt beslut om min-analytiker + adminassistent ska byggas färdigt eller avvecklas. Tre scaffold-projekt dränerar fokus från värdeskapande.
+**TRADESYS-BLOCKER:** Model v2 presterar -3.7pp sämre out-of-sample trots +4.1pp bättre in-sample. VIXY≠VIX-bias i backtesten. Fixas innan implementation.
 
-**Systeminsikt:** Du har hamnat i klassisk startup-fälla — för många parallella initiativ utan fokuserad exekvering. TRADESYS-scaffolden bevisar att persistent memory-patternen fungerar (95%+ kontinuitet). Använd den framgångsrika arkitekturen för savage-roar istället för att underhålla tre olika scaffold.
-
-**Rekommendation:** Kill min-analytiker + adminassistent. Fokusera 100% på savage-roar (juridisk risk) + TRADESYS model v2 (teknisk skuld). Automatisera deadline-bevakning via GitHub Actions så ingenting faller mellan stolarna.
-
-Founder-regeln: när externa deadlines hotar — allt annat är sekundärt.
+**REKOMMENDATION:** 1) Bygg Warner deadline-countdown omedelbart. 2) Formellt beslut om scaffold-projekten — bygg färdigt ELLER kill. 3) Fixa VIXY-kalibreringen i TRADESYS. Fokusera på färre projekt som faktiskt levererar värde.
 
 ## Gap-analys per projekt
-- **[HIGH] savage-roar-music**: Kritisk juridisk deadline 22 maj utan automatisk bevakning eller operativt system → *Omedelbar Supabase setup + deadline radar implementation*
-- **[HIGH] tradesys1337**: Model v2 byggt men inte implementerat i live dashboard. VIXY≠VIX mapping förstör regimbedömning → *Fixa VIXY-kalibrering först, sedan implementera model v2*
-- **[MEDIUM] min-analytiker + adminassistent**: Två scaffold-projekt utan funktionalitet eller daglig användning → *Kill-or-build audit — avgör om dessa ska byggas färdigt eller avvecklas*
-- **[HIGH] styr-ai**: Saknar proaktiv deadline-bevakning över alla projekt → *GitHub Actions workflow för automatisk deadline-eskalering*
+- **[HIGH] savage-roar-music**: Ingen automatisk deadline-bevakning för Warner cure period (22 maj) → *GitHub Actions som räkner dagar kvar, eskalerar automatiskt vid 30/14/7 dagar*
+- **[HIGH] tradesys1337**: Model v2 presterar sämre out-of-sample (-3.7pp) trots bättre in-sample (+4.1pp) → *Fixa VIXY-bias i polygon-backtest.js, implementera riktig VIX-data*
+- **[MEDIUM] min-analytiker**: Scaffold utan funktion — ingen daglig pre-market briefing produceras → *Formellt beslut: bygg färdigt eller avveckla projektet*
+- **[MEDIUM] adminassistent**: Scaffold utan integration — Gustavs mailflöde opåverkat → *Formellt beslut: bygg färdigt eller avveckla projektet*
 
 ## Cross-project insikter
-- **Resource allocation anti-pattern:** 60% av projektportföljen (3/5) är scaffold utan funktionalitet — klassisk startup misstag att starta för många parallella initiativ
-- **Persistent memory success:** TRADESYS-scaffolden fungerar perfekt (95%+ session continuity). Använd samma pattern för savage-roar istället för att bygga nya scaffold
-- **Integration opportunity:** min-analytiker konsumerar TRADESYS-data men båda är scaffold-läge — bygg TRADESYS model v2 implementation först, sedan avgör om analytiker behövs
-- **Deadline risk:** Warner-tvisten är den enda externa deadline med verkliga konsekvenser. Alla andra projekt kan pausas — denna kan inte
-- **Automation ready:** TRADESYS WQ-008 (live scanner verification) kan automatiseras via GitHub Actions 15:25 CET — minska manuell overhead
+- Scaffold-pattern från TRADESYS fungerar för persistent memory (~95%) men skapar värdelösa projekt utan implementation
+- Juridiska deadlines (Warner 22 maj) kräver proaktiv automatisering — manuell bevakning är opålitlig
+- Model calibration i TRADESYS visar att in-sample performance ≠ out-of-sample — overfitting-risk i alla AI-system
+- Tre av fyra projekt är antingen i kris (savage-roar) eller värdelösa scaffolds — fokusering behövs
+- Supabase + Vercel + GitHub-pattern etablerat men underutnyttjat — kan skalas till fler projekt
 
 ## Tillagda work items
-- **DEADLINE-004** [MAX] (savage-roar-music): Warner deadline countdown automation
-- **VALUE-003** [HIGH] (styr-ai): Kill decision för scaffold-projekt
-
-## Autonom åtgärd
-[object Object]
+- **DEADLINE-004** [MAX] (savage-roar-music): Warner deadline countdown
+- **VALUE-001** [HIGH] (styr-ai): Scaffold audit — bygg eller kill
+- **MODEL-001** [HIGH] (tradesys1337): VIXY calibration fix
