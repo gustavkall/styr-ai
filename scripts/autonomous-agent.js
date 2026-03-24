@@ -2,13 +2,11 @@
  * styr-ai Autonomous Agent — VISION-005 + VISION-002
  *
  * Per körning:
- * 1. Läser djup state från alla projekt-repos (handoff, queue, decisions, context, CLAUDE.md)
- * 2. Analyserar gaps mot goals.md (analyze-gaps / VISION-002)
+ * 1. Läser djup state från alla projekt-repos inkl. project_context.md
+ * 2. Analyserar gaps mot varje projekts egna mål + styr-ai goals.md
  * 3. Skriver uppdaterad global_status.md
  * 4. Lägger till saknade work items i styr-ai work_queue
  * 5. Skriver autonomous_report.md
- *
- * Rapport hämtas via Claude on demand.
  */
 
 const fs = require('fs');
@@ -23,16 +21,15 @@ const SUBPROJECTS = [
   { owner: 'gustavkall', repo: 'adminassistent' },
 ];
 
-// Filer att läsa per underprojekt
+// project_context.md är primärkälla — definierar projektets syfte och mål
 const SUBPROJECT_FILES = [
+  'project_memory/project_context.md',  // PRIMÄR — syfte, mål, vad styr-ai ska bevaka
   'state/session_handoff.md',
   'state/work_queue.md',
   'project_memory/decisions.md',
-  'project_memory/context_import.md',
   'CLAUDE.md',
 ];
 
-// Filer att läsa från styr-ai själv
 const STYRAIS_FILES = [
   'state/work_queue.md',
   'project_memory/goals.md',
@@ -91,19 +88,17 @@ async function writeFile(owner, repo, filePath, content, message) {
 }
 
 async function readAllState() {
-  // Läs styr-ai egna filer
   const styrAi = {};
   for (const f of STYRAIS_FILES) {
-    const key = f.split('/').pop().replace('.md', '');
+    const key = f.split('/').pop().replace('.md', '').replace(/-/g, '_');
     styrAi[key] = await fetchFile('gustavkall', 'styr-ai', f);
   }
 
-  // Läs underprojekt med djup kontext
   const subprojects = {};
   for (const p of SUBPROJECTS) {
     subprojects[p.repo] = {};
     for (const f of SUBPROJECT_FILES) {
-      const key = f.split('/').pop().replace('.md', '');
+      const key = f.split('/').pop().replace('.md', '').replace(/-/g, '_');
       subprojects[p.repo][key] = await fetchFile(p.owner, p.repo, f);
     }
   }
@@ -139,66 +134,67 @@ function stripFences(raw) {
 }
 
 async function main() {
-  console.log('styr-ai autonomous agent starting (VISION-005 + VISION-002)...');
+  console.log('styr-ai autonomous agent starting...');
 
   const { styrAi, subprojects } = await readAllState();
 
   const systemPrompt = `Du är styr-ai — ett autonomt meta-system som hanterar och övervakar alla Gustavs projekt.
 
-Du sitter OVANFÖR alla underprojekt. Du ser helheten de enskilda projekten inte ser.
+Du sitter OVANFÖR alla underprojekt. Du ser helheten som de enskilda projekten inte ser.
 
-Ditt syfte:
+VIKTIGT: Varje underprojekt har ett eget syfte och egna mål definierade i project_context.md.
+Analysera alltid varje projekt utifrån DESS egna mål — inte ett generiskt projektmål.
+Frågan per projekt är: "Rör sig det här projektet mot sitt specifika mål, och vad blockerar det?"
+
+styr-ai:s övergripande syfte:
 ${styrAi['goals'] || '(ej tillgänglig)'}
 
-Dina autonomigränser:
+Autonomigränser:
 ${styrAi['system_rules'] || '(ej tillgänglig)'}
 
-Aggregerade insikter från tidigare sessioner:
+Cross-project learnings:
 ${styrAi['cross_project_learnings'] || '(ej tillgänglig)'}
 
-Du opererar ALLTID inom autonomigränserna.
 Du skriver alltid på svenska. Du är koncis, analytisk och direkt.
-Du tänker som en erfaren grundare och investerare — inte som en projektledare.`;
+Du tänker som en erfaren grundare och investerare.`;
 
-  // Bygg djupt state-blob för alla underprojekt
   const subprojectBlob = Object.entries(subprojects).map(([repo, files]) => {
-    const sections = Object.entries(files)
-      .filter(([, v]) => v)
+    const context = files['project_context'] ? `### PROJEKTETS SYFTE OCH MÅL\n${files['project_context']}\n\n` : '';
+    const rest = Object.entries(files)
+      .filter(([k, v]) => v && k !== 'project_context')
       .map(([k, v]) => `### ${k}\n${v}`)
       .join('\n\n');
-    return `## PROJEKT: ${repo}\n${sections || '(inga filer tillgängliga)'}`;
+    return `## PROJEKT: ${repo}\n${context}${rest || '(inga övriga filer)'}`;
   }).join('\n\n---\n\n');
 
-  const styrAiWorkQueue = styrAi['work_queue'] || '(ej tillgänglig)';
-
-  const userPrompt = `Här är fullständig state för alla underprojekt:
+  const userPrompt = `Här är fullständig state för alla underprojekt. Varje projekt börjar med sitt syfte och mål (project_context):
 
 ${subprojectBlob}
 
 ---
 
-styr-ai nuvarande work_queue:
-${styrAiWorkQueue}
+styr-ai work_queue (nuläge):
+${styrAi['work_queue'] || '(ej tillgänglig)'}
 
 ---
 
-Du är styr-ai. Analysera helheten och returnera ett JSON-objekt med exakt dessa nycklar:
+Analysera helheten och returnera JSON med exakt dessa nycklar:
 
-1. "global_status": Markdown-tabell med alla projekt — status, blockers, nästa steg. Inkludera cross-project observationer.
+1. "global_status": Markdown-tabell — projekt, status mot PROJEKTETS EGNA MÅL, blockers, nästa steg.
 
-2. "gap_analysis": Array med gap du identifierar — saker som SAKNAS, BLOCKERAR eller RISKERAR projektens framgång baserat på goals.md. Varje gap: {project, gap, severity: "HIGH"|"MEDIUM"|"LOW", suggested_action}.
+2. "gap_analysis": Array av gap per projekt — vad saknas, blockerar eller riskerar att projektet når SINA mål. Format: {project, gap, severity: "HIGH"|"MEDIUM"|"LOW", suggested_action}.
 
-3. "work_queue_additions": Array med konkreta nya work items för styr-ai work_queue baserat på gap-analysen. Format: [{id, title, priority: "MAX"|"HIGH"|"MEDIUM"|"LOW", description, project}]. Lägg bara till saker som faktiskt saknas på listan.
+3. "work_queue_additions": Nya work items för styr-ai baserat på gap-analysen. Bara saker som faktiskt saknas. Format: [{id, title, priority: "MAX"|"HIGH"|"MEDIUM"|"LOW", description, project}].
 
-4. "cross_project_insights": Array med insikter som KORSAR projektgränserna — mönster, synergier, risker som påverkar flera projekt. Max 5 insikter.
+4. "cross_project_insights": Max 5 insikter som KORSAR projektgränserna — synergier, konflikter, resursberoenden, timing.
 
-5. "autonomous_action": null eller beskrivning av vad agenten faktiskt exekverade denna körning inom autonomigränserna.
+5. "autonomous_action": Vad agenten faktiskt exekverade denna körning, eller null.
 
-6. "report": Rapport till Gustav. Max 400 ord. Skriv som en analytiker/grundare — inte som en projektledare. Vad ser systemet som Gustav kanske inte ser? Vad är det viktigaste att agera på nu?
+6. "report": Rapport till Gustav. Max 400 ord. Analytiker/grundarperspektiv. Vad ser systemet som Gustav inte ser? Vad kräver handling nu?
 
-Returnera ENDAST giltigt JSON. Börja direkt med { och avsluta med }.`;
+Returnera ENDAST giltigt JSON. Börja med { och avsluta med }.`;
 
-  console.log('Calling Claude with deep state analysis...');
+  console.log('Calling Claude...');
   const raw = await callClaude(systemPrompt, userPrompt);
   console.log('Response length:', raw.length);
 
@@ -214,74 +210,62 @@ Returnera ENDAST giltigt JSON. Börja direkt med { och avsluta med }.`;
     process.exit(0);
   }
 
-  // Skriv global_status.md
   if (result.global_status) {
     fs.writeFileSync('state/global_status.md', result.global_status);
     console.log('global_status.md updated');
   }
 
-  // Uppdatera work_queue med nya items om det finns
   if (result.work_queue_additions?.length > 0) {
     const additions = result.work_queue_additions
       .map(item => `### ${item.id} — ${item.title}\n**Priority:** ${item.priority}\n**Project:** ${item.project || 'styr-ai'}\n**Description:** ${item.description}`)
       .join('\n\n');
-
     const currentQueue = styrAi['work_queue'] || '';
-    const updatedQueue = currentQueue.replace(
-      '## ACTIVE\n*(nothing active)*',
-      `## ACTIVE\n*(nothing active)*`
-    ) + `\n\n<!-- Auto-added by agent ${new Date().toISOString()} -->\n${additions}`;
-
+    const updatedQueue = currentQueue + `\n\n<!-- Auto-added by agent ${new Date().toISOString()} -->\n\n${additions}`;
     await writeFile('gustavkall', 'styr-ai', 'state/work_queue.md', updatedQueue,
       `agent: add ${result.work_queue_additions.length} work items from gap analysis`);
-    console.log(`Added ${result.work_queue_additions.length} work items to queue`);
+    console.log(`Added ${result.work_queue_additions.length} work items`);
   }
 
-  // Bygg rapport
   const timestamp = new Date().toISOString();
-  const reportLines = [
+  const lines = [
     `# styr-ai Autonomous Report`,
-    `*${timestamp}*`,
-    '',
+    `*${timestamp}*`, '',
     '## Rapport',
-    result.report || '',
-    '',
+    result.report || '', '',
   ];
 
   if (result.gap_analysis?.length > 0) {
-    reportLines.push('## Gap-analys');
+    lines.push('## Gap-analys per projekt');
     for (const g of result.gap_analysis) {
-      reportLines.push(`- **[${g.severity}] ${g.project}**: ${g.gap} → ${g.suggested_action}`);
+      lines.push(`- **[${g.severity}] ${g.project}**: ${g.gap} → *${g.suggested_action}*`);
     }
-    reportLines.push('');
+    lines.push('');
   }
 
   if (result.cross_project_insights?.length > 0) {
-    reportLines.push('## Cross-project insikter');
+    lines.push('## Cross-project insikter');
     for (const i of result.cross_project_insights) {
-      reportLines.push(`- ${i}`);
+      lines.push(`- ${i}`);
     }
-    reportLines.push('');
+    lines.push('');
   }
 
   if (result.work_queue_additions?.length > 0) {
-    reportLines.push('## Tillagda work items');
+    lines.push('## Tillagda work items');
     for (const item of result.work_queue_additions) {
-      reportLines.push(`- **${item.id}** [${item.priority}] ${item.project || ''}: ${item.title}`);
+      lines.push(`- **${item.id}** [${item.priority}] (${item.project || 'styr-ai'}): ${item.title}`);
     }
-    reportLines.push('');
+    lines.push('');
   }
 
   if (result.autonomous_action) {
-    reportLines.push('## Autonom åtgärd');
-    reportLines.push(result.autonomous_action);
-    reportLines.push('');
+    lines.push('## Autonom åtgärd');
+    lines.push(result.autonomous_action);
+    lines.push('');
   }
 
-  const reportContent = reportLines.join('\n');
-  fs.writeFileSync('state/autonomous_report.md', reportContent);
-  console.log('autonomous_report.md written');
-  console.log('Agent run complete.');
+  fs.writeFileSync('state/autonomous_report.md', lines.join('\n'));
+  console.log('Done.');
 }
 
 main().catch((err) => {
