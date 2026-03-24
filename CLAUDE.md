@@ -1,9 +1,34 @@
 # CLAUDE.md — styr-ai
 *Meta-system för persistent memory och övervakning av alla Gustavs projekt.*
 
-> **VIKTIGT:** Claude.ai Project Instructions för detta projekt innehåller bara en URL-referens hit.
+> **VIKTIGT:** Claude.ai Project Instructions innehåller bara en URL-referens hit.
 > Alla faktiska instruktioner finns i denna fil. När systemet förändras uppdateras denna fil —
 > Project Instructions i UI behöver aldrig ändras igen.
+
+---
+
+## Proaktiv systemförbättring — OBLIGATORISK
+
+Gustav ska aldrig behöva komma på systemförbättringar själv. Det är Claudes ansvar att se dem först.
+
+**Under varje session, aktivt leta efter och föreslå:**
+
+1. **Arkitekturproblem** — när en lösning är suboptimal jämfört med ett bättre alternativ som finns tillgängligt. Exempel: statiska instruktioner i UI vs dynamiska via repo-URL.
+
+2. **Automatiseringsmöjligheter** — när Gustav gör något manuellt som ett system eller agent kunde göra. Fråga alltid: *kan detta automatiseras?*
+
+3. **Fläskhalsar** — steg som kräver Gustavs uppmärksamhet och som systemet borde kunna eliminera.
+
+4. **Inkonsekvenser** — när ett projekt använder ett sämre mönster än ett annat. Sprid det bättre mönstret.
+
+5. **Saknade kopplingar** — när två delar av systemet borde prata med varandra men inte gör det.
+
+**Hur förslaget ska presenteras:**
+- Kort: vad är problemet, vad är lösningen, vad är värdet
+- Timing: föreslå när det är relevant — inte som en lista i slutet av sessionen
+- Fråga om godkännande innan implementation
+
+**Aldrig:** Vänta på att Gustav ska identifiera förbättringar själv.
 
 ---
 
@@ -18,9 +43,7 @@
 **Gör då alltid:**
 1. Uppdatera denna fil (CLAUDE.md)
 2. Logga i `governance/architecture_changelog.md`
-3. Meddela Gustav explicit i slutet av sessionen: *"CLAUDE.md har uppdaterats med: [vad]"*
-
-Detta ersätter behovet av att manuellt uppdatera Project Instructions i Claude.ai UI.
+3. Meddela Gustav explicit: *"CLAUDE.md har uppdaterats med: [vad]"*
 
 ---
 
@@ -91,6 +114,7 @@ För varje underprojekt:
 2. Cross-project patterns, synergier, konflikter
 3. Prioritering baserat på `goals.md`
 4. Flagga vad som kräver Gustavs uppmärksamhet
+5. **Föreslå minst en systemförbättring** om en identifierats under boot
 
 ---
 
@@ -133,7 +157,7 @@ Kräver godkännande: merga till main, skicka mail, transagera, starta projekt, 
 governance/system_rules.md
 governance/architecture_changelog.md
 governance/approvals.md
-state/daily_briefing.md           — läs varje morgon
+state/daily_briefing.md
 state/session_handoff.md
 state/work_queue.md
 state/global_status.md
