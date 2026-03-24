@@ -72,14 +72,19 @@
 **Project:** styr-ai
 **Description:** Designa hur tradesys1337 och min-analytiker ska dela data. Centraliserad Supabase-arkitektur för alla projekt.
 
-<!-- Auto-added by agent 2026-03-24T10:19:31.488Z -->
+<!-- Auto-added by agent 2026-03-24T10:20:01.527Z -->
 
-### DEADLINE-001 — Deadline radar system
-**Priority:** MAX
-**Project:** styr-ai
-**Description:** Automatisk bevakning av juridiska deadlines, kontraktsfrister och kritiska datum. Eskalerar prioritet när deadlines närmar sig. Första case: Warner cure period 22 maj 2026.
+### DEADLINE-002 — Warner-deadline tracking system
+**Priority:** HIGH
+**Project:** savage-roar-music
+**Description:** Automatiskt system som bevakar 22 maj deadline, eskalerar 30/14/7 dagar före. GitHub Actions + Claude API notification.
 
-### INTEGRATION-001 — Cross-project API design
+### VALUE-001 — Project value audit
 **Priority:** MEDIUM
 **Project:** styr-ai
-**Description:** Designa hur tradesys1337 och min-analytiker ska dela data. Centraliserad Supabase-arkitektur för alla projekt.
+**Description:** Analysera om min-analytiker och adminassistent ska byggas färdigt eller avvecklas. Tre scaffold-projekt ger ingen ROI.
+
+### MORNING-001 — TRADESYS morning verification
+**Priority:** MEDIUM
+**Project:** tradesys1337
+**Description:** GitHub Actions workflow som verifierar scanners 15:25 CET, rapporterar status. Automatisera WQ-008.
