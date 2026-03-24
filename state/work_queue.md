@@ -88,3 +88,20 @@
 **Priority:** MEDIUM
 **Project:** tradesys1337
 **Description:** GitHub Actions workflow som verifierar scanners 15:25 CET, rapporterar status. Automatisera WQ-008.
+
+<!-- Auto-added 2026-03-24T11:03:08.741Z -->
+
+### DEADLINE-002 — Warner-deadline tracking system
+**Priority:** HIGH
+**Project:** savage-roar-music
+**Description:** Automatiskt system som bevakar 22 maj deadline, eskalerar 30/14/7 dagar före. GitHub Actions + Claude API notification.
+
+### VALUE-001 — Project value audit
+**Priority:** MEDIUM
+**Project:** styr-ai
+**Description:** Analysera om min-analytiker och adminassistent ska byggas färdigt eller avvecklas. Tre scaffold-projekt ger ingen ROI.
+
+### MORNING-001 — TRADESYS morning verification
+**Priority:** MEDIUM
+**Project:** tradesys1337
+**Description:** GitHub Actions workflow som verifierar scanners 15:25 CET, rapporterar status. Automatisera WQ-008.
