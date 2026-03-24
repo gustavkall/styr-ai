@@ -1,6 +1,21 @@
-| Projekt | Status mot mål | Blocker | Nästa steg |
-|---------|----------------|---------|------------|
-| **savage-roar-music** | 🔴 KRITISK — Warner cure period 59 dagar kvar | Juridisk deadline, settlement ej nått | DEADLINE-004 automation ASAP |
-| **tradesys1337** | 🟡 BYGGER — Model v2 färdig, OOS-problem | VIXY≠VIX kalibrering fel | MODEL-001 fix för korrekt regimbedömning |
-| **min-analytiker** | 🔴 SCAFFOLD — Ej funktionalitet | Ingen integration med TRADESYS | VALUE-001 beslut: bygg eller kill |
-| **adminassistent** | 🔴 SCAFFOLD — Ej funktionalitet | Gmail MCP ej implementerat | VALUE-001 beslut: bygg eller kill |
+# Global Status
+*Genererad vid session close 2026-03-24*
+
+| Projekt | Status | Blockers | Nästa steg |
+|---------|--------|----------|------------|
+| **styr-ai** | ✅ Operativt | Inga | Agenter körs automatiskt |
+| **tradesys1337** | ✅ v37 Live | Ingen | ENTRY-v1 bygge i CC |
+| **savage-roar-music** | ⚠️ Aktiv | Warner cure period 22 maj | Gustav hanterar dialoger |
+| **min-analytiker** | ✅ Sammanslått med TRADESYS | — | Kan avvecklas |
+| **adminassistent** | 🛠️ Planerad | Inget byggt | EA-system — nästa sprint |
+
+## Agenter
+| Agent | Status | Senaste körning |
+|-------|--------|------------------|
+| autonomous-agent | ✅ Live | 2026-03-24 |
+| market-regime-agent | ✅ Live | Imorgon 08:00 |
+| top-gainers-agent v2 | ✅ Live | Imorgon 22:30 |
+| memory-integrity-agent | ✅ Live | Söndag 04:00 |
+
+## Kritiska datum
+- **22 maj 2026:** Warner cure period löper ut (59 dagar)
