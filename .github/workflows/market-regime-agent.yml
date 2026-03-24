@@ -1,0 +1,23 @@
+name: Market Regime Agent
+
+on:
+  schedule:
+    - cron: '0 7 * * 1-5'  # 08:00 CET (07:00 UTC) måndag-fredag
+  workflow_dispatch:
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install
+      - name: Run market regime agent
+        env:
+          POLYGON_KEY: ${{ secrets.POLYGON_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/market-regime-agent.js
