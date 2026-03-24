@@ -1,9 +1,6 @@
-| Projekt | Status mot egna mål | Blockers | Nästa steg |
-|---------|--------------------|---------|-----------|
-| savage-roar-music | 🔴 KRITISKT — Warner cure period 22 maj (58 dagar kvar), endast scaffold-läge | Supabase setup saknas, ingen operativ funktionalitet | SETUP-001: Bygg Supabase infrastruktur OMEDELBART |
-| tradesys1337 | 🟡 DELVIS — Model v2 byggt men ej implementerat, live-verifiering utebliven | VIXY≠VIX mapping fel, model integration saknas | MODEL-002: Fixa VIXY-kalibrering, MODEL-001: Score model v3 |
-| min-analytiker | 🔴 VÄRDELÖST — Endast scaffold, noll funktionalitet | Ingen integration med TRADESYS, pre-market workflow saknas | VALUE-002: Avgör om projektet ska byggas eller avvecklas |
-| adminassistent | 🔴 VÄRDELÖST — Endast scaffold, används ej dagligen | Ingen Gmail/Calendar integration, ej i dagligt workflow | VALUE-002: Avgör om projektet ska byggas eller avvecklas |
-| styr-ai | 🟡 PARTIELT — Persistent memory fungerar, autonomi begränsad | Saknar deadline radar, proaktiv prioritering, blind spot-detektion | DEADLINE-003: Automatisk deadline-bevakning |
-
-**ALARM:** Tre av fem projekt levererar noll värde. Warner-deadline 58 dagar bort utan operativt system.
+| Projekt | Status mot mål | Blockers | Nästa steg |
+|---------|-----------------|----------|------------|
+| savage-roar-music | ⚠️ **KRITISK DEADLINE** — Warner cure period 59 dagar kvar | Juridisk osäkerhet, förhandlingsresurser | Eskaleringsplan för deadline-bevakning |
+| tradesys1337 | 🔧 **MODEL CALIBRATION** — Model v2 +4.1pp in-sample, -3.7pp OOS | VIXY≠VIX bias i backtest | Fixa VIXY-kalibrering, implementera 4-modells arkitektur |
+| min-analytiker | 🏗️ **SCAFFOLD** — inget byggt, inget värde | Setup-block, ingen integration med TRADESYS | Bygg eller kill-beslut |
+| adminassistent | 🏗️ **SCAFFOLD** — inget byggt, inget värde | Setup-block, ingen integration med workflow | Bygg eller kill-beslut |
