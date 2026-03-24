@@ -1,34 +1,34 @@
 # styr-ai Autonomous Report
-*2026-03-24T11:03:08.741Z*
+*2026-03-24T13:06:07.463Z*
 
 ## Rapport
-**KRITISK SITUATION: Warner-deadline 58 dagar utan systematisk bevakning**
+**KRITISK PRIORITERING KRÄVS**
 
-Savage Roar Music har en juridisk deadline 22 maj som kan avgöra bolagets framtid, men systemet saknar automatisk bevakning. Detta är den största risken i hela portföljen.
+Warner-tvisten har 59 dagar kvar till cure period (22 maj) utan automatisk bevakning — detta är högsta juridiska risk just nu. Föreslår omedelbar implementation av deadline-radar.
 
-**RESURSFÖRDELNING INEFFEKTIV:** Tre av fyra projekt är scaffold utan funktionalitet. Min-analytiker och adminassistent konsumerar utvecklingsresurser utan att leverera värde. TRADESYS är enda funktionella systemet men kräver manuell marknadsverifiering.
+TRADESYS utvecklas bra med model v2 på 51.2% precision vs v1:s 47.1%, men VIXY-buggen förvränger regimbedömningen i backtest. Parallell träning pågår men foundation är skev.
 
-**REKOMMENDATIONER:**
-1. **AKUT:** Implementera deadline radar för Warner-deadline. GitHub Actions + eskaleringslogik.
-2. **STRATEGISK:** Beslut om min-analytiker/adminassistent — färdigbygg ELLER avveckla. Halvfärdiga system är värdelösa.
-3. **OPERATIONELL:** Automatisera TRADESYS-verifiering så det inte kräver daglig manuell kontroll.
+Tre projekt (min-analytiker, adminassistent, savage-roar scaffold) har varit inaktiva sedan mars — de genererar noll värde och dränerar mental kapacitet. Rekommenderar kill-or-commit decision: antingen full implementation med tydlig användarintegration, eller avveckla.
 
-Systemet behöver fokus på färre projekt med högre completion rate. Bättre att ha två fullt funktionella system än fyra halvfärdiga.
+styr-ai saknar autonom executor — kan definiera prioriteringar men inte agera på dem. GitHub Actions + Claude API skulle möjliggöra 24/7-övervakning och execution inom definierade ramar.
+
+**Nästa 48h:** Deadline-radar för Warner (MAX), VIXY-fix i TRADESYS (HIGH), scaffold audit (HIGH). Fokus på execution över planning.
 
 ## Gap-analys per projekt
-- **[HIGH] savage-roar-music**: Ingen automatisk bevakning av Warner deadline 22 maj. Cure period kan missas utan manuell övervakning. → *GitHub Actions deadline radar med 30/14/7-dagars eskaleringar*
-- **[MEDIUM] tradesys1337**: WQ-008 kräver manuell marknadsverifiering. Ingen automatiserad kvalitetskontroll av scanners. → *GitHub Actions som testar scanners 15:25 CET, rapporterar status*
-- **[MEDIUM] min-analytiker**: Tre scaffold-projekt ger ingen ROI. Resurser splittras på icke-funktionella system. → *Beslut: färdigbygga eller avveckla baserat på faktiskt användningsbehov*
-- **[MEDIUM] styr-ai**: Systemet saknar proaktiv prioritering och blind spot-detektion enligt VISION-002/003. → *Implementera work queue gap-analysis och externa signal-korrelation*
+- **[HIGH] savage-roar-music**: Warner-deadline 22 maj har ingen automatisk bevakning — riskerar juridisk eskalering → *GitHub Actions cron som eskalerar 30/14/7 dagar före deadline*
+- **[HIGH] tradesys1337**: VIXY≠VIX skapar fel regimbedömning i backtest — underminerar modellvalidering → *Korrigera VIXY-mapping i polygon-backtest.js*
+- **[MEDIUM] min-analytiker**: Scaffold i 5 månader utan funktionalitet — ingen ROI → *Avveckla eller full commitment med integrationsplan*
+- **[MEDIUM] adminassistent**: Scaffold utan Gmail/Calendar-integration — ingen daglig användning → *Avveckla eller full commitment med MCP-integration*
+- **[HIGH] styr-ai**: Saknar autonom executor — kan inte jobba mellan sessioner → *GitHub Actions workflow för autonom exekvering*
 
 ## Cross-project insikter
-- Tre av fyra projekt är i scaffold-läge utan funktionalitet — resursfördelningen är ineffektiv
-- Warner-deadline 22 maj påverkar hela systemet: om Savage Roar Music fallerar påverkas Gustavs trovärdighet i alla andra affärer
-- TRADESYS är enda fullt funktionella projektet men kräver daglig verifiering — automatisering är kritisk
-- Persistent memory-patternen från TRADESYS kan återanvändas i andra projekt, men bara om de faktiskt byggs
-- styr-ai systemet saknar sina egna kärnfunktioner (proaktiv prioritering, blind spot-detektion) medan det övervakar andra projekt
+- Alla projekt utom TRADESYS har identiska scaffold-filer — tyder på copy-paste utan anpassning till projektspecifika behov
+- Supabase-blockern förekommer i 3/4 projekt men ingen har löst den — centraliserad lösning skulle frigöra kapacitet
+- TRADESYS är det enda projektet som faktiskt används dagligt — de andra riskerar att bli zombie-projekt
+- Warner-deadline 22 maj är 59 dagar bort men saknar automatisk bevakning — typisk blind spot där kritiska datum glöms
+- Cross-project memory pattern (GitHub + state-filer) fungerar bra för TRADESYS men implementeras inte konsekvent i övriga
 
 ## Tillagda work items
-- **DEADLINE-002** [HIGH] (savage-roar-music): Warner-deadline tracking system
-- **VALUE-001** [MEDIUM] (styr-ai): Project value audit
-- **MORNING-001** [MEDIUM] (tradesys1337): TRADESYS morning verification
+- **DEADLINE-003** [MAX] (styr-ai): Automated deadline radar för alla projekt
+- **VALUE-002** [HIGH] (styr-ai): Scaffold audit — bygg eller kill decision
+- **MODEL-002** [HIGH] (tradesys1337): VIXY calibration fix
