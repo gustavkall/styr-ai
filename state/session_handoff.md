@@ -5,7 +5,7 @@
 
 ## LAST SESSION
 - **Date:** 2026-03-24
-- **Summary:** VISION-001 + VISION-004 + VISION-005 klara. goals.md, system_rules.md, autonomous-agent.js och workflow committade. ANTHROPIC_API_KEY secret tillagd. Agenten testad.
+- **Summary:** VISION-001 + VISION-004 + VISION-005 klara. Ny ANTHROPIC_API_KEY skapad och tillagd. Testar agent.
 
 ---
 
@@ -24,7 +24,7 @@
 ## CURRENT STATE
 
 - **System:** VISION-005 live — agent triggar på varje push till main
-- **Secrets:** ANTHROPIC_API_KEY ✅
+- **Secrets:** ANTHROPIC_API_KEY ✅ (ny nyckel 2026-03-24)
 - **Blockers:** Inga
 
 ---
@@ -39,6 +39,6 @@
 
 ## NEXT SESSION STARTS WITH
 
-1. Verifiera att autonomous agent körde korrekt (kolla Actions-fliken)
+1. Verifiera att autonomous agent körde korrekt
 2. Hämta autonomous_report.md och presentera för Gustav
 3. VISION-002: Proaktiv prioritering
