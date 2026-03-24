@@ -4,15 +4,25 @@
 
 ---
 
-## FORMAT
-```
-### YYYY-MM-DD — Förändring
-**Vad:** Vad lades till / ändrades / togs bort
-**Påverkar CLAUDE.md:** Ja/Nej — vilken sektion
-**Åtgärd:** Uppdaterad / Väntar
-```
+### 2026-03-24 — COO-agent byggd
+**Vad:** `scripts/coo-agent.js` + `.github/workflows/coo-agent.yml`. Orchestrerar alla specialistagenter, skriver `state/daily_briefing.md` kl 06:00 CET vardagar. Eskalerar beslut till `governance/approvals.md`.
+**Påverkar CLAUDE.md:** Agent-schema, repo-struktur, boot protocol (daily_briefing som primärkort)
+**Åtgärd:** Uppdaterad ✅
 
----
+### 2026-03-24 — Fem agenter live
+**Vad:** autonomous-agent (cron 03:00), coo-agent (06:00), market-regime-agent (08:00), top-gainers-agent (22:30), memory-integrity-agent (sön 04:00)
+**Påverkar CLAUDE.md:** Agent-schema-sektion tillagd
+**Åtgärd:** Uppdaterad ✅
+
+### 2026-03-24 — top-gainers-agent v2
+**Vad:** Full pre-move analys: 25d OHLCV, alla tekniska indikatorer, macro (SPY/VIXY/HYG), nyheter via Polygon, fundamentals via Alpha Vantage, ENTRY-score 1/3/5 dagar före move, Claude post-mortem, auto-genererade case-filer för modell-träning.
+**Påverkar CLAUDE.md:** Agent-beskrivning
+**Åtgärd:** Uppdaterad ✅
+
+### 2026-03-24 — min-analytiker sammanslått med TRADESYS
+**Vad:** min-analytiker är inte längre ett separat projekt. Agenternas output går direkt till tradesys1337/state/. TRADESYS project_context uppdaterad.
+**Påverkar CLAUDE.md:** Underprojektstabell
+**Åtgärd:** Uppdaterad ✅
 
 ### 2026-03-24 — CLAUDE.md uppdaterad till fullständigt tillstånd
 **Vad:** CLAUDE.md reskriven med goals.md, project_context.md, autonomous agent, 6-modells-arkitektur, next_session_brief-protokoll, architecture_changelog
@@ -20,26 +30,11 @@
 **Åtgärd:** Uppdaterad ✅
 
 ### 2026-03-24 — Architecture changelog skapad
-**Vad:** `governance/architecture_changelog.md` skapad. Ingår nu i boot-sekvensen och handoff-protokollet.
-**Påverkar CLAUDE.md:** Boot protocol steg 7, Handoff steg 8, Repo-struktur
+**Vad:** `governance/architecture_changelog.md` skapad.
+**Påverkar CLAUDE.md:** Boot protocol, Handoff protocol, Repo-struktur
 **Åtgärd:** Uppdaterad ✅
 
-### 2026-03-24 — next_session_brief-protokoll
-**Vad:** `project_memory/next_session_brief.md` används nu för att ge CC specifika instruktioner per session. Läses vid boot, raderas när den följts.
-**Påverkar CLAUDE.md:** Boot protocol, Handoff protocol
-**Åtgärd:** Uppdaterad ✅
-
-### 2026-03-24 — Autonomous agent live (VISION-005)
-**Vad:** `scripts/autonomous-agent.js` + `.github/workflows/autonomous-agent.yml` skapade. Agenten triggar på push till main, läser alla projekt, skriver rapport.
-**Påverkar CLAUDE.md:** Ny sektion: Autonomous Agent
-**Åtgärd:** Uppdaterad ✅
-
-### 2026-03-24 — project_context.md per underprojekt
-**Vad:** Alla underprojekt fick `project_memory/project_context.md` med syfte, mål, vad styr-ai ska bevaka.
-**Påverkar CLAUDE.md:** Boot protocol steg 2
-**Åtgärd:** Uppdaterad ✅
-
-### 2026-03-24 — goals.md + system_rules.md (VISION-001 + VISION-004)
-**Vad:** `project_memory/goals.md` och `governance/system_rules.md` skapade.
+### 2026-03-24 — goals.md + system_rules.md + approvals.md
+**Vad:** VISION-001 + VISION-004 + godkännandesystem via approvals.md
 **Påverkar CLAUDE.md:** Boot protocol, autonomigränser
 **Åtgärd:** Uppdaterad ✅
