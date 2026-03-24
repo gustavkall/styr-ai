@@ -1,29 +1,34 @@
 # styr-ai Autonomous Report
-*2026-03-24T13:16:32.588Z*
+*2026-03-24T13:17:51.469Z*
 
 ## Rapport
-**KRITISK SITUATION:** Warner-tvisten har 59 dagar kvar till cure period-slutet (22 maj). Detta är den enda deadline som faktiskt kan förstöra ett bolag om den missas. Kräver omedelbar automatisk bevakning.
+**Kritisk situation: Warner-deadline 59 dagar utan övervakning**
 
-**SCAFFOLD-PROBLEM:** Tre av fyra projekt är antingen scaffolds utan värde (min-analytiker, adminassistent) eller har tekniska blockers (TRADESYS model calibration). Systemet bygger projekt men levererar inte värde.
+Savage Roar Music har juridisk cure period som löper ut 22 maj — ingen automatik bevakar detta. Detta är systemfel på MAX-nivå.
 
-**TRADESYS-BLOCKER:** Model v2 presterar -3.7pp sämre out-of-sample trots +4.1pp bättre in-sample. VIXY≠VIX-bias i backtesten. Fixas innan implementation.
+**Projekt-portfolio har arkitekturproblem:**
+- TRADESYS operativ men model v2 har VIXY-bias som undergräver tillförlitlighet
+- Tre scaffold-projekt (60% av portfolio) genererar noll värde — resource-drag
+- Agent-system buggar med dubbletter och push-loopar
 
-**REKOMMENDATION:** 1) Bygg Warner deadline-countdown omedelbart. 2) Formellt beslut om scaffold-projekten — bygg färdigt ELLER kill. 3) Fixa VIXY-kalibreringen i TRADESYS. Fokusera på färre projekt som faktiskt levererar värde.
+**Rekommendation:**
+1. **Omedelbart**: Implementera Warner deadline-automation
+2. **Denna vecka**: Formellt beslut om scaffolds — bygg färdigt eller kill
+3. **Nästa**: Fixa TRADESYS VIXY-kalibrering för korrekt regime-bedömning
+
+Systemet byggdes för autonom skalning men 75% av projekten är blockerade eller felkalibrerade. Fokusera på de 25% som fungerar (TRADESYS + savage-roar core) och besluta om resten.
 
 ## Gap-analys per projekt
-- **[HIGH] savage-roar-music**: Ingen automatisk deadline-bevakning för Warner cure period (22 maj) → *GitHub Actions som räkner dagar kvar, eskalerar automatiskt vid 30/14/7 dagar*
-- **[HIGH] tradesys1337**: Model v2 presterar sämre out-of-sample (-3.7pp) trots bättre in-sample (+4.1pp) → *Fixa VIXY-bias i polygon-backtest.js, implementera riktig VIX-data*
-- **[MEDIUM] min-analytiker**: Scaffold utan funktion — ingen daglig pre-market briefing produceras → *Formellt beslut: bygg färdigt eller avveckla projektet*
-- **[MEDIUM] adminassistent**: Scaffold utan integration — Gustavs mailflöde opåverkat → *Formellt beslut: bygg färdigt eller avveckla projektet*
+- **[HIGH] savage-roar-music**: Juridisk deadline saknar automatisk övervakning — 59 dagar kvar utan alertsystem → *GitHub Actions som räkner dagar, eskalerar vid 30/14/7 dagar*
+- **[HIGH] tradesys1337**: Model v2 har VIXY-bias som ger -3.7pp OOS-performance — byggt på fel data → *Kalibrera VIXY→VIX eller ersätt med manuell regime-input*
+- **[HIGH] styr-ai**: Tre scaffold-projekt (min-analytiker, adminassistent, delvis savage-roar) drar kontext utan värde → *Formellt beslut: bygg färdigt ELLER avveckla scaffolds*
 
 ## Cross-project insikter
-- Scaffold-pattern från TRADESYS fungerar för persistent memory (~95%) men skapar värdelösa projekt utan implementation
-- Juridiska deadlines (Warner 22 maj) kräver proaktiv automatisering — manuell bevakning är opålitlig
-- Model calibration i TRADESYS visar att in-sample performance ≠ out-of-sample — overfitting-risk i alla AI-system
-- Tre av fyra projekt är antingen i kris (savage-roar) eller värdelösa scaffolds — fokusering behövs
-- Supabase + Vercel + GitHub-pattern etablerat men underutnyttjat — kan skalas till fler projekt
+- Persistent memory-pattern från TRADESYS fungerar väl — 85-95% kontinuitet. Samma scaffold används i alla nya projekt.
+- Agent-system behöver deduplicering — lägger till samma items upprepade gånger i work_queues.
+- Scaffold-projekten (min-analytiker, adminassistent) blockerar vid Supabase-setup — standardisera eller eliminera steget.
+- Warner-deadline är den enda MAX-priority över alla projekt — allt annat är sekundärt till 22 maj.
+- Model-kalibrering i TRADESYS visar att VIXY≠VIX-antaganden sprider sig till andra projekt — systemisk risk för felaktig marknadsregim-bedömning.
 
 ## Tillagda work items
-- **DEADLINE-004** [MAX] (savage-roar-music): Warner deadline countdown
-- **VALUE-001** [HIGH] (styr-ai): Scaffold audit — bygg eller kill
-- **MODEL-001** [HIGH] (tradesys1337): VIXY calibration fix
+- **WARNER-AUTOMATION-001** [MAX] (savage-roar-music): Automatisk deadline-countdown Warner
