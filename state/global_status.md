@@ -1,6 +1,7 @@
 | Projekt | Status mot mål | Blockers | Nästa steg |
-|---------|----------------|----------|-------------|
-| savage-roar-music | 🔴 KRITISK: Warner-deadline 22 maj (58 dagar) | Supabase setup, ingen automatisk deadline-bevakning | Setup scaffold → deadline radar system |
-| tradesys1337 | 🟡 FUNKTIONELL men ej verifierad live | WQ-008 kräver marknadsverifiering | Live-verifiering av scanners vid marknadsöppning |
-| min-analytiker | 🔴 SCAFFOLD: Ingen funktionalitet | Full setup krävs, oklart värde utan TRADESYS-integration | Beslut: bygga eller avveckla |
-| adminassistent | 🔴 SCAFFOLD: Ingen funktionalitet | Full setup krävs, oklart värde utan daglig användning | Beslut: bygga eller avveckla |
+|---------|---------------|----------|------------|
+| savage-roar-music | 🔴 KRITISKT — Warner cure period löper ut 22 maj, ingen automatisk bevakning | Ingen deadline-tracker, manuell uppföljning | Automatiskt deadline-system med eskalering |
+| tradesys1337 | 🟡 TRÄNAR — Model v2 50% färdig, parallell backtesting pågår, ej live-verifierat | VIXY≠VIX i polygon-backtest ger skev regimbedömning | Fixa VIXY-kalibrering, slutför 4-modells-arkitektur |
+| min-analytiker | 🔴 SCAFFOLD — Inget byggt sedan mars, ingen integration med TRADESYS | Supabase setup blockerad, ingen funktionalitet | Avgöra: bygga eller avveckla |
+| adminassistent | 🔴 SCAFFOLD — Inget byggt sedan mars, ingen Gmail/Calendar-integration | Supabase setup blockerad, ingen funktionalitet | Avgöra: bygga eller avveckla |
+| styr-ai | 🟡 META — Goals layer klar, autonomigränser definierade, saknar execution | Ingen autonom executor byggd | GitHub Actions + Claude API för autonom körning |
