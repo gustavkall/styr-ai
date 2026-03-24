@@ -103,3 +103,15 @@
 **Priority:** MAX
 **Project:** savage-roar-music
 **Description:** GitHub Actions som beräknar dagar kvar till 22 maj, flaggar vid 30/14/7 dagar, uppdaterar savage-roar work_queue automatiskt. Kritisk juridisk deadline.
+
+<!-- Auto-added 2026-03-24T13:19:34.589Z -->
+
+### WARNER-AUTOMATION-002 — Warner settlement strategy — legal options analysis
+**Priority:** HIGH
+**Project:** savage-roar-music
+**Description:** Analysera settlement-optioner vs stämning baserat på Warners respons på breach-brev. Nils juridisk rådgivning + Maria Svedenström-relationen som variabel.
+
+### TRADESYS-LIVE-001 — Verifiera scanners live vid marknadsöppning
+**Priority:** HIGH
+**Project:** tradesys1337
+**Description:** WQ-008 manuell verifiering — EMS/FPS/STS/EXIT labels + news loading + I:VIX endpoint. Kritiskt för daglig trading.
