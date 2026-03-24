@@ -1,1 +1,23 @@
+name: Memory Integrity Agent
 
+on:
+  schedule:
+    - cron: '0 3 * * 0'  # 04:00 CET (03:00 UTC) varje söndag
+  workflow_dispatch:
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install
+      - name: Run memory integrity agent
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/memory-integrity-agent.js
