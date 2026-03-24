@@ -1,7 +1,9 @@
-| Projekt | Status mot mål | Blockers | Nästa steg |
-|---------|---------------|----------|------------|
-| savage-roar-music | 🔴 KRITISKT — Warner cure period löper ut 22 maj, ingen automatisk bevakning | Ingen deadline-tracker, manuell uppföljning | Automatiskt deadline-system med eskalering |
-| tradesys1337 | 🟡 TRÄNAR — Model v2 50% färdig, parallell backtesting pågår, ej live-verifierat | VIXY≠VIX i polygon-backtest ger skev regimbedömning | Fixa VIXY-kalibrering, slutför 4-modells-arkitektur |
-| min-analytiker | 🔴 SCAFFOLD — Inget byggt sedan mars, ingen integration med TRADESYS | Supabase setup blockerad, ingen funktionalitet | Avgöra: bygga eller avveckla |
-| adminassistent | 🔴 SCAFFOLD — Inget byggt sedan mars, ingen Gmail/Calendar-integration | Supabase setup blockerad, ingen funktionalitet | Avgöra: bygga eller avveckla |
-| styr-ai | 🟡 META — Goals layer klar, autonomigränser definierade, saknar execution | Ingen autonom executor byggd | GitHub Actions + Claude API för autonom körning |
+| Projekt | Status mot egna mål | Blockers | Nästa steg |
+|---------|--------------------|---------|-----------|
+| savage-roar-music | 🔴 KRITISKT — Warner cure period 22 maj (58 dagar kvar), endast scaffold-läge | Supabase setup saknas, ingen operativ funktionalitet | SETUP-001: Bygg Supabase infrastruktur OMEDELBART |
+| tradesys1337 | 🟡 DELVIS — Model v2 byggt men ej implementerat, live-verifiering utebliven | VIXY≠VIX mapping fel, model integration saknas | MODEL-002: Fixa VIXY-kalibrering, MODEL-001: Score model v3 |
+| min-analytiker | 🔴 VÄRDELÖST — Endast scaffold, noll funktionalitet | Ingen integration med TRADESYS, pre-market workflow saknas | VALUE-002: Avgör om projektet ska byggas eller avvecklas |
+| adminassistent | 🔴 VÄRDELÖST — Endast scaffold, används ej dagligen | Ingen Gmail/Calendar integration, ej i dagligt workflow | VALUE-002: Avgör om projektet ska byggas eller avvecklas |
+| styr-ai | 🟡 PARTIELT — Persistent memory fungerar, autonomi begränsad | Saknar deadline radar, proaktiv prioritering, blind spot-detektion | DEADLINE-003: Automatisk deadline-bevakning |
+
+**ALARM:** Tre av fem projekt levererar noll värde. Warner-deadline 58 dagar bort utan operativt system.
