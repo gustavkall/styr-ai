@@ -122,3 +122,15 @@
 **Priority:** HIGH
 **Project:** tradesys1337
 **Description:** Korrigera VIXY≠VIX mapping i polygon-backtest.js. VIXY ~15≈VIX ~20, VIXY ~25≈VIX ~30
+
+<!-- Auto-added 2026-03-24T13:11:26.733Z -->
+
+### DEADLINE-004 — Warner deadline countdown automation
+**Priority:** MAX
+**Project:** savage-roar-music
+**Description:** GitHub Actions som beräknar dagar kvar till 22 maj, eskalerar automatiskt vid 30/14/7 dagar. Uppdaterar savage-roar work_queue prioritet.
+
+### VALUE-003 — Kill decision för scaffold-projekt
+**Priority:** HIGH
+**Project:** styr-ai
+**Description:** Formellt beslut: bygg färdigt min-analytiker + adminassistent ELLER avveckla. Tre scaffold-projekt dränerar fokus från värdeskapande arbete.
