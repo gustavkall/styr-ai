@@ -65,3 +65,16 @@
 | AGENT-002 | Cron trigger | 2026-03-24 | ✅ Byt i GitHub UI |
 | AGENT-003 | Approvals-system | 2026-03-24 | ✅ governance/approvals.md |
 | DEADLINE-004 | Warner countdown | 2026-03-24 | ✅ Nedprioriterad — Gustav hanterar |
+
+
+<!-- Auto-added 2026-03-25T03:01:46.026Z -->
+
+### CONSOLIDATION-001 — Consolidera scaffold-projekt
+**Priority:** HIGH
+**Project:** styr-ai
+**Description:** Beslut: Merge min-analytiker + adminassistent i tradesys1337 som executive-assistant-komponent ELLER avveckla båda scaffold-repos. Eliminera duplicate state-management.
+
+### WARNER-ESCALATION-001 — Warner litigation timeline
+**Priority:** HIGH
+**Project:** savage-roar-music
+**Description:** Set March 31 deadline för Warner response. Om ingen respons: initiera litigation proceedings. Koordinera med Nils (jurist).
