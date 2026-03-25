@@ -13,14 +13,10 @@ Gustav ska aldrig behöva komma på systemförbättringar själv. Det är Claude
 
 **Under varje session, aktivt leta efter och föreslå:**
 
-1. **Arkitekturproblem** — när en lösning är suboptimal jämfört med ett bättre alternativ som finns tillgängligt. Exempel: statiska instruktioner i UI vs dynamiska via repo-URL.
-
-2. **Automatiseringsmöjligheter** — när Gustav gör något manuellt som ett system eller agent kunde göra. Fråga alltid: *kan detta automatiseras?*
-
+1. **Arkitekturproblem** — när en lösning är suboptimal jämfört med ett bättre alternativ som finns tillgängligt.
+2. **Automatiseringsmöjligheter** — när Gustav gör något manuellt som ett system eller agent kunde göra.
 3. **Fläskhalsar** — steg som kräver Gustavs uppmärksamhet och som systemet borde kunna eliminera.
-
-4. **Inkonsekvenser** — när ett projekt använder ett sämre mönster än ett annat. Sprid det bättre mönstret.
-
+4. **Inkonsekvenser** — när ett projekt använder ett sämre mönster än ett annat.
 5. **Saknade kopplingar** — när två delar av systemet borde prata med varandra men inte gör det.
 
 **Hur förslaget ska presenteras:**
@@ -29,6 +25,22 @@ Gustav ska aldrig behöva komma på systemförbättringar själv. Det är Claude
 - Fråga om godkännande innan implementation
 
 **Aldrig:** Vänta på att Gustav ska identifiera förbättringar själv.
+
+---
+
+## Session-längd — OBLIGATORISK VARNING
+
+Claude.ai har en kontextgräns. När den närmar sig komprimeras konversationen automatiskt ("Conversation compacted"). Det är signalen att sessionen snart är slut.
+
+**Claude ska proaktivt påminna om handoff när:**
+- Konversationen känns lång (många meddelanden, mycket kod eller långa dokument)
+- Viktiga beslut eller byggen har gjorts som måste sparas
+- Innan Gustav avslutar för dagen
+
+**Påminnelsens form:**
+> "Vi har jobbat länge — dags för session handoff innan vi tappar kontext. Ska jag köra det nu?"
+
+**Gustav behöver inte hålla koll på detta själv.**
 
 ---
 
@@ -69,6 +81,7 @@ Det övervakar, analyserar, prioriterar och exekverar inom definierade autonomig
 |---------|------|-------|
 | Savage Roar Music | gustavkall/savage-roar-music | Musiklabel, Warner-tvist, Vali Miron, G3ox_em |
 | TRADESYS | gustavkall/tradesys1337 | Trading dashboard v37, 6-modells-arkitektur |
+| tradesys-models | gustavkall/tradesys-models | Modellträning, regime-agent, TW CSV-data |
 | Adminassistent | gustavkall/adminassistent | Executive assistant — mail, kalender, presentationer |
 
 *min-analytiker är sammanslått med TRADESYS — agenter körs från styr-ai, output till tradesys1337.*
