@@ -2,17 +2,15 @@
  * Market Regime Agent
  * Körs varje vardag 08:00 CET via GitHub Actions
  *
- * Hämtar SPY, VIX (via VIXY), HYG från Polygon
- * Bedömer marknadsregim: RISK-ON / NEUTRAL / RISK-OFF
- * Skriver till tradesys1337/state/market_regime.md
- * Gustav ser regimbedömning när han vaknar
+ * GITHUB_TOKEN har bara access till styr-ai-repot.
+ * PAT_TOKEN krävs för att skriva till tradesys1337.
  */
 
 const POLYGON_KEY = process.env.POLYGON_KEY;
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;       // styr-ai (eget repo)
+const PAT_TOKEN = process.env.PAT_TOKEN;             // cross-repo write access
 
 async function fetchPolygon(ticker) {
-  // Hämta senaste 5 dagars data
   const to = new Date().toISOString().split('T')[0];
   const from = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${from}/${to}?adjusted=true&sort=desc&limit=5&apiKey=${POLYGON_KEY}`;
@@ -22,10 +20,10 @@ async function fetchPolygon(ticker) {
   return data.results || [];
 }
 
-async function fetchFileSha(owner, repo, filePath) {
+async function fetchFileSha(owner, repo, filePath, token) {
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
   const res = await fetch(url, {
-    headers: { Authorization: `token ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.v3+json' },
+    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' },
   });
   if (!res.ok) return null;
   const data = await res.json();
@@ -33,13 +31,15 @@ async function fetchFileSha(owner, repo, filePath) {
 }
 
 async function writeFileToGitHub(owner, repo, filePath, content, message) {
-  const sha = await fetchFileSha(owner, repo, filePath);
+  // Använd PAT_TOKEN för cross-repo, GITHUB_TOKEN för eget repo
+  const token = (owner === 'gustavkall' && repo !== 'styr-ai') ? PAT_TOKEN : GITHUB_TOKEN;
+  const sha = await fetchFileSha(owner, repo, filePath, token);
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
   const body = { message, content: Buffer.from(content).toString('base64'), branch: 'main' };
   if (sha) body.sha = sha;
   const res = await fetch(url, {
     method: 'PUT',
-    headers: { Authorization: `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+    headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
   if (!res.ok) {
@@ -50,40 +50,18 @@ async function writeFileToGitHub(owner, repo, filePath, content, message) {
 }
 
 function calcRegime(spy, vixy, hyg) {
-  // VIXY kalibrering: VIXY ~15 = VIX ~20, VIXY ~20 = VIX ~25, VIXY ~25 = VIX ~30
-  // Trösklar kalibrerade för VIXY (inte VIX)
-  const vixyRiskOn = 14;   // VIXY < 14 ≈ VIX < 18 = RISK-ON
-  const vixyRiskOff = 20;  // VIXY > 20 ≈ VIX > 25 = RISK-OFF
-  const hygRiskOn = 80;    // HYG > 80 = credit ok
-  const hygRiskOff = 78;   // HYG < 78 = credit stress
-
-  // SPY trend: jämför senaste close mot 5d sedan
+  const vixyRiskOn = 14;
+  const vixyRiskOff = 20;
+  const hygRiskOn = 80;
+  const hygRiskOff = 78;
   const spyTrend = spy.length >= 2 ? (spy[0].c - spy[spy.length-1].c) / spy[spy.length-1].c * 100 : 0;
-
   const latestVixy = vixy[0]?.c;
   const latestHyg = hyg[0]?.c;
   const latestSpy = spy[0]?.c;
-
   let regime = 'NEUTRAL';
-  let signals = [];
-
-  if (latestVixy < vixyRiskOn && latestHyg > hygRiskOn && spyTrend > -1) {
-    regime = 'RISK-ON';
-  } else if (latestVixy > vixyRiskOff || latestHyg < hygRiskOff) {
-    regime = 'RISK-OFF';
-  }
-
-  if (latestVixy < vixyRiskOn) signals.push(`VIXY ${latestVixy?.toFixed(2)} (låg = lugnt)`);
-  else if (latestVixy > vixyRiskOff) signals.push(`VIXY ${latestVixy?.toFixed(2)} (hög = stress)`);
-  else signals.push(`VIXY ${latestVixy?.toFixed(2)} (neutral)`);
-
-  if (latestHyg > hygRiskOn) signals.push(`HYG ${latestHyg?.toFixed(2)} (credit ok)`);
-  else if (latestHyg < hygRiskOff) signals.push(`HYG ${latestHyg?.toFixed(2)} (credit stress)`);
-  else signals.push(`HYG ${latestHyg?.toFixed(2)} (neutral)`);
-
-  signals.push(`SPY ${latestSpy?.toFixed(2)} (5d trend: ${spyTrend > 0 ? '+' : ''}${spyTrend.toFixed(1)}%)`);
-
-  return { regime, signals, latestVixy, latestHyg, latestSpy, spyTrend };
+  if (latestVixy < vixyRiskOn && latestHyg > hygRiskOn && spyTrend > -1) regime = 'RISK-ON';
+  else if (latestVixy > vixyRiskOff || latestHyg < hygRiskOff) regime = 'RISK-OFF';
+  return { regime, latestVixy, latestHyg, latestSpy, spyTrend };
 }
 
 async function main() {
@@ -97,40 +75,16 @@ async function main() {
     fetchPolygon('HYG'),
   ]);
 
-  const { regime, signals, latestVixy, latestHyg, latestSpy, spyTrend } = calcRegime(spy, vixy, hyg);
-
-  console.log(`Regime: ${regime}`);
-  console.log(`Signals: ${signals.join(', ')}`);
+  const { regime, latestVixy, latestHyg, latestSpy, spyTrend } = calcRegime(spy, vixy, hyg);
+  console.log(`Regime: ${regime} | SPY: ${latestSpy} | VIXY: ${latestVixy} | HYG: ${latestHyg}`);
 
   const regimeEmoji = regime === 'RISK-ON' ? '✅' : regime === 'RISK-OFF' ? '❌' : '⚠️';
 
-  const content = `# Marknadsregim
-*Uppdaterad: ${timestamp}*
+  const content = `# Marknadsregim\n*Uppdaterad: ${timestamp}*\n\n## ${regimeEmoji} ${regime}\n\n| Indikator | Värde | Signal |\n|-----------|-------|--------|\n| SPY | $${latestSpy?.toFixed(2)} | 5d trend ${spyTrend > 0 ? '+' : ''}${spyTrend.toFixed(1)}% |\n| VIXY | $${latestVixy?.toFixed(2)} | ${latestVixy < 14 ? 'Låg volatilitet' : latestVixy > 20 ? 'Hög volatilitet' : 'Neutral'} |\n| HYG | $${latestHyg?.toFixed(2)} | ${latestHyg > 80 ? 'Credit ok' : latestHyg < 78 ? 'Credit stress' : 'Neutral'} |\n\n## Implikation för trading\n${regime === 'RISK-ON' ? '- FPS och EMS-setups prioriteras\n- Full position-storlek ok' : ''}${regime === 'RISK-OFF' ? '- FPS Fear Premium-strategi prioriteras\n- Reducera position-storlek' : ''}${regime === 'NEUTRAL' ? '- Selektiv approach\n- Håll position-storlek reducerad' : ''}\n\n## VIXY-kalibrering\n- VIXY < 14 ≈ VIX < 18 → RISK-ON\n- VIXY 14–20 ≈ VIX 18–25 → NEUTRAL\n- VIXY > 20 ≈ VIX > 25 → RISK-OFF\n`;
 
-## ${regimeEmoji} ${regime}
-
-| Indikator | Värde | Signal |
-|-----------|-------|--------|
-| SPY | $${latestSpy?.toFixed(2)} | 5d trend ${spyTrend > 0 ? '+' : ''}${spyTrend.toFixed(1)}% |
-| VIXY | $${latestVixy?.toFixed(2)} | ${latestVixy < 14 ? 'Låg volatilitet' : latestVixy > 20 ? 'Hög volatilitet' : 'Neutral'} |
-| HYG | $${latestHyg?.toFixed(2)} | ${latestHyg > 80 ? 'Credit ok' : latestHyg < 78 ? 'Credit stress' : 'Neutral'} |
-
-## Implikation för trading
-${regime === 'RISK-ON' ? '- FPS och EMS-setups prioriteras\n- Full position-storlek ok\n- Leta aktier med stark RS vs SPY' : ''}
-${regime === 'RISK-OFF' ? '- FPS Fear Premium-strategi prioriteras\n- Reducera position-storlek\n- Undvik nya entries utan stark fundamental katalysator' : ''}
-${regime === 'NEUTRAL' ? '- Selektiv approach\n- Håll position-storlek reducerad\n- Vänta på klarare signal' : ''}
-
-## VIXY-kalibrering (obs: VIXY ≠ VIX)
-- VIXY < 14 ≈ VIX < 18 → RISK-ON
-- VIXY 14–20 ≈ VIX 18–25 → NEUTRAL  
-- VIXY > 20 ≈ VIX > 25 → RISK-OFF
-`;
-
-  // Skriv till tradesys1337
   await writeFileToGitHub('gustavkall', 'tradesys1337', 'state/market_regime.md', content,
     `agent: market regime ${regime} ${dateStr}`);
 
-  // Skriv även summary till styr-ai för cross-project kontext
   const summary = `# Market Regime Summary\n*${timestamp}*\n\n**${regime}** | SPY $${latestSpy?.toFixed(2)} | VIXY $${latestVixy?.toFixed(2)} | HYG $${latestHyg?.toFixed(2)}`;
   await writeFileToGitHub('gustavkall', 'styr-ai', 'state/market_regime_latest.md', summary,
     `agent: market regime summary ${dateStr}`);
@@ -138,7 +92,4 @@ ${regime === 'NEUTRAL' ? '- Selektiv approach\n- Håll position-storlek reducera
   console.log('Market Regime Agent complete.');
 }
 
-main().catch(err => {
-  console.error('Fatal:', err);
-  process.exit(1);
-});
+main().catch(err => { console.error('Fatal:', err); process.exit(1); });
