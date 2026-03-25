@@ -1,42 +1,33 @@
 # Cross-Project Learnings
-*Aggregerade insikter från alla underprojekt. Uppdateras av styr-ai vid session close.*
+*Uppdaterad: 2026-03-25*
 
 ---
 
-## Systeminsikter
+## Systemarkitektur
 
-### 2026-03-23 — Persistent memory setup
-- GitHub MCP Connector måste INSTALLERAS (inte bara auktoriseras) för write-access
-- Privata repos kräver installation via github.com/apps/anthropic-github-mcp-connector
-- Alternativ: gör repos publika (inga hemligheter i state-filer)
-- `tr '-' ''` i zsh ger tomt resultat — använd `tr -d '-'` istället
-- Session boot-instruktioner i Claude.ai Project Instructions är tillräckligt för att driva read/write-cykeln
+- **URL-first instruktioner:** Project Instructions i Claude.ai pekar på CLAUDE.md i repo. Uppdatera repot — UI behöver aldrig ändras.
+- **Separata repos per syfte:** Träningsdata (tradesys-models) ska inte ligga i samma repo som dashboard-kod (tradesys1337). Håll concerns separerade.
+- **Privata repos:** Känslig data (handelsstrategi, juridiska processer) ska ligga i privata repos. tradesys1337 och savage-roar-music är nu privata.
+- **Merge-konflikter:** Uppstår när styr-ai och CC pushar till samma repo parallellt. CC löser dem — inget kritiskt.
 
-### 2026-03-24 — Agent-arkitektur
-- push_files (tree API) blockeras av GitHub MCP — använd create_or_update_file istället
-- .github/workflows/ kräver manuell commit via GitHub UI — GitHub-säkerhetsbegränsning
-- Agent som triggar på push skapar loop (committar → triggar sig själv) — använd cron istället
-- work_queue måste ha ID-deduplicering — annars appendar agenten samma items upprepade gånger
-- approvals.md är rätt mönster för Gustav att godkänna autonoma actions
+## Modellträning
 
-### 2026-03-24 — Model-kalibrering TRADESYS
-- En enda score-modell löser fel problem — behövs 6 separata: ENTRY/PASS/SIZE/HOLD/ADD/EXIT
-- VIXY ≠ VIX — contango-decay gör att VIXY ~15 ≈ VIX ~20
-- VIX bör vara manuellt filter — "buy when others are fearful" kräver omdöme, inte automation
-- Out-of-sample test avgör om modellförbättringar håller — inte samma dataset
-- Model v2 51.2% training, 34.9% OOS — VIXY-bias förklarar skillnaden
-- 241+ case-filer genererade, case-format etablerat för top-gainers-agenten
+- **Regime > TA:** Regimklassificering är starkaste enskilda signal (+11pp separationskraft). TA-indikatorer bidrar 2-5pp var.
+- **HYG/LQD > VIX:** Kreditmarknad är bättre strukturellt makrofilter. VIX är stämningsindex, rör sig för snabbt för månadsvis taggning.
+- **PANIC ≠ RISK-OFF:** Panik-dagar (VIX>30/spike>15%) har högre BUY-rate än normalt RISK-ON. Fear premium är reell.
+- **Mean reversion på 5d:** rs5 (underpresterat SPX senaste 5d) är starkaste BUY-signal. Matchar FPS-edge.
+- **Scanner-labels saknas:** EMS/FPS/STS-logik finns inte i träningsdatan ännu. Det är Gustavs starkaste edge och måste läggas till.
+- **Precision 34-47%:** Ren TA predicerar inte returns. Modellen används som confidence-filter, inte standalone predictor.
 
-### 2026-03-24 — Projekt-governance
-- CLAUDE.md glider efter när systemet växer — måste ingå i session handoff-protokollet
-- architecture_changelog.md löser problämet med inaktuell CLAUDE.md
-- project_context.md per underprojekt är kritisk för att agenten förstår projektens egna mål
-- next_session_brief.md är rätt mönster för att ge CC specifika instruktioner per session
+## Trading-edge (kvantitativt bekräftad)
 
----
+- FPS = köp underpresterare (rs5 neg) + frisk kredit (HYG) + panik (VIX spike) + fundamentalt stark
+- Extended ovanför EMA20 = starkaste WAIT-signal
+- RSI oversold = aktier fortsätter falla (inte V-bounce)
+- Sektoralignment (+0.18) — ticker + sektor i trend = bättre
 
-## Cross-project patterns
+## Processer
 
-- **Tradesys regimbedömning** påverkar timing för Savage Roar releases (RISK-OFF = sämre streamingmånad)
-- **Adminassistent** och **Savage Roar** delar operativ last — adminassistenten bör prioritera Warner-deadlines
-- **Top gainers case-filer** byggs upp dagligen — ENTRY-v1 tränas mot dem när tillräckligt med data finns
+- **Session boot:** Läs alltid CLAUDE.md via URL → läs state-filer → aggregera → presentera
+- **Parallella sessioner:** CC och Claude.ai kan jobba parallellt. CC äger kod-exekvering, Claude.ai äger strategi och styr-ai.
+- **Handoff-konflikter:** Förväntat när båda skriver till samma fil. CC löser med rebase.

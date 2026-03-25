@@ -1,30 +1,51 @@
 # styr-ai — SESSION HANDOFF
-*Global session close: 2026-03-24*
+*Global session close: 2026-03-25*
 
 ---
 
 ## DENNA SESSION
 
 ### Byggt
-- 5 agenter live: autonomous, coo, market-regime, top-gainers v2, memory-integrity
-- COO-agent: orchestrerar allt, skriver daily_briefing.md 06:00 CET
-- Top gainers v2: full pre-move analys (25d OHLCV, alla indikatorer, macro, nyheter, fundamentals, case-filer)
-- Memory integrity agent: söndagar 04:00, kontrollerar minneshälsa
-- Approvals-system: governance/approvals.md
-- Architecture changelog: governance/architecture_changelog.md
-- Position tracker brief: tradesys1337/project_memory/position_tracker_brief.md
-- Proaktiv förbättringsregel: alla CLAUDE.md uppdaterade
-- URL-first arkitektur: Project Instructions pekar på CLAUDE.md i repo
-- work_queue rengjord och deduplicerad
+- tradesys-models/ repo: komplett modelltränings-pipeline
+- regime-agent.js: daglig klassificering VIX/HYG/LQD/SPX/IWM + 9 sektor-ETFer
+- generate-training-data.js: 17,907 samples, 91 tickers, sektorflödes-features
+- train-model.js: gradient descent + walk-forward validering
+- BUY_5D + WAIT_5D modeller tränade och validerade
+- Repos gjorda privata: tradesys1337, savage-roar-music
 
 ### Beslut
-- 6 separata modeller: ENTRY/PASS/SIZE/HOLD/ADD/EXIT-v1
-- VIX är manuellt filter — Gustav sätter regim
-- min-analytiker sammanslått med TRADESYS
-- Warner-deadline nedprioriterad — Gustav hanterar personligen
-- Top gainers fas 2 (predictive) — väntar på case-filer från agenten
-- Position tracker — byggs efter EXIT-v1
-- push_files blockeras på .github/workflows/ — måste göras via GitHub UI
+- tradesys-models/ är separat repo (privat) — träningsdata bloatar inte tradesys1337
+- Regime-agenten äger regimklassificering — Gustav verifierar output men agenten har bättre systematik
+- Daglig VIX (inte 4H/1H) för modellträning — matchar 1D-bars
+- HYG + LQD viktigare makrofilter än VIX ensamt
+- PANIC = separat kategori (VIX>30 eller spike>15%) — inte RISK-OFF
+- Warner-dispyt nedprioriterad — Gustav hanterar personligen
+- Scaffold-projekt (min-analytiker/adminassistent) — beslut skjuts fram
+
+### Kvantitativa insikter (modellträning)
+- PANIC-dagar: 37.9% BUY-rate vs RISK-ON 33.9% — fear premium bekräftad
+- rs5 (mean reversion) = starkaste BUY-signal (-0.62)
+- creditStress (HYG/LQD-divergens) = starkaste WAIT-signal (+0.73)
+- VIX-spike = köpsignal, inte säljsignal
+- HYG viktigare makrofilter än VIX-nivå
+
+---
+
+## MODELL-EKVATIONER (BUY_5D / WAIT_5D)
+
+**BUY_5D:**
+```
+score = -0.62*rs5 - 0.45*regimeRiskOff - 0.37*regimeRiskOn
+      + 0.22*hygAboveEma20 + 0.18*sectorAligned + 0.15*regimePanic
+      + 0.10*nearEma20 + 0.10*rsiMomentum + 0.02
+```
+
+**WAIT_5D:**
+```
+score = +0.73*creditStress + 0.30*extendedAboveEma20
+      - 0.25*vixSpike - 0.21*hygAboveEma20 + 0.13*regimeRiskOff
+      + 0.13*rsiOversold + 0.77
+```
 
 ---
 
@@ -34,23 +55,17 @@
 ```
 session boot
 ```
-Läser daily_briefing.md (om COO kört), sedan full state.
 
-### CC i ~/tradesys1337:
+### CC i ~/tradesys-models:
 ```bash
-cd ~/tradesys1337 && claude
+cd ~/tradesys-models && claude
 session boot
 ```
-Läser next_session_brief.md automatiskt. Följ instruktionerna.
-
-Startprompt för ENTRY-v1:
-```
-Läs project_memory/next_session_brief.md och project_memory/model_architecture_brief.md
-
-Vi bygger ENTRY-v1. Analysera case-filer i project_memory/score_cases/
-och identifiera vilka komponenter som bäst predicerar CORRECT_BUY vs FALSE_BUY.
-Visa förslag på calcEntryScore() som ekvation/tabell INNAN du kodar något.
-```
+Prioritet:
+1. Scanner-labels som features (EMS/FPS/STS) i generate-training-data.js
+2. EPS surprise från Polygon — eps_surprise_pct feature
+3. SELL/HOLD-modeller — kräver position-simulation
+4. Implementera BUY/WAIT-ekvationer i tradesys1337/index.html
 
 ---
 
@@ -69,4 +84,4 @@ Visa förslag på calcEntryScore() som ekvation/tabell INNAN du kodar något.
 ---
 
 ## KRITISKA DATUM
-- **22 maj 2026:** Warner cure period (59 dagar) — Gustav hanterar
+- **22 maj 2026:** Warner cure period — Gustav hanterar

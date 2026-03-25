@@ -1,53 +1,55 @@
 # styr-ai — WORK QUEUE
-*Uppdaterad: 2026-03-24 global session close*
+*Uppdaterad: 2026-03-25 session close*
 
 ---
 
 ## ACTIVE
 
-### ENTRY-001 — Bygg ENTRY-v1
-**Priority:** MAX
-**Project:** tradesys1337
-**Description:** Nästa CC-session. Läs next_session_brief.md. Analysera score_cases/, föreslå calcEntryScore() som ekvation före kod, kör mot baseline 47.1%.
+*(inget aktivt)*
 
 ---
 
 ## READY — PRIORITY ORDER
 
-### EXIT-001 — Bygg EXIT-v1
-**Priority:** HIGH
-**Project:** tradesys1337
-**Description:** Efter ENTRY-v1. Krävs för position tracker agent.
+### MODEL-002 — Scanner-labels som features
+**Priority:** MAX
+**Project:** tradesys-models
+**Description:** Implementera EMS/FPS/STS-logik i generate-training-data.js. Binära features: ems_triggered, fps_triggered, sts_triggered. Gustavs starkaste edge saknas helt i träningsdatan.
 
-### HOLD-ADD-001 — Bygg HOLD-v1 + ADD-v1
+### MODEL-003 — EPS surprise från Polygon
+**Priority:** HIGH
+**Project:** tradesys-models
+**Description:** Hämta earnings data via Polygon API. Kolumn: eps_surprise_pct. Fundamentals är kritisk komponent i EMS/FPS.
+
+### MODEL-004 — Implementera BUY/WAIT-ekvationer i dashboard
 **Priority:** HIGH
 **Project:** tradesys1337
-**Description:** Efter EXIT-v1.
+**Description:** Lägg till calcBuyScore5d() och calcWaitScore5d() i index.html. Confidence-filter bredvid befintlig calcSetupScore(). Vänta tills MODEL-002+003 är klara.
+
+### MODEL-005 — SELL/HOLD-modeller
+**Priority:** HIGH
+**Project:** tradesys-models
+**Description:** Position-simulation i generate-training-data.js. BUY-signal → entry → daglig HOLD/SELL-bedömning. Label: sell_5d = dropp >5% inom 5d.
+
+### MODEL-006 — ADD/SCALE-modeller
+**Priority:** MEDIUM
+**Project:** tradesys-models
+**Description:** ADD: pullback i befintlig position. SCALE: Kelly-baserad positionsstorlek. Troligen handregler — för få case.
 
 ### POSITION-001 — Position tracker agent
 **Priority:** HIGH
 **Project:** tradesys1337
-**Description:** Läs project_memory/position_tracker_brief.md. Bygg efter EXIT/HOLD/ADD-v1. Komponent 2 (historical analysis) kan byggas parallellt.
+**Description:** Bygg efter SELL/HOLD-modeller klara.
 
-### VALUE-001 — Scaffold audit
-**Priority:** HIGH
-**Project:** styr-ai
-**Description:** Beslut: bygg färdigt min-analytiker + adminassistent ELLER avveckla. min-analytiker sammanslått — kan repo avvecklas?
-
-### PREDICTIVE-001 — Top gainers fas 2
+### SCAFFOLD-AUDIT — Avveckla scaffold-projekt
 **Priority:** MEDIUM
-**Project:** tradesys1337
-**Description:** Watchlist pre-move scanner. Väntar på att case-filer byggs upp av top-gainers-agenten över tid (veckor).
+**Project:** styr-ai
+**Description:** min-analytiker redan sammanslaget. adminassistent är tom scaffold. Beslut: avveckla båda repos.
 
 ### ADMINASSISTENT-001 — Bygg EA-system
 **Priority:** MEDIUM
-**Project:** adminassistent
-**Description:** Gmail MCP + Calendar MCP + Drive. Läsa mail, föreslå svar, boka möten, skapa presentationer. Separat sprint.
-
-### VIXY-001 — Kalibrera VIXY-trösklar
-**Priority:** MEDIUM
-**Project:** tradesys1337
-**Description:** VIXY ~15 ≈ VIX ~20, VIXY ~25 ≈ VIX ~30. Korrigera i polygon-backtest.js efter ENTRY-v1.
+**Project:** styr-ai
+**Description:** Gmail MCP + Calendar MCP + Drive. Separat sprint när modellarbete är klart.
 
 ---
 
@@ -62,19 +64,6 @@
 | ARCH-001 | URL-first arkitektur | 2026-03-24 | ✅ Alla CLAUDE.md uppdaterade |
 | ARCH-002 | Proaktiv förbättringsregel | 2026-03-24 | ✅ Alla CLAUDE.md uppdaterade |
 | AGENT-001 | Agent deduplicering | 2026-03-24 | ✅ ID-check i autonomous-agent.js |
-| AGENT-002 | Cron trigger | 2026-03-24 | ✅ Byt i GitHub UI |
 | AGENT-003 | Approvals-system | 2026-03-24 | ✅ governance/approvals.md |
-| DEADLINE-004 | Warner countdown | 2026-03-24 | ✅ Nedprioriterad — Gustav hanterar |
-
-
-<!-- Auto-added 2026-03-25T03:01:46.026Z -->
-
-### CONSOLIDATION-001 — Consolidera scaffold-projekt
-**Priority:** HIGH
-**Project:** styr-ai
-**Description:** Beslut: Merge min-analytiker + adminassistent i tradesys1337 som executive-assistant-komponent ELLER avveckla båda scaffold-repos. Eliminera duplicate state-management.
-
-### WARNER-ESCALATION-001 — Warner litigation timeline
-**Priority:** HIGH
-**Project:** savage-roar-music
-**Description:** Set March 31 deadline för Warner response. Om ingen respons: initiera litigation proceedings. Koordinera med Nils (jurist).
+| MODEL-001 | Training pipeline + regime-agent | 2026-03-25 | ✅ tradesys-models/, 17,907 samples, BUY/WAIT 5d, daglig regime |
+| SECURITY-001 | Repos privata | 2026-03-25 | ✅ tradesys1337 + savage-roar-music privata |
