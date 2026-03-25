@@ -29,3 +29,8 @@ REJECT: VALUE-001
 
 | Datum | ID | Beslut | Resultat |
 |-------|----|---------|---------|
+
+
+<!-- COO-agent 2026-03-25 -->
+PENDING: WARNER-DEADLINE  # Sätt ultimatum för Warner breach-respons [TODAY]
+PENDING: SCAFFOLD-AUDIT  # Avveckla värdelösa scaffold-projekt [THIS_WEEK]
