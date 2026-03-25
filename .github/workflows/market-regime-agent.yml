@@ -20,4 +20,5 @@ jobs:
         env:
           POLYGON_KEY: ${{ secrets.POLYGON_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: node scripts/market-regime-agent.js
