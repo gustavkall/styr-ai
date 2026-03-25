@@ -11,17 +11,12 @@ APPROVE: ID     — godkänn och exekvera detta work item autonomt
 REJECT: ID      — avvisa, lägg inte till i queue igen
 ```
 
-## Exempel
-```
-APPROVE: DEADLINE-004
-REJECT: VALUE-001
-```
-
 ---
 
 ## Aktiva beslut
 
-*(inga ännu — Gustav skriver APPROVE: eller REJECT: här)*
+APPROVE: SCAFFOLD-AUDIT
+REJECT: WARNER-DEADLINE  # Gustav hanterar Warner personligen
 
 ---
 
@@ -29,6 +24,8 @@ REJECT: VALUE-001
 
 | Datum | ID | Beslut | Resultat |
 |-------|----|---------|---------|
+| 2026-03-25 | SCAFFOLD-AUDIT | APPROVE | Avveckla min-analytiker + adminassistent scaffold-repos |
+| 2026-03-25 | WARNER-DEADLINE | REJECT | Gustav hanterar dialogen personligen |
 
 
 <!-- COO-agent 2026-03-25 -->
