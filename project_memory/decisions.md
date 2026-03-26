@@ -1,39 +1,40 @@
 # styr-ai — Decision Log
-*Cumulative log of architectural and design decisions. Append-only.*
-
----
-
-## FORMAT
-```
-### [DATE] — [DECISION TITLE]
-**Context:** What prompted this decision?
-**Decision:** What was decided?
-**Why:** Why this approach over alternatives?
-**Impact:** What changed as a result?
-```
+*Cumulative log. Append-only.*
 
 ---
 
 ### 2026-03-24 — Goals layer definierad (VISION-001)
-**Context:** styr-ai saknade ett explicit mål. Work items prioriterades utan referenspunkt.
-**Decision:** goals.md definierar systemets syfte som leverage-multiplikator. Kärnfunktioner: persistent kontext, godkännandebaserad exekvering, autonom exekvering inom ramar, proaktiv prioritering, blind spot-detektion, systemövervakning.
-**Why:** Utan ett tydligt mål optimeras systemet för fel saker. Goals layer är prerequisite för meningsfull prioritering och VISION-002/003.
-**Impact:** Alla framtida work items värderas mot goals.md. Systemet kan flagga när prioriteringen avviker från målet.
+**Context:** styr-ai saknade ett explicit mål.
+**Decision:** goals.md definierar systemets syfte som leverage-multiplikator.
+**Why:** Utan tydligt mål optimeras systemet för fel saker.
+**Impact:** Alla work items värderas mot goals.md.
 
 ### 2026-03-24 — Autonomigränser definierade (VISION-004)
-**Context:** VISION-005 (autonom exekvering via GitHub Actions) kräver tydliga ramar för vad som är tillåtet autonomt.
-**Decision:** governance/system_rules.md definierar tre nivåer: autonomt tillåtet, kräver godkännande, aldrig autonomt. Eskaleringsregel: osäkerhet = fråga, aldrig gissa.
-**Why:** Tydliga gränser är en förutsättning för autonom exekvering, inte ett hinder. Utan dem är VISION-005 en risk.
-**Impact:** VISION-005 kan nu planeras. Godkännandeprocessen för projekt-scope är definierad.
+**Context:** VISION-005 kräver tydliga ramar.
+**Decision:** governance/system_rules.md — tre nivåer: autonomt, kräver godkännande, aldrig autonomt.
+**Why:** Tydliga gränser är förutsättning för autonom exekvering.
+**Impact:** VISION-005 kunde planeras och exekveras.
 
 ### 2026-03-26 — Warner-tvist hanteras personligen
-**Context:** COO-agenten eskalerade Warner-deadline (22 maj) som systemuppgift.
-**Decision:** Gustav hanterar Warner-tvisten personligen. Inte en systemuppgift.
-**Why:** Juridiska förhandlingar kräver personlig bedömning och relation — inte automation.
-**Impact:** Eskalering WARNER-DEADLINE tas bort från systemets scope. COO ska inte eskalera detta framåt.
+**Context:** COO-agenten eskalerade Warner-deadline som systemuppgift.
+**Decision:** Gustav hanterar personligen. Inte en systemuppgift.
+**Why:** Juridiska förhandlingar kräver personlig bedömning.
+**Impact:** COO ska inte eskalera WARNER-DEADLINE framöver.
 
 ### 2026-03-26 — MODEL-002 och MODEL-003 bekräftat byggda
-**Context:** COO-agenten flaggade EMS/FPS/STS scanner-labels och EPS surprise som saknade (MISSING-EDGE).
-**Decision:** Gustav bekräftar att MODEL-002 (scanner-labels) och MODEL-003 (EPS surprise) redan är implementerade.
-**Why:** COO hade inaktuell information — state-filer reflekterade inte faktiskt läge.
-**Impact:** Båda markerade som completed i work_queue. MODEL-004 (dashboard-integration) är nästa steg.
+**Context:** COO flaggade EMS/FPS/STS och EPS surprise som saknade.
+**Decision:** Gustav bekräftar att båda är implementerade.
+**Why:** State-filer reflekterade inte faktiskt läge.
+**Impact:** Båda markerade completed. MODEL-004 är nästa steg.
+
+### 2026-03-26 — styrAI-product arkitektur
+**Context:** Behövde bestämma arkitektur för persistent memory-produkten.
+**Decision:** MCP-server (Vercel) + Supabase PostgreSQL + pgvector + OpenAI embeddings. Managed hosting hos Gustav.
+**Why:** MCP är rätt leveransmekanism. Managed ger zero friktion för kund. pgvector i Supabase eliminerar separat vektordatabas.
+**Impact:** Fas 1 byggd och live samma dag. COGS <$1/mån per kund.
+
+### 2026-03-26 — Separata repos för meta-system och produkt
+**Context:** styr-ai repot används som meta-system med state-filer och agenter.
+**Decision:** styrAI-product är separat repo — deployas på Vercel. styr-ai förblir internt.
+**Why:** Separation of concerns. Produktkod ska inte blandas med state-filer.
+**Impact:** Ren arkitektur. Vercel deployar styrAI-product, inte styr-ai.

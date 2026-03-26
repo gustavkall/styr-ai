@@ -1,5 +1,5 @@
 # styr-ai — WORK QUEUE
-*Uppdaterad: 2026-03-26 session*
+*Uppdaterad: 2026-03-26 session close*
 
 ---
 
@@ -11,52 +11,45 @@
 
 ## READY — PRIORITY ORDER
 
-### MODEL-002 — Scanner-labels som features
+### STYRAI-001 — Fas 2: Sajt och onboarding
 **Priority:** MAX
-**Project:** tradesys-models
-**Description:** Implementera EMS/FPS/STS-logik i generate-training-data.js. Binära features: ems_triggered, fps_triggered, sts_triggered. Gustavs starkaste edge saknas helt i träningsdatan.
-**Status:** Bekräftat byggt (2026-03-26). Uppdatera när integrerat i tradesys-models.
+**Project:** styrAI-product
+**Description:** Landningssida med riktig copy, setup-guide (max 10 min onboarding), read-only dashboard för kund. Fas 1 är klar.
 
-### MODEL-003 — EPS surprise från Polygon
+### STYRAI-002 — Onboarda kund #1
+**Priority:** MAX
+**Project:** styrAI-product
+**Description:** Skicka API-nyckel (e5a93009-8ad9-4b44-9f6f-840d9c8c32da) + CLAUDE.md-template. Verifiera live. Samla feedback.
+
+### STYRAI-003 — Domän
 **Priority:** HIGH
-**Project:** tradesys-models
-**Description:** Hämta earnings data via Polygon API. Kolumn: eps_surprise_pct. Fundamentals är kritisk komponent i EMS/FPS.
-**Status:** Bekräftat byggt (2026-03-26). Uppdatera när integrerat.
+**Project:** styrAI-product
+**Description:** styr.ai är tagen. Kolla: usestyr.ai, trystyr.ai, styr-ai.com, styrapp.ai
 
-### MODEL-004 — Implementera BUY/WAIT-ekvationer i dashboard
+### MODEL-004 — BUY/WAIT-ekvationer i dashboard
 **Priority:** HIGH
 **Project:** tradesys1337
-**Description:** Lägg till calcBuyScore5d() och calcWaitScore5d() i index.html. Confidence-filter bredvid befintlig calcSetupScore(). Väntar på MODEL-002+003.
+**Description:** calcBuyScore5d() och calcWaitScore5d() i index.html. Confidence-filter bredvid calcSetupScore().
 
 ### MODEL-005 — SELL/HOLD-modeller
 **Priority:** HIGH
 **Project:** tradesys-models
-**Description:** Position-simulation i generate-training-data.js. BUY-signal → entry → daglig HOLD/SELL-bedömning. Label: sell_5d = dropp >5% inom 5d.
+**Description:** Position-simulation i generate-training-data.js.
 
-### MODEL-006 — ADD/SCALE-modeller
+### STYRAI-004 — Fas 3: Stripe + självbetjäning
 **Priority:** MEDIUM
-**Project:** tradesys-models
-**Description:** ADD: pullback i befintlig position. SCALE: Kelly-baserad positionsstorlek. Troligen handregler — för få case.
+**Project:** styrAI-product
+**Description:** Aktiveras efter 3-5 kunder. Stripe-integration, automatisk provisioning, admin-dashboard.
 
-### POSITION-001 — Position tracker agent
-**Priority:** HIGH
-**Project:** tradesys1337
-**Description:** Bygg efter SELL/HOLD-modeller klara.
-
-### SCAFFOLD-AUDIT — Avveckla scaffold-projekt
-**Priority:** LOW
-**Project:** styr-ai
-**Description:** adminassistent är tom scaffold. Beslut: tas senare.
+### STYRAI-005 — Fas 4: Distribution
+**Priority:** MEDIUM
+**Project:** styrAI-product
+**Description:** Ansökan till Anthropics MCP-register, npm-paket (npx styr-ai init), integrationsguider.
 
 ### ADMINASSISTENT-001 — Bygg EA-system
 **Priority:** LOW
 **Project:** styr-ai
-**Description:** Gmail MCP + Calendar MCP + Drive. Separat sprint — tas senare på Gustavs initiativ.
-
-### TRADESYS-007 — Pre-market briefing agent
-**Priority:** HIGH
-**Project:** tradesys1337
-**Description:** Bygg pre-market briefing-agent. Hämta overnight news, gappers, earnings calendar. Kör automatiskt 08:30 svensk tid.
+**Description:** Gmail MCP + Calendar MCP + Drive. Tas på Gustavs initiativ.
 
 ---
 
@@ -72,9 +65,9 @@
 | ARCH-002 | Proaktiv förbättringsregel | 2026-03-24 | ✅ Alla CLAUDE.md uppdaterade |
 | AGENT-001 | Agent deduplicering | 2026-03-24 | ✅ ID-check i autonomous-agent.js |
 | AGENT-003 | Approvals-system | 2026-03-24 | ✅ governance/approvals.md |
-| MODEL-001 | Training pipeline + regime-agent | 2026-03-25 | ✅ tradesys-models/, 17,907 samples, BUY/WAIT 5d, daglig regime |
-| SECURITY-001 | Repos privata | 2026-03-25 | ✅ tradesys1337 + savage-roar-music privata |
+| MODEL-001 | Training pipeline + regime-agent | 2026-03-25 | ✅ 48,976 samples, BUY/WAIT 5d |
+| SECURITY-001 | Repos privata | 2026-03-25 | ✅ tradesys1337 + savage-roar-music |
 | MODEL-002 | Scanner-labels (EMS/FPS/STS) | 2026-03-26 | ✅ Bekräftat byggt av Gustav |
 | MODEL-003 | EPS surprise från Polygon | 2026-03-26 | ✅ Bekräftat byggt av Gustav |
-| BUGFIX-001 | fetch-state.js MARKNADSREGIM crash | 2026-03-26 | ✅ Sektion tillagd i current_state.md |
-| WARNER-001 | Warner-tvist personlig hantering | 2026-03-26 | Gustav hanterar personligen — ej systemuppgift |
+| BUGFIX-001 | fetch-state.js MARKNADSREGIM crash | 2026-03-26 | ✅ Fixad i tradesys1337 |
+| STYRAI-FAS1 | styrAI-product Fas 1 | 2026-03-26 | ✅ MCP-server live, 6 verktyg, embeddings, kund #1 provisionerad |

@@ -1,87 +1,57 @@
 # styr-ai — SESSION HANDOFF
-*Global session close: 2026-03-25*
+*Session close: 2026-03-26*
 
 ---
 
 ## DENNA SESSION
 
 ### Byggt
-- tradesys-models/ repo: komplett modelltränings-pipeline
-- regime-agent.js: daglig klassificering VIX/HYG/LQD/SPX/IWM + 9 sektor-ETFer
-- generate-training-data.js: 17,907 samples, 91 tickers, sektorflödes-features
-- train-model.js: gradient descent + walk-forward validering
-- BUY_5D + WAIT_5D modeller tränade och validerade
-- Repos gjorda privata: tradesys1337, savage-roar-music
+- styrAI-product repo skapad och deployad på Vercel (project-b786o.vercel.app)
+- Supabase schema: projects, sessions, decisions, learnings, embeddings + pgvector
+- MCP-server live med 6 verktyg: read_memory, write_session, log_decision, log_learning, search_memory, get_status
+- RLS policies fixade (service role access)
+- OpenAI embeddings aktiva (text-embedding-3-small)
+- Testat live — 5/5 verktyg fungerar
+- Test-projekt provisionerat (API-nyckel: e5a93009-8ad9-4b44-9f6f-840d9c8c32da)
+- fetch-state.js MARKNADSREGIM-bug fixad i tradesys1337
+- Teknisk spec committad: product/TECHNICAL_SPEC.md
+- Konkurrensanalys gjord: Mem0 ($24M Series A) är närmaste konkurrent
+- Whitepaper v2.0 läst och analyserat — arkitektur validerad
 
 ### Beslut
-- tradesys-models/ är separat repo (privat) — träningsdata bloatar inte tradesys1337
-- Regime-agenten äger regimklassificering — Gustav verifierar output men agenten har bättre systematik
-- Daglig VIX (inte 4H/1H) för modellträning — matchar 1D-bars
-- HYG + LQD viktigare makrofilter än VIX ensamt
-- PANIC = separat kategori (VIX>30 eller spike>15%) — inte RISK-OFF
-- Warner-dispyt nedprioriterad — Gustav hanterar personligen
-- Scaffold-projekt (min-analytiker/adminassistent) — beslut skjuts fram
+- styr-ai (meta-system) och styrAI-product (produkt) är separata repos
+- Managed Supabase hos Gustav — inte self-hosted per kund
+- OpenAI för embeddings (inte Anthropic — saknar embeddings-API)
+- MCP-server är leveransmekanismen, inte REST-sajt
+- Warner-tvist hanteras personligen av Gustav — inte systemuppgift
+- MODEL-002 (scanner-labels) och MODEL-003 (EPS surprise) bekräftat byggda
+- AdminAssistent tas upp på Gustavs initiativ — lågprio
 
-### Kvantitativa insikter (modellträning)
-- PANIC-dagar: 37.9% BUY-rate vs RISK-ON 33.9% — fear premium bekräftad
-- rs5 (mean reversion) = starkaste BUY-signal (-0.62)
-- creditStress (HYG/LQD-divergens) = starkaste WAIT-signal (+0.73)
-- VIX-spike = köpsignal, inte säljsignal
-- HYG viktigare makrofilter än VIX-nivå
-
----
-
-## MODELL-EKVATIONER (BUY_5D / WAIT_5D)
-
-**BUY_5D:**
-```
-score = -0.62*rs5 - 0.45*regimeRiskOff - 0.37*regimeRiskOn
-      + 0.22*hygAboveEma20 + 0.18*sectorAligned + 0.15*regimePanic
-      + 0.10*nearEma20 + 0.10*rsiMomentum + 0.02
-```
-
-**WAIT_5D:**
-```
-score = +0.73*creditStress + 0.30*extendedAboveEma20
-      - 0.25*vixSpike - 0.21*hygAboveEma20 + 0.13*regimeRiskOff
-      + 0.13*rsiOversold + 0.77
-```
+### Fas-status (styrAI-product)
+- **Fas 1:** ✅ KLAR — MCP-server live, 6 verktyg, embeddings, kund #1 provisionerad
+- **Fas 2:** 🔲 NÄSTA — Sajt, setup-guide, dashboard
+- **Fas 3:** 🔲 VÄNTANDE — Stripe, självbetjäning (efter 3-5 kunder)
+- **Fas 4:** 🔲 VÄNTANDE — MCP-register, npm-paket, distribution
 
 ---
 
 ## NÄSTA SESSION
 
-### Claude.ai styr-ai:
-```
-session boot
-```
+### Prioritet 1 — Fas 2: Sajt och onboarding
+- Landningssida med riktig copy (inte placeholder)
+- Setup-guide: steg-för-steg, max 10 min från noll till fungerande
+- Dashboard: read-only vy för kund (senaste session, beslut, learnings)
+- Domän: styr.ai är tagen — kolla usestyr.ai, trystyr.ai, styr-ai.com
 
-### CC i ~/tradesys-models:
-```bash
-cd ~/tradesys-models && claude
-session boot
-```
-Prioritet:
-1. Scanner-labels som features (EMS/FPS/STS) i generate-training-data.js
-2. EPS surprise från Polygon — eps_surprise_pct feature
-3. SELL/HOLD-modeller — kräver position-simulation
-4. Implementera BUY/WAIT-ekvationer i tradesys1337/index.html
+### Prioritet 2 — Onboarda kund #1
+- Skicka API-nyckel + CLAUDE.md-template
+- Verifiera att kunden är live
+- Samla feedback
 
----
-
-## AGENT-SCHEMA
-
-| Tid | Agent | Output |
-|-----|-------|--------|
-| 03:00 CET natt | autonomous-agent | state/autonomous_report.md |
-| 06:00 CET vardagar | coo-agent | state/daily_briefing.md |
-| 08:00 CET vardagar | market-regime-agent | tradesys1337/state/market_regime.md |
-| 22:30 CET vardagar | top-gainers-agent v2 | tradesys1337/state/top_gainers_report.md |
-| 04:00 CET söndagar | memory-integrity-agent | state/memory_integrity_report.md |
-
-**Secrets på plats:** ANTHROPIC_API_KEY, POLYGON_KEY, ALPHA_VANTAGE_KEY
+### Prioritet 3 — TRADESYS MODEL-004
+- Implementera BUY/WAIT-ekvationer i dashboard (calcBuyScore5d, calcWaitScore5d)
 
 ---
 
 ## KRITISKA DATUM
-- **22 maj 2026:** Warner cure period — Gustav hanterar
+- **22 maj 2026:** Warner cure period — Gustav hanterar personligen
