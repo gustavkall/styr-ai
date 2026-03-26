@@ -31,3 +31,8 @@ REJECT: WARNER-DEADLINE  # Gustav hanterar Warner personligen
 <!-- COO-agent 2026-03-25 -->
 PENDING: WARNER-DEADLINE  # Sätt ultimatum för Warner breach-respons [TODAY]
 PENDING: SCAFFOLD-AUDIT  # Avveckla värdelösa scaffold-projekt [THIS_WEEK]
+
+
+<!-- COO-agent 2026-03-26 -->
+PENDING: WARNER-DEADLINE  # Warner-tvist: 57 dagar kvar av cure period [CRITICAL]
+PENDING: MISSING-EDGE  # Gustavs starkaste trading-edge saknas i TRADESYS [HIGH]
