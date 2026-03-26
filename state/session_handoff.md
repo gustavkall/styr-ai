@@ -1,57 +1,92 @@
 # styr-ai — SESSION HANDOFF
-*Session close: 2026-03-26*
+*Session close: 2026-03-26 (session 2)*
 
 ---
 
 ## DENNA SESSION
 
-### Byggt
-- styrAI-product repo skapad och deployad på Vercel (project-b786o.vercel.app)
-- Supabase schema: projects, sessions, decisions, learnings, embeddings + pgvector
-- MCP-server live med 6 verktyg: read_memory, write_session, log_decision, log_learning, search_memory, get_status
-- RLS policies fixade (service role access)
-- OpenAI embeddings aktiva (text-embedding-3-small)
-- Testat live — 5/5 verktyg fungerar
-- Test-projekt provisionerat (API-nyckel: e5a93009-8ad9-4b44-9f6f-840d9c8c32da)
-- fetch-state.js MARKNADSREGIM-bug fixad i tradesys1337
-- Teknisk spec committad: product/TECHNICAL_SPEC.md
-- Konkurrensanalys gjord: Mem0 ($24M Series A) är närmaste konkurrent
-- Whitepaper v2.0 läst och analyserat — arkitektur validerad
+### Byggt — styrAI-product
+- **Remote MCP-server** (`/api/mcp-server`) — Claude Desktop connector, JSON-RPC 2024-11-05, SSE + Streamable HTTP
+- **Episodiskt minnesystem** — `get_history`, `update_decision`, `context_refs`, `project_phase`, `energy` på alla tabeller
+- **agent_id spårbarhet** — sessions, decisions, learnings taggade med vem som skapade dem. Filter i `get_history`. Dashboard visar agent-badges med unik färg per agent.
+- **Ny sajt** — outcome-fokuserad copy, ingen stack-info avslöjas. Remote MCP som primär onboarding.
+- **Setup-guide** med tre tabbar: Claude Desktop (primär), Claude Code (CLI), Manual (CLAUDE.md). Inbyggd key-tester.
+- **Dashboard uppdaterad** — agents-bar, agent-badges på sessions och beslut
+- **Lasttest genomfört** — 8/8 tester gröna. 10 concurrent writes 100% ok, avg latency 502ms, inga race conditions.
+
+### Migrationer körda i Supabase
+- `migration-episodic.sql` — context_refs, project_phase, energy, supersedes/superseded_by, get_episode_history()
+- `migration-agent-id.sql` — agent_id på sessions/decisions/learnings, uppdaterad get_episode_history() med p_agent_id filter
 
 ### Beslut
-- styr-ai (meta-system) och styrAI-product (produkt) är separata repos
-- Managed Supabase hos Gustav — inte self-hosted per kund
-- OpenAI för embeddings (inte Anthropic — saknar embeddings-API)
-- MCP-server är leveransmekanismen, inte REST-sajt
-- Warner-tvist hanteras personligen av Gustav — inte systemuppgift
-- MODEL-002 (scanner-labels) och MODEL-003 (EPS surprise) bekräftat byggda
-- AdminAssistent tas upp på Gustavs initiativ — lågprio
+- Ingen grafdatabas — pgvector + kontextlager (context_refs + project_phase) löser 3D-minnesstruktur utan infrastrukturkomplexitet
+- Ingen API-nyckelhantering för externa källor (Polygon etc) — Fas 3, inte kärnprodukt
+- Sajten berättar vad, inte hur — konkurrensskydd
+- agent_id är spårbarhet, inte autentisering — full agent-auth är Fas 3
 
-### Fas-status (styrAI-product)
-- **Fas 1:** ✅ KLAR — MCP-server live, 6 verktyg, embeddings, kund #1 provisionerad
-- **Fas 2:** 🔲 NÄSTA — Sajt, setup-guide, dashboard
+### Fas-status styrAI-product
+- **Fas 1:** ✅ KLAR — MCP-server, 8 verktyg, embeddings, kund #1 provisionerad
+- **Fas 2:** ✅ KLAR — Sajt, setup-guide, dashboard, remote MCP connector, episodiskt minne, agent_id
 - **Fas 3:** 🔲 VÄNTANDE — Stripe, självbetjäning (efter 3-5 kunder)
 - **Fas 4:** 🔲 VÄNTANDE — MCP-register, npm-paket, distribution
 
 ---
 
-## NÄSTA SESSION
+## NÄSTA SESSION — PRIORITERINGSORDNING
 
-### Prioritet 1 — Fas 2: Sajt och onboarding
-- Landningssida med riktig copy (inte placeholder)
-- Setup-guide: steg-för-steg, max 10 min från noll till fungerande
-- Dashboard: read-only vy för kund (senaste session, beslut, learnings)
-- Domän: styr.ai är tagen — kolla usestyr.ai, trystyr.ai, styr-ai.com
+### 1. Onboarda kund #1 (nästa vecka)
+- Skicka: API-nyckel `e5a93009-8ad9-4b44-9f6f-840d9c8c32da` + CLAUDE.md-template + länk till setup-guide
+- Instruera: lägg till `agent_id: deras-namn` i CLAUDE.md
+- Följ upp: bekräfta att de är live, samla feedback
 
-### Prioritet 2 — Onboarda kund #1
-- Skicka API-nyckel + CLAUDE.md-template
-- Verifiera att kunden är live
-- Samla feedback
+### 2. Domän
+- styr.ai är tagen
+- Kolla: `usestyr.ai`, `trystyr.ai`, `styrapp.ai`, `styr.dev`, `styr-ai.com`
+- Peka på Vercel när köpt
 
-### Prioritet 3 — TRADESYS MODEL-004
-- Implementera BUY/WAIT-ekvationer i dashboard (calcBuyScore5d, calcWaitScore5d)
+### 3. TRADESYS MODEL-004 (parallellt i CC)
+- calcBuyScore5d() + calcWaitScore5d() i index.html
+- Confidence-filter bredvid calcSetupScore()
+
+### 4. rollback-verktyg (`restore_session`)
+- Hämtar state från ett specifikt session_id
+- Returnerar det som om det vore nuvarande state
+- Append-only — inget raderas
+
+### 5. Fas 3 (efter 3-5 kunder)
+- Stripe, självbetjäning, admin-dashboard
+
+---
+
+## TEKNISK STATE — styrAI-product
+
+**Live URL:** https://project-b786o.vercel.app  
+**Repo:** gustavkall/styrAI-product  
+**API endpoint:** /api/mcp (REST) + /api/mcp-server (Remote MCP)  
+**Supabase:** Styr.AI projekt  
+**8 MCP-verktyg:** read_memory, write_session, log_decision, log_learning, search_memory, get_history, update_decision, get_status  
+**Test-nyckel:** e5a93009-8ad9-4b44-9f6f-840d9c8c32da (projekt: Test)  
+
+**Installation kund:**  
+Claude Desktop: Settings → Integrations → https://project-b786o.vercel.app/api/mcp-server  
+Claude Code: `claude mcp add styr-ai --transport http --url ... --header "Authorization: Bearer KEY"`  
+
+**CLAUDE.md för kund:**
+```
+## Persistent Memory — styr-ai
+API: https://project-b786o.vercel.app/api/mcp
+Key: [API-NYCKEL]
+agent_id: [namn-maskin]
+
+## Session Start
+Call read_memory. Present last session, active decisions, learnings.
+
+## Session End  
+Call write_session: summary, changes[], next_steps[], project_phase, energy, agent_id
+```
 
 ---
 
 ## KRITISKA DATUM
+- **Nästa vecka:** Onboarda kund #1
 - **22 maj 2026:** Warner cure period — Gustav hanterar personligen
