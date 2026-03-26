@@ -1,5 +1,5 @@
 # styr-ai — WORK QUEUE
-*Uppdaterad: 2026-03-26 session 2 close (slutlig)*
+*Uppdaterad: 2026-03-26 session 2 close (definitiv)*
 
 ---
 
@@ -15,6 +15,31 @@
 **Project:** styrAI-product
 **Description:** Lägg till `health`-fält i `read_memory`-svaret: status, last_session_age_hours, warning om >72h sedan senaste handoff. Lägg till `verified: true` + `next_boot_preview` i `write_session`-svaret. Det är detta som tar kärnprodukten till 95-98% tillförlitlighet. Görs före onboarding av kund #1.
 
+### STYRAI-PROTOCOL-001 — Loggningsprotokoll per repo
+**Priority:** MAX
+**Project:** styr-ai / alla repos
+**Description:** Lägg till loggningsprotokoll i CLAUDE.md för varje repo (styr-ai, styrAI-product, tradesys1337, savage-roar-music). Protokollet definierar när en session ska logga till styr-ai och när inte. Mål: traceability utan noise. Regel: logga beslut med konsekvenser, inte implementationsdetaljer.
+**Template att lägga in:**
+```
+## Loggningsprotokoll
+Logga ALLTID via styr-ai om sessionen:
+- Lade till ny funktion, komponent eller API-endpoint
+- Ändrade arkitektur, datamodell eller systemgräns
+- Tog ett beslut med långsiktig påverkan
+- Bröt något som behöver fixas nästa session
+- Slutförde ett work queue-item
+
+Logga INTE:
+- Bugfixar under 30 min utan arkitekturpåverkan
+- Explorerande experiment som inte landade
+- Kosmetiska ändringar / typofixar
+- Refaktorering utan beteendeändring
+
+Vid sessionslut (om något ska loggas):
+1. log_decision för varje strukturellt beslut
+2. write_session med summary, changes[], next_steps[], project_phase, energy, agent_id
+```
+
 ### STYRAI-ONBOARD-001 — Onboarda kund #1
 **Priority:** MAX
 **Project:** styrAI-product
@@ -28,18 +53,17 @@
 ### STYRAI-OPENAPI-001 — openapi.yaml — ChatGPT + Gemini
 **Priority:** HIGH
 **Project:** styrAI-product
-**Description:** Skriv en openapi.yaml som beskriver /api/mcp-endpointen med alla 8 verktyg. Samma fil öppnar både ChatGPT (GPT Actions) och Gemini (Extensions) simultant. En dags arbete. Görs efter Claude-versionen är stabil med kund #1.
-**Stack:** REST /api/mcp (finns) + openapi.yaml (saknas) → ChatGPT + Gemini
+**Description:** Skriv openapi.yaml för /api/mcp med alla 8 verktyg. Öppnar både ChatGPT (GPT Actions) och Gemini (Extensions) simultant. En dags arbete. Görs efter kund #1 är stabil.
 
 ### STYRAI-MCP-REGISTER-001 — Ansök till Anthropics MCP-register
 **Priority:** HIGH
 **Project:** styrAI-product
-**Description:** När domän är köpt: ansök till Anthropics officiella MCP-katalog. Kunden hittar styr-ai direkt i Claude Desktop och klickar Install. Krav: stabil domän, OAuth/Bearer auth (klart), tools/list endpoint (klart).
+**Description:** När domän är köpt. Kunden hittar styr-ai direkt i Claude Desktop, klickar Install. Krav: stabil domän (saknas), Bearer auth (klart), tools/list (klart).
 
 ### STYRAI-ROLLBACK-001 — restore_session
 **Priority:** MEDIUM
 **Project:** styrAI-product
-**Description:** Nytt MCP-verktyg. Hämtar state från specifikt session_id. Returnerar som nuvarande state. Append-only, inget raderas. Git-liknande rollback.
+**Description:** Nytt MCP-verktyg. Hämtar state från specifikt session_id. Append-only, inget raderas.
 
 ### MODEL-004 — BUY/WAIT-ekvationer i dashboard
 **Priority:** HIGH
@@ -49,17 +73,15 @@
 ### MODEL-005 — SELL/HOLD-modeller
 **Priority:** HIGH
 **Project:** tradesys-models
-**Description:** Position-simulation i generate-training-data.js.
 
 ### STYRAI-003 — Fas 3: Stripe + självbetjäning
 **Priority:** MEDIUM
 **Project:** styrAI-product
-**Description:** Aktiveras efter 3-5 kunder. Stripe, automatisk provisioning, admin-dashboard.
+**Description:** Aktiveras efter 3-5 kunder.
 
 ### ADMINASSISTENT-001 — Bygg EA-system
 **Priority:** LOW
-**Project:** styr-ai
-**Description:** Gmail + Calendar + Drive. På Gustavs initiativ.
+**Description:** På Gustavs initiativ.
 
 ---
 
