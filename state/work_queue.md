@@ -67,3 +67,11 @@
 | AGENT-003 | Approvals-system | 2026-03-24 | ✅ governance/approvals.md |
 | MODEL-001 | Training pipeline + regime-agent | 2026-03-25 | ✅ tradesys-models/, 17,907 samples, BUY/WAIT 5d, daglig regime |
 | SECURITY-001 | Repos privata | 2026-03-25 | ✅ tradesys1337 + savage-roar-music privata |
+
+
+<!-- Auto-added 2026-03-26T03:03:21.949Z -->
+
+### TRADESYS-007 — Implementera min-analytiker som pre-market agent
+**Priority:** HIGH
+**Project:** tradesys1337
+**Description:** Bygg pre-market briefing-agent i TRADESYS. Hämta overnight news, gappers, earnings calendar. Kör automatiskt 08:30 svensk tid.
