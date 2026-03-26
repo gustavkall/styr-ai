@@ -1,5 +1,5 @@
 # Cross-Project Learnings
-*Uppdaterad: 2026-03-25*
+*Uppdaterad: 2026-03-26*
 
 ---
 
@@ -9,6 +9,7 @@
 - **Separata repos per syfte:** Träningsdata (tradesys-models) ska inte ligga i samma repo som dashboard-kod (tradesys1337). Håll concerns separerade.
 - **Privata repos:** Känslig data (handelsstrategi, juridiska processer) ska ligga i privata repos. tradesys1337 och savage-roar-music är nu privata.
 - **Merge-konflikter:** Uppstår när styr-ai och CC pushar till samma repo parallellt. CC löser dem — inget kritiskt.
+- **State-filer reflekterar inte alltid faktiskt läge:** COO-agenten läser state-filer, inte kod. Om Gustav byggt något utanför sessionen måste state uppdateras manuellt eller via session handoff.
 
 ## Modellträning
 
@@ -16,7 +17,8 @@
 - **HYG/LQD > VIX:** Kreditmarknad är bättre strukturellt makrofilter. VIX är stämningsindex, rör sig för snabbt för månadsvis taggning.
 - **PANIC ≠ RISK-OFF:** Panik-dagar (VIX>30/spike>15%) har högre BUY-rate än normalt RISK-ON. Fear premium är reell.
 - **Mean reversion på 5d:** rs5 (underpresterat SPX senaste 5d) är starkaste BUY-signal. Matchar FPS-edge.
-- **Scanner-labels saknas:** EMS/FPS/STS-logik finns inte i träningsdatan ännu. Det är Gustavs starkaste edge och måste läggas till.
+- **Scanner-labels (MODEL-002) bekräftat byggt:** EMS/FPS/STS-logik implementerad. Bekräftat av Gustav 2026-03-26.
+- **EPS surprise (MODEL-003) bekräftat byggt:** Polygon earnings-data integrerad. Bekräftat av Gustav 2026-03-26.
 - **Precision 34-47%:** Ren TA predicerar inte returns. Modellen används som confidence-filter, inte standalone predictor.
 
 ## Trading-edge (kvantitativt bekräftad)
@@ -31,3 +33,5 @@
 - **Session boot:** Läs alltid CLAUDE.md via URL → läs state-filer → aggregera → presentera
 - **Parallella sessioner:** CC och Claude.ai kan jobba parallellt. CC äger kod-exekvering, Claude.ai äger strategi och styr-ai.
 - **Handoff-konflikter:** Förväntat när båda skriver till samma fil. CC löser med rebase.
+- **Warner-tvist:** Gustav hanterar personligen. Ska inte eskaleras av COO-agenten framåt.
+- **AdminAssistent:** Tas upp på Gustavs initiativ. Lågprio tills vidare.

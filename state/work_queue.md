@@ -1,5 +1,5 @@
 # styr-ai — WORK QUEUE
-*Uppdaterad: 2026-03-25 session close*
+*Uppdaterad: 2026-03-26 session*
 
 ---
 
@@ -15,16 +15,18 @@
 **Priority:** MAX
 **Project:** tradesys-models
 **Description:** Implementera EMS/FPS/STS-logik i generate-training-data.js. Binära features: ems_triggered, fps_triggered, sts_triggered. Gustavs starkaste edge saknas helt i träningsdatan.
+**Status:** Bekräftat byggt (2026-03-26). Uppdatera när integrerat i tradesys-models.
 
 ### MODEL-003 — EPS surprise från Polygon
 **Priority:** HIGH
 **Project:** tradesys-models
 **Description:** Hämta earnings data via Polygon API. Kolumn: eps_surprise_pct. Fundamentals är kritisk komponent i EMS/FPS.
+**Status:** Bekräftat byggt (2026-03-26). Uppdatera när integrerat.
 
 ### MODEL-004 — Implementera BUY/WAIT-ekvationer i dashboard
 **Priority:** HIGH
 **Project:** tradesys1337
-**Description:** Lägg till calcBuyScore5d() och calcWaitScore5d() i index.html. Confidence-filter bredvid befintlig calcSetupScore(). Vänta tills MODEL-002+003 är klara.
+**Description:** Lägg till calcBuyScore5d() och calcWaitScore5d() i index.html. Confidence-filter bredvid befintlig calcSetupScore(). Väntar på MODEL-002+003.
 
 ### MODEL-005 — SELL/HOLD-modeller
 **Priority:** HIGH
@@ -42,14 +44,19 @@
 **Description:** Bygg efter SELL/HOLD-modeller klara.
 
 ### SCAFFOLD-AUDIT — Avveckla scaffold-projekt
-**Priority:** MEDIUM
+**Priority:** LOW
 **Project:** styr-ai
-**Description:** min-analytiker redan sammanslaget. adminassistent är tom scaffold. Beslut: avveckla båda repos.
+**Description:** adminassistent är tom scaffold. Beslut: tas senare.
 
 ### ADMINASSISTENT-001 — Bygg EA-system
-**Priority:** MEDIUM
+**Priority:** LOW
 **Project:** styr-ai
-**Description:** Gmail MCP + Calendar MCP + Drive. Separat sprint när modellarbete är klart.
+**Description:** Gmail MCP + Calendar MCP + Drive. Separat sprint — tas senare på Gustavs initiativ.
+
+### TRADESYS-007 — Pre-market briefing agent
+**Priority:** HIGH
+**Project:** tradesys1337
+**Description:** Bygg pre-market briefing-agent. Hämta overnight news, gappers, earnings calendar. Kör automatiskt 08:30 svensk tid.
 
 ---
 
@@ -67,11 +74,7 @@
 | AGENT-003 | Approvals-system | 2026-03-24 | ✅ governance/approvals.md |
 | MODEL-001 | Training pipeline + regime-agent | 2026-03-25 | ✅ tradesys-models/, 17,907 samples, BUY/WAIT 5d, daglig regime |
 | SECURITY-001 | Repos privata | 2026-03-25 | ✅ tradesys1337 + savage-roar-music privata |
-
-
-<!-- Auto-added 2026-03-26T03:03:21.949Z -->
-
-### TRADESYS-007 — Implementera min-analytiker som pre-market agent
-**Priority:** HIGH
-**Project:** tradesys1337
-**Description:** Bygg pre-market briefing-agent i TRADESYS. Hämta overnight news, gappers, earnings calendar. Kör automatiskt 08:30 svensk tid.
+| MODEL-002 | Scanner-labels (EMS/FPS/STS) | 2026-03-26 | ✅ Bekräftat byggt av Gustav |
+| MODEL-003 | EPS surprise från Polygon | 2026-03-26 | ✅ Bekräftat byggt av Gustav |
+| BUGFIX-001 | fetch-state.js MARKNADSREGIM crash | 2026-03-26 | ✅ Sektion tillagd i current_state.md |
+| WARNER-001 | Warner-tvist personlig hantering | 2026-03-26 | Gustav hanterar personligen — ej systemuppgift |
