@@ -1,5 +1,5 @@
 # styr-ai — WORK QUEUE
-*Uppdaterad: 2026-03-27 session 2 close*
+*Uppdaterad: 2026-03-27 session 2 close + Stripe-tillägg*
 
 ---
 
@@ -19,6 +19,11 @@
 **Priority:** HIGH
 **Project:** styrAI-product
 **Description:** Gustav bestämmer namn. Kandidater: Engram (`withengram.ai` $160), Exocortex (`useexocortex.ai` $160), Axon (`useaxon.ai` $160), Mnemo (`usemnemo.ai` $160). När namn är klart: köp domän → uppdatera Vercel → uppdatera alla URLer → ansök MCP-register.
+
+### STYRAI-STRIPE-001 — Stripe-integration + självbetjäning
+**Priority:** HIGH
+**Project:** styrAI-product
+**Description:** Betalvägg för nya kunder. Flöde: kund betalar via Stripe → webhook skapar projekt + genererar API-nyckel i Supabase → bekräftelsemail med nyckel + setup-URL skickas automatiskt. Gustav behöver inte vara manuellt involverad efter kund #1. Komponenter: Stripe Checkout, webhook-handler (/api/stripe-webhook), projekt-provisioning i Supabase, mail via Resend eller liknande. Aktiveras när kund #1 är bekräftad stabil. Görs parallellt med eller efter namnbeslut.
 
 ### STYRAI-OPENAPI-001 — openapi.yaml — ChatGPT + Gemini
 **Priority:** HIGH
@@ -43,11 +48,6 @@
 ### MODEL-005 — SELL/HOLD-modeller
 **Priority:** HIGH
 **Project:** tradesys-models
-
-### STYRAI-003 — Fas 3: Stripe + självbetjäning
-**Priority:** MEDIUM
-**Project:** styrAI-product
-**Description:** Aktiveras efter 3-5 kunder.
 
 ### SETUP-BATCH-001 — Setup-batch för stagnerade projekt
 **Priority:** MEDIUM
