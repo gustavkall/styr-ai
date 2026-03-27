@@ -1,20 +1,29 @@
-# 📋 Daily Briefing — 2026-03-26
-*Genererad av COO-agent 2026-03-26T05:37:34.208Z*
-*Systemhälsa: ████░░░░░░ 4/10*
+# Daily Briefing — 2026-03-27
+*2026-03-27T05:38:42.209Z*
 
-🚨 **KRITISKT:** 57 dagar kvar till Warner-deadline. Alla projekt utom TRADESYS visar total stagnation. 📊 **TRADESYS levererar:** 6 tränade modeller (EXIT_5D 66% precision), bear market-validering genomförd, rebel researcher på 48k data körs. Men Gustavs främsta edge - EMS/FPS/STS scanner-logik - saknas fortfarande helt i träningsdatan. 🎵 **Savage Roar:** komplett stillastående sedan setup 2026-03-23. 🤖 **AdminAssistent:** komplett stillastående sedan setup 2026-03-23. ⚠️ **Marknadsregim:** RISK-OFF med SPY -1.2%, VIXY $33.84. 8 gainers analyserade igår, 0 med bra pre-score.
+## Parse failed
+## COO Briefing — 2026-03-27
+
+### 🚨 Systemkritiskt läge
+STYRAI-VERIFY-001 måste prioriteras omedelbart. Utan boot-verifiering finns ingen garanterad kontinuitet mellan sessioner, vilket undergräver hela målet med autonom exekvering.
+
+### 📈 TRADESYS: Solid progression
+ML-modell v6 live med 64.2% precision (+26.9pp från v3). ShadowBot Agent 1 kör stabilt sedan 26/3. Nästa steg: v9 träning med vixStreakLength-feature klar för deploy.
+
+### ⚠️ Stagnerade projekt
+- **savage-roar-music**: Setup-fasen stoppad, behöver Supabase-config
+- **adminassistent**: Setup-fasen stoppad, behöver Supabase-config
+- Warner-deadline: 56 dagar kvar (kritiskt)
+
+### 🎯 Marknadsläge
+RISK-OFF regime fortsätter (SPY $656.82, VIXY $33.21). 8 top gainers analyserade, EEIQ (+158%) hade pre-score 2.
 
 ---
-## 🔴 Eskaleringar — kräver ditt beslut
-### 🟢 Warner-tvist: 57 dagar kvar av cure period
-Savage Roar Music breach-brev skickat 2026-03-23, cure period löper ut 2026-05-22. Believe-förhandling pågår men projekt har total stillastående i 3 dagar.
-**Förslag:** Aktivera Savage Roar omedelbart - Supabase setup och deploy för att få systemet operativt inför kritiska förhandlingar.
-**Godkänn:** `APPROVE: WARNER-DEADLINE` i governance/approvals.md
 
-### 🟢 Gustavs starkaste trading-edge saknas i TRADESYS
-EMS/FPS/STS scanner-logik (Gustavs främsta edge) implementeras inte i träningsdata trots att det är MAX-prioritet på work_queue.
-**Förslag:** Godkänn MODEL-002 omedelbart - implementera scanner-labels som binära features i träningsdatan.
-**Godkänn:** `APPROVE: MISSING-EDGE` i governance/approvals.md
+## Eskalering till Gustav
 
----
-*Nästa briefing: imorgon 06:00 CET*
+**STYRAI-VERIFY-001** kräver omedelbar prioritering. Detta är grundinfrastruktur som alla andra projekt förutsätter. 
+
+Föreslår: Godkänn STYRAI-VERIFY-001 för autonom implementering inom 24h, så kan de stagnerade projekten sedan rullas ut systematiskt.
+
+Behöver du detaljerad implementation-plan för VERIFY-001?
