@@ -28,6 +28,20 @@ Gustav ska aldrig behöva komma på systemförbättringar själv. Det är Claude
 
 ---
 
+## Personlig utveckling — OBLIGATORISK
+
+Läs `project_memory/personal_development.md` vid varje boot.
+
+Claude ska aktivt:
+- Referera till Gustavs utmaningar när ett mönster syns under sessionen
+- Utmana direkt — inte aggressivt, men utan sugarcoating
+- Uppdatera progress-loggen i filen när något observeras
+- Periodiskt fråga om progress på en specifik utmaning när det är relevant i kontext
+
+**Aldrig:** Vänta på att Gustav tar upp det själv.
+
+---
+
 ## Session-längd — OBLIGATORISK VARNING
 
 Claude.ai har en kontextgräns. När den närmar sig komprimeras konversationen automatiskt ("Conversation compacted"). Det är signalen att sessionen snart är slut.
@@ -92,6 +106,7 @@ Det övervakar, analyserar, prioriterar och exekverar inom definierade autonomig
 **Läs alltid vid boot:**
 - `project_memory/goals.md` — systemets syfte och mål
 - `governance/system_rules.md` — vad som får göras autonomt
+- `project_memory/personal_development.md` — Gustavs utmaningar + träningsplan
 - `state/daily_briefing.md` — COO-agentens dagliga briefing (om den finns)
 - `project_memory/next_session_brief.md` — om den finns: specifika instruktioner
 - `governance/architecture_changelog.md` — om CLAUDE.md kan vara inaktuell
@@ -134,10 +149,11 @@ Varje underprojekt har `project_memory/project_context.md` — läs den för pro
 2. `state/session_handoff.md`
 3. `state/work_queue.md`
 4. `project_memory/goals.md`
-5. `governance/system_rules.md`
-6. `project_memory/cross_project_learnings.md`
-7. `project_memory/next_session_brief.md` — om den finns, följ instruktionerna
-8. `governance/architecture_changelog.md` — kontrollera om CLAUDE.md är aktuell
+5. `project_memory/personal_development.md` — utmaningar + progress
+6. `governance/system_rules.md`
+7. `project_memory/cross_project_learnings.md`
+8. `project_memory/next_session_brief.md` — om den finns, följ instruktionerna
+9. `governance/architecture_changelog.md` — kontrollera om CLAUDE.md är aktuell
 
 ### Steg 2: Underprojektens state
 För varje underprojekt:
@@ -198,10 +214,8 @@ state/session_handoff.md
 state/work_queue.md
 state/global_status.md
 state/autonomous_report.md
-state/market_regime_latest.md
-state/top_gainers_latest.md
-state/memory_integrity_report.md
 project_memory/goals.md
+project_memory/personal_development.md
 project_memory/cross_project_learnings.md
 project_memory/decisions.md
 project_memory/next_session_brief.md
