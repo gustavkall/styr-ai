@@ -78,7 +78,7 @@ Vid sessionslut (om något ska loggas):
 1. `log_decision` för varje strukturellt beslut
 2. `write_session` med summary, changes[], next_steps[], project_phase, energy, agent_id
 
-**API:** https://project-b786o.vercel.app/api/mcp | Bearer: se governance/secrets.md
+**API:** https://app.savageroar.se/api/mcp | Bearer: se governance/secrets.md
 
 ---
 
@@ -115,13 +115,13 @@ Varje underprojekt har `project_memory/project_context.md` — läs den för pro
 
 ## Agent-schema
 
-| Tid CET | Agent | Output |
-|---------|-------|--------|
-| 03:00 natt | autonomous-agent | `state/autonomous_report.md` |
-| 06:00 vardagar | **coo-agent** | `state/daily_briefing.md` (läs denna på morgonen) |
-| 08:00 vardagar | market-regime-agent | `tradesys1337/state/market_regime.md` |
-| 22:30 vardagar | top-gainers-agent | `tradesys1337/state/top_gainers_report.md` + case-filer |
-| 04:00 söndagar | memory-integrity-agent | `state/memory_integrity_report.md` |
+| Tid CET | Agent | Output | Status |
+|---------|-------|--------|--------|
+| 03:00 natt | autonomous-agent | `state/autonomous_report.md` | **PAUSAD** |
+| 06:00 vardagar | coo-agent | `state/daily_briefing.md` | **PAUSAD** |
+| 08:00 vardagar | market-regime-agent | `tradesys1337/state/market_regime.md` | Aktiv |
+| 22:30 vardagar | top-gainers-agent | `tradesys1337/state/top_gainers_report.md` + case-filer | Aktiv |
+| 04:00 söndagar | memory-integrity-agent | `state/memory_integrity_report.md` | Aktiv |
 
 **Secrets:** `ANTHROPIC_API_KEY`, `POLYGON_KEY`, `ALPHA_VANTAGE_KEY`
 
@@ -130,7 +130,7 @@ Varje underprojekt har `project_memory/project_context.md` — läs den för pro
 ## Session Boot Protocol (OBLIGATORISK — kör automatiskt)
 
 ### Steg 1: styr-ai state
-1. `state/daily_briefing.md` — COO-briefing (PRIMÄR — läs först)
+1. `state/daily_briefing.md` — COO-briefing (om den finns)
 2. `state/session_handoff.md`
 3. `state/work_queue.md`
 4. `project_memory/goals.md`
