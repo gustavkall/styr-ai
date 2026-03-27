@@ -102,3 +102,16 @@ Vid sessionslut (om något ska loggas):
 | STYRAI-FAS1 | Fas 1 — kärnprodukt | 2026-03-26 | ✅ MCP-server live, 8 verktyg |
 | STYRAI-FAS2 | Fas 2 — sajt, setup, dashboard, remote MCP, episodiskt minne, agent_id | 2026-03-26 | ✅ |
 | STYRAI-LASTTEST | Lasttest 8/8 | 2026-03-26 | ✅ Inga race conditions, 502ms avg |
+
+
+<!-- Auto-added 2026-03-27T03:03:24.279Z -->
+
+### SETUP-BATCH-001 — Setup-batch för stagnerade projekt
+**Priority:** HIGH
+**Project:** cross-project
+**Description:** Kör Supabase setup + deploy för savage-roar-music, min-analytiker, adminassistent samtidigt för att ta dem från scaffold till fungerande v1
+
+### TRADESYS-PROD-001 — sectorMomentum i produktion
+**Priority:** HIGH
+**Project:** tradesys1337
+**Description:** Implementera cross-ticker sectorMomentum feature för att ta v6/v8 ML-förbättringar till full produktion
