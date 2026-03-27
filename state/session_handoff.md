@@ -1,44 +1,57 @@
 # styr-ai — SESSION HANDOFF
-*Session close: 2026-03-27*
+*Session close: 2026-03-27 (session 2)*
 
 ---
 
 ## DENNA SESSION — SAMMANFATTNING
 
-### Byggt
-- STYRAI-VERIFY-001 implementerat i styrAI-product/api/mcp.js
-- `buildHealth()` — beräknar last_session_age_hours från created_at, varnar om >72h eller ingen session finns
-- `health` tillagd i svar från `read_memory` och `get_status`
-- `verified: true` + `next_boot_preview` tillagd i svar från `write_session`
-- Commit: 73778ff6 på main
+Full produktionsdag. Fyra leveranser:
+
+1. **STYRAI-VERIFY-001** — `health` i read_memory + get_status, `verified` + `next_boot_preview` i write_session. Kärnprodukten på ~98% tillförlitlighet.
+2. **STYRAI-PROTOCOL-001** — Loggningsprotokoll tillagt i alla 4 CLAUDE.md (styr-ai, styrAI-product, tradesys1337, savage-roar-music). savage-roar-music rubrik korrigerad.
+3. **Domän + deployment** — app.savageroar.se live på styrAI-product. DNS via Websupport (CNAME uppdaterad till 882fdbf935675c16.vercel-dns-017.com). Alla API-URLer uppdaterade i alla repos.
+4. **STYRAI-ONBOARD-001** — Gmail-draft skickad till anna.garmen@gmail.com (kund #1). Nyckel + setup-guide. Redo att skickas.
+5. **Agenter pausade** — coo-agent + autonomous-agent schedule kommenterade ut. market-regime + top-gainers + memory-integrity kvar aktiva.
 
 ### Beslut
-- `created_at` används för åldersberäkning (mer precis än session_date som är datumstring)
-- Warning-tröskeln satt till 72h — täcker helger utan false positives
-- `next_boot_preview` trunkeras vid 120 tecken för att hålla svaret rent
+- savageroar.se används som produktionsdomän tills vidare — inget hinder för kund #1
+- Produktnamn beslutas separat. Kandidater: Engram, Exocortex, Axon, Mnemo
+- `withengram.ai`, `useexocortex.ai`, `useaxon.ai`, `usemnemo.ai` alla tillgängliga för $160/2år
+- Remote MCP-flödet (Claude Desktop → URL) är primärt onboarding-spår, inte REST/CLAUDE.md
 
 ---
 
 ## NÄSTA SESSION — PRIORITET
 
-### 1. STYRAI-ONBOARD-001
-VERIFY-001 klar. Nästa blockerare borta. Kund #1 kan nu onboardas.
-API-nyckel: `e5a93009-8ad9-4b44-9f6f-840d9c8c32da`
-URL: https://project-b786o.vercel.app/setup
+### 1. Bekräfta kund #1
+Anna svarar → bekräfta att hon är live → samla feedback → iterera.
 
-### 2. Warner — uppföljning
-29 mars passerade utan svar. Stärker juridiskt läge. Nästa eskalering innan audit §8.3 (22 april).
+### 2. Produktnamn
+Gustav bestämmer. Kandidater klara. Domän köps → MCP-register öppnas.
 
-### 3. ShadowBot rapport
-FREDAG 22:00 CET: `cd tradesys-models && node scripts/shadowbot.js --report`
+### 3. MODEL-004
+calcBuyScore5d() + calcWaitScore5d() i tradesys-dashboard. Kör i CC.
+
+### 4. ShadowBot — IDAG 22:00 CET
+```bash
+cd tradesys-models && node scripts/shadowbot.js --report
+```
 Måndag 09:00: starta Agent 2.
 
 ---
 
-## TEKNISK STATE — styrAI-product
+## TEKNISK STATE
 
-**Live URL:** https://project-b786o.vercel.app
-**Repo:** gustavkall/styrAI-product
-**Senaste commit:** 73778ff6 — VERIFY-001
-**Endpoints:** /api/mcp · /api/mcp-server · /api/status
-**Verifiering:** health.status + health.last_session_age_hours + health.warning live
+**styrAI-product**
+- Live: https://app.savageroar.se
+- Senaste commit: VERIFY-001 + URL-uppdateringar
+- Kund #1 draft: Gmail draft ID r5404878031968918972
+
+**TRADESYS**
+- v10 GB live (69.0% BREAKOUT precision)
+- ShadowBot Agent 1 kör (PID 4310, till 22:00 idag)
+
+**Savage Roar / Warner**
+- 29 mars passerade utan svar — stärker juridiskt läge
+- Audit §8.3: 22 april
+- Cure period: 22 maj
