@@ -1,24 +1,22 @@
-# Global Status — 2026-03-27
+# Global Status — 2026-03-27 (EOD)
 
 ## styrAI-product
-**Status:** Live, redo för kunder
+**Status:** Live, kund #1 onboardad (draft skickad)
 **URL:** https://app.savageroar.se
-**Fas:** Post-Fas2, onboarding pågår
-**Kund #1:** Draft skickad (anna.garmen@gmail.com)
-**Nästa:** Bekräfta live, namnbeslut, domänköp
+**Nästa:** Bekräfta Anna live, Stripe-integration, namnbeslut
 
 ## TRADESYS
-**Status:** Produktion
+**Status:** Produktion — massiv dag
 **Modell:** v10 GB — 69.0% BREAKOUT precision
-**ShadowBot:** Agent 1 aktiv t.o.m. 22:00 idag
-**Nästa:** Rapport 22:00, Agent 2 måndag 09:00, MODEL-004
+**ShadowBot:** 6 agenter live, synkar till Supabase
+**Öppna:** Agent2 (5 pos), Agent4 (5 pos inkl AGX +37%), Agent5 (3 pos), Agent6 (5 pos)
+**Nästa:** Vänta sells → agent-rapport → catalyst-screening → Model v11
 
 ## Savage Roar Music
 **Status:** Warner-tvist aktiv
 **Kritiska datum:** Audit 22 april, Cure period 22 maj
-**Senast:** 29 mars-frist passerad utan svar — stärker juridiskt läge
 
-## Agenter
+## Agenter (styr-ai)
 | Agent | Status |
 |-------|--------|
 | coo-agent | PAUSAD |
