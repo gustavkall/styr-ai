@@ -1,5 +1,5 @@
 # styr-ai — WORK QUEUE
-*Uppdaterad: 2026-03-27 session 3 close*
+*Uppdaterad: 2026-03-27 EOD — MULTI-PROJECT + CC-SYNC blockerare tillagda*
 
 ---
 
@@ -10,58 +10,93 @@
 
 ## READY — PRIORITY ORDER
 
-### STYRAI-ONBOARD-CONFIRM-001 — Bekräfta kund #1 live
-**Priority:** MAX
+### STYRAI-MULTI-PROJECT-001 — Multi-projekt arkitektur (BLOCKERARE FÖR ANNA)
+**Priority:** MAX — GÖR DETTA FÖRST IMORGON
 **Project:** styrAI-product
-**Description:** Gmail-draft skickad till anna.garmen@gmail.com. Bekräfta att hon öppnat setup-guiden och är live. Samla initial feedback. Kund-API-nyckel: e5a93009-8ad9-4b44-9f6f-840d9c8c32da.
+**Blockerare för:** STYRAI-ONBOARD-CONFIRM-001, STYRAI-STRIPE-001
+**Problem:** Nuvarande arkitektur = 1 nyckel → 1 projekt. Om Anna har 2+ projekt blandas minnena ihop. Måste lösas INNAN Anna är live.
+**Lösning (detaljerad i project_memory/architecture/multi_project_design.md):**
+- Steg 1 (30 min): Lägg till `project_name` i Supabase projects-tabell + i CLAUDE.md-template. Kunden skapar 1 nyckel per projekt. Löser Anna direkt.
+- Steg 2 (2h — parallellt med Stripe): Bygg accounts-tabell ovanför projects. 1 konto → N nycklar → N projekt. Skalbart för all framtid.
+**Supabase migration:** Se `project_memory/architecture/multi_project_design.md`
+
+### TRADESYS-CC-SYNC-001 — CC skriver till styr-ai MCP vid handoff
+**Priority:** MAX — ANDRA SAKEN IMORGON
+**Project:** tradesys1337 / styr-ai
+**Problem:** CC jobbar i tradesys utan att styr-ai vet vad som gjorts. Idag: squeeze-features, 6 agenter, catalyst-research — inget av det syns i styr-ai förrän manuell synk.
+**Lösning:** Klistra in detta i CC nästa session:
+```
+Viktigt: Vi har ett persistent memory-problem.
+Vid varje session handoff, efter att du committat session_handoff.md,
+gör också ett extra steg:
+
+curl -X POST https://app.savageroar.se/api/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer e5a93009-8ad9-4b44-9f6f-840d9c8c32da" \
+  -d '{"tool": "write_session", "input": {
+    "summary": "[vad vi gjorde]",
+    "changes": ["..."],
+    "next_steps": ["..."],
+    "project_phase": "build",
+    "energy": "momentum",
+    "agent_id": "cc-tradesys"
+  }}'
+
+Gör detta ALLTID. Det tar 10 sekunder och säkerställer att
+styr-ai alltid vet exakt vad CC har gjort.
+```
+
+### STYRAI-ONBOARD-CONFIRM-001 — Bekräfta kund #1 live
+**Priority:** HIGH (efter MULTI-PROJECT-001)
+**Project:** styrAI-product
+**Description:** Gmail-draft skickad till anna.garmen@gmail.com. Bekräfta live EFTER multi-projekt-fix är deployad.
 
 ### STYRAI-STRIPE-001 — Stripe-integration + självbetjäning
-**Priority:** HIGH
+**Priority:** HIGH (efter MULTI-PROJECT-001)
 **Project:** styrAI-product
-**Description:** Flöde: kund betalar via Stripe → webhook skapar projekt + genererar API-nyckel i Supabase → bekräftelsemail automatiskt. Komponenter: Stripe Checkout, /api/stripe-webhook, projekt-provisioning, mail via Resend. Aktiveras när kund #1 är bekräftad stabil.
+**Description:** Flöde: kund betalar via Stripe → webhook skapar projekt + genererar API-nyckel i Supabase → bekräftelsemail automatiskt. Bygg accounts-arkitekturen (steg 2 i MULTI-PROJECT-001) parallellt med Stripe.
+
+### TRADESYS-FMP-UPGRADE — FMP Starter $29/mån
+**Priority:** HIGH
+**Project:** tradesys-models
+**Description:** Låser upp short interest + earnings surprise i squeeze-probability.js. Görs imorgon. URL: https://financialmodelingprep.com/pricing
+
+### TRADESYS-MARKETDATA-001 — Testa MarketData.app options flow
+**Priority:** HIGH
+**Project:** tradesys-models
+**Description:** Gratis 100 req/dag. GET /v1/options/chain/AGX/?token=KEY. Verifiera IV + volym/OI. Om OK → put/call ratio som squeeze-feature.
 
 ### STYRAI-NAME-001 — Besluta produktnamn
 **Priority:** HIGH
 **Project:** styrAI-product
-**Description:** Kandidater: Engram (`withengram.ai` $160), Exocortex (`useexocortex.ai` $160), Axon (`useaxon.ai` $160), Mnemo (`usemnemo.ai` $160). När namn klart: köp domän → uppdatera Vercel + alla URLer → ansök MCP-register.
+**Description:** Kandidater: Engram (`withengram.ai` $160), Exocortex (`useexocortex.ai` $160), Axon (`useaxon.ai` $160), Mnemo (`usemnemo.ai` $160).
 
 ### STYRAI-OPENAPI-001 — openapi.yaml — ChatGPT + Gemini
 **Priority:** HIGH
 **Project:** styrAI-product
-**Description:** openapi.yaml för /api/mcp med alla 8 verktyg. Öppnar GPT Actions + Gemini Extensions. Görs efter kund #1 stabil.
 
 ### STYRAI-MCP-REGISTER-001 — Ansök till Anthropics MCP-register
 **Priority:** HIGH
 **Project:** styrAI-product
-**Description:** Kräver stabil domän (blockerare). Bearer auth klart, tools/list klart.
+**Description:** Kräver stabil domän (blockerare).
 
 ### STYRAI-ROLLBACK-001 — restore_session
 **Priority:** MEDIUM
 **Project:** styrAI-product
-**Description:** Nytt MCP-verktyg. Hämtar state från specifikt session_id.
 
 ### TRADESYS-CATALYST-001 — CATALYST_WATCH-lista i dashboard
 **Priority:** HIGH
 **Project:** tradesys1337
-**Description:** Bygg screening: RSI<40 + RelVol<0.5x + drawdown>-15% + pris<$20. Baserat på catalyst-research: RSI<30 dag-1 → avg +84% gain. 84% av explosiva hade vol-spike >2x i 10-dag fönster.
+**Description:** RSI<40 + RelVol<0.5x + drawdown>-15% + pris<$20.
 
 ### TRADESYS-AGENT-REPORT-001 — ShadowBot agent-rapport
 **Priority:** HIGH
 **Project:** tradesys-models
-**Description:** Vänta tills 5-10 avslutade trades per agent. Kör rapport, jämför strategier, identifiera bästa agenten för Model v11-träning.
-
-### MODEL-004 — BUY/WAIT-ekvationer i dashboard
-**Priority:** HIGH
-**Project:** tradesys1337
+**Description:** Vänta tills 5-10 avslutade trades per agent.
 
 ### MODEL-v11 — Nästa ML-iteration
 **Priority:** MEDIUM
 **Project:** tradesys-models
-**Description:** Träna med agentdata när tillräckligt med trades samlats. Eventuellt orderbook-data som ny feature-kategori.
-
-### SETUP-BATCH-001 — Setup-batch stagnerade projekt
-**Priority:** MEDIUM
-**Project:** cross-project
 
 ### ADMINASSISTENT-001 — Bygg EA-system
 **Priority:** LOW
@@ -93,3 +128,4 @@
 | TRADESYS-SHADOWBOT-6 | 6 ShadowBot-agenter live + Supabase-sync | 2026-03-27 | ✅ Alla 6 aktiva |
 | TRADESYS-AGENTS-TAB | AGENTS-tab i dashboard med live P&L | 2026-03-27 | ✅ Live |
 | TRADESYS-CATALYST | catalyst-researcher.js + 74 cases | 2026-03-27 | ✅ RSI<30 → avg +84% |
+| TRADESYS-SQUEEZE | squeeze-probability.js + 🔥 i dashboard | 2026-03-27 | ✅ Polygon float+earnings live, short interest väntar FMP |
