@@ -1,1 +1,1 @@
-Kritisk systemgap: TRADESYS har tränade modeller men systemet opererar utan Gustavs starkaste edge (EMS/FPS/STS-logik). Tre projekt väntar på deployment, min-analytiker sammanslaget men inte implementerat.
+CRITICAL SYSTEM FOUNDATIONS MISSING: Boot-verifiering saknas för tillförlitlig handoff mellan sessioner, vilket är basalt för autonom exekvering. Tre projekt stagnerade på initial setup utan clear next action. TRADESYS produktiv med ML v6 live men fortsatt utveckling blockerad av cross-ticker features.
