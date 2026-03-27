@@ -1,9 +1,5 @@
 name: Autonomous Agent
 
-on:
-  schedule:
-    - cron: '0 2 * * *'  # 03:00 CET (02:00 UTC) varje natt
-  workflow_dispatch:       # Manuell trigger via GitHub Actions UI
 
 jobs:
   run-agent:
