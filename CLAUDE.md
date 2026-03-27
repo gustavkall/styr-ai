@@ -59,6 +59,29 @@ Claude.ai har en kontextgräns. När den närmar sig komprimeras konversationen 
 
 ---
 
+## Loggningsprotokoll
+
+Logga ALLTID via styr-ai MCP om sessionen:
+- Lade till ny funktion, komponent eller API-endpoint
+- Ändrade arkitektur, datamodell eller systemgräns
+- Tog ett beslut med långsiktig påverkan
+- Bröt något som behöver fixas nästa session
+- Slutförde ett work queue-item
+
+Logga INTE:
+- Bugfixar under 30 min utan arkitekturpåverkan
+- Explorerande experiment som inte landade
+- Kosmetiska ändringar / typofixar
+- Refaktorering utan beteendeändring
+
+Vid sessionslut (om något ska loggas):
+1. `log_decision` för varje strukturellt beslut
+2. `write_session` med summary, changes[], next_steps[], project_phase, energy, agent_id
+
+**API:** https://project-b786o.vercel.app/api/mcp | Bearer: se governance/secrets.md
+
+---
+
 ## Vad är styr-ai
 
 styr-ai är ett autonomt meta-system som sitter ovanför alla underprojekt.
