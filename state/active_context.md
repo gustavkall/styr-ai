@@ -1,46 +1,33 @@
 # active_context.md — Delat whiteboard CC ↔ Claude.ai
 *Uppdateras av Claude.ai vid varje beslut. Läses av CC vid boot och vid `sync`.*
-*Senast uppdaterad: 2026-03-28 EOD av Claude.ai*
+*Senast uppdaterad: 2026-03-28*
 
 ---
 
-## NÄSTA SESSION — PRIORITETSORDNING
+## ENGRAMS TODO — MASTER LISTA
+*Fullständig lista: `state/engrams_todo.md`*
 
-1. **ENGRAMS-MULTI-PROJECT-001** — SQL migration i Supabase (blockerare för Anna + Stripe)
-   - Steg 1: `ALTER TABLE projects ADD COLUMN project_name TEXT`
-   - Se `project_memory/architecture/multi_project_design.md`
-   - Anna-draft Gmail ID: r5404878031968918972 — SKICKA EJ förrän klar
+| # | Task | Status |
+|---|------|--------|
+| 1 | MULTI-PROJECT-001 — SQL-schema i Supabase | ⬜ EJ KLAR |
+| 2 | ONBOARD-001 — Mail till Anna | ⬜ väntar på #1 |
+| 3 | STRIPE-001 — Betalning → nyckel automatiskt | ⬜ väntar på #1 |
+| 4 | MCP-CONNECTOR-001 — Officiell Claude Connector | ⬜ EJ KLAR |
+| 5 | OPENAPI-001 — ChatGPT + Gemini spec | ⬜ väntar på #4 |
+| 6 | PRICING-001 — Prissektion på sajten | ⬜ väntar på #3 |
+| 7 | DASHBOARD-001 — Kund-dashboard | ⬜ EJ KLAR |
 
-2. **ENGRAMS-ONBOARD-001** — Skicka mail till Anna (efter #1)
-
-3. **ENGRAMS-STRIPE-001** — Självbetjäning, betalning → nyckel automatiskt
-
-4. **ENGRAMS-MCP-CONNECTOR-001** — Officiell Claude Connector
-   - openapi.yaml → engrams.app/api/mcp-server → Anthropic MCP-register
-
-5. **TRADESYS-SECTOR-HOT-001** — Expandera Defense/Financials watchlist
-   - Agent 4+6 behöver omstart med ny kod
-
-6. **TRADESYS-FMP-001** — FMP Starter $29/mån (short interest live)
-
----
-
-## ENGRAMS — NULÄGE
-
-- Live: https://engrams.app
-- Repo: gustavkall/engrams
-- Stack: Static HTML + Vercel serverless + Supabase (styr-ai projekt)
-- Waitlist aktiv, formulär live
-- MCP-server: https://app.savageroar.se/api/mcp-server (ska flyttas till engrams.app)
+**Nästa att köra: #1 — SQL-schema (30 min, blockerare för allt)**
 
 ---
 
 ## TRADESYS — NULÄGE
 
-- Agent 4: SECTOR_HOT (ny strategi, 71.8% WR) — behöver omstart
-- Agent 6: SC_TREND (ny strategi, 62.6% WR) — behöver omstart
+- Agent 4: SECTOR_HOT (71.8% WR) — behöver omstart med ny kod
+- Agent 6: SC_TREND (62.6% WR) — behöver omstart med ny kod
 - ML v10 + bugfix live (BUY_BREAKOUT 68.8%)
 - Marknadsregim: RISK-OFF
+- squeeze-probability.js väntar på FMP $29/mån
 
 **Öppna positioner:**
 - Agent2: STRL, ETN, CAT, EME, PWR
@@ -52,11 +39,10 @@
 
 ## SAVAGE ROAR / WARNER
 
-- Frist 29 mars passerar IMORGON — inget formellt svar
-- Stärkt juridiskt läge ju längre de dröjer
-- Audit §8.3: 22 april (25 dagar)
+- Frist 29 mars passerade — inget formellt svar från Warner
+- Stärkt juridiskt läge
+- Audit §8.3: 22 april
 - Minimum settlement: 200k SEK
-- Jennie Runnedahl: jennie.runnedahl@warnermusic.com
 
 ---
 
