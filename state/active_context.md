@@ -1,5 +1,5 @@
 # active_context.md — Delat whiteboard CC ↔ Claude.ai
-*Uppdaterad: 2026-03-28 FINAL*
+*Uppdaterad: 2026-03-28 FINAL EOD*
 
 ---
 
@@ -20,14 +20,23 @@
 | 11 | ENGRAMS-TEAM-001 (V2) | ⬜ planerad |
 | 12 | CC-SUPABASE-MCP-001 | ⬜ 2 min, Gustav kör |
 
-**NÄSTA: Gustav lägger till env vars i Vercel, sedan #3 + #8**
+**NÄSTA: Gustav lägger till env vars i Vercel → Claude kör #3 + #8**
 
 ---
 
-## STYRNING (nytt idag)
+## TRADESYS — KRITISKT IMORGON
 
-- GOVERNANCE.md live — grundlagar alla projekt följer
-- PROJECT.md i alla 6 repos — projektidentitet + regler
+**TRAINER-COST-001** — agent-trainer.js anropar Anthropic API under träning och äter credits.
+CC ska lösa detta FÖRST nästa session. Se tradesys1337/state/work_queue.md.
+
+**Agent 4 + 6** — SECTOR_HOT + SC_TREND behöver omstart med ny kod.
+
+---
+
+## STYRNING
+
+- GOVERNANCE.md live — grundlagar alla projekt följer (en ändring = gäller alla)
+- PROJECT.md i alla 6 repos — projektidentitet, Supabase-ref, regler
 - system_projects-tabell i Supabase — alla projekt registrerade
 - Boot Steg 0: hämta GOVERNANCE.md + PROJECT.md före allt annat
 
@@ -35,9 +44,10 @@
 
 ## TEKNISK STATE
 
-**Engrams:** engrams.app live. lib/ + api/ kod klar. Saknar env vars i Vercel.
-**TRADESYS:** Agent 4+6 behöver omstart. FMP $29/mån väntar.
-**Warner:** Frist passerade, inget svar. Audit 22/4. Cure 22/5.
+**Engrams:** engrams.app live. lib/ + api/ kod klar.
+**Saknas i Vercel (engrams):** OPENAI_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY
+
+**Warner:** Frist 29/3 passerade utan svar. Audit 22/4 (25 dagar). Cure 22/5. Min 200k SEK.
 
 ---
 
