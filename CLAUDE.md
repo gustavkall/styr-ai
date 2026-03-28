@@ -133,33 +133,45 @@ KRÄVER GUSTAVS UPPMÄRKSAMHET: [om något finns]
 
 ---
 
-## ENGRAMS TODO — REGLER (gäller boot, sync och handoff)
+## ENGRAMS TODO — REGLER
 
-### När ska en task LÄGGAS TILL i engrams_todo.md?
+### Triggrar för att LÄGGA TILL en task
 
-Lägg till när **något av dessa är sant**:
-- Gustav godkänner något som ska byggas ("ja", "kör", "gör det")
-- En blockerare eller dependency identifieras som påverkar befintlig task
-- En ny feature, integration eller infrastruktur-komponent beslutas
-- En uppföljning krävs efter ett beslut (t.ex. "testa X", "verifiera Y")
+**Lägg till direkt (ingen fråga behövs) när:**
+- Gustav explicit godkänner något: "ja", "kör", "gör det", "godkänt"
+- En task slutförs och en naturlig uppföljningstask uppstår
+- En blockerare identifieras som kräver separat åtgärd
 
-Lägg **INTE** till vid:
-- Lösa idéer som diskuteras men inte godkänts
-- Implementation-detaljer som ryms inom en befintlig task
+**Använd opt-out-modellen när Claude identifierar en möjlig task:**
+Claude lägger INTE till utan synlighet. Istället — i slutet av svaret där det är relevant:
+
+> `→ Todo-förslag: [ID] — [beskrivning]. Lägger till i listan om du inte invänder.`
+
+Om Gustav inte invänder i nästa meddelande = godkänt. Claude lägger till direkt.
+Om Gustav skriver "nej", "skippa", "inte nu" = läggs inte till.
+
+**Lägg ALDRIG till utan synlighet:**
+- Lösa idéer som diskuteras men inte beslutats
+- Implementation-detaljer inom befintlig task
 - Hypotetiska scenarion
 
-### När ska status uppdateras?
+### Triggrar för att UPPDATERA status
 
-- **Direkt** när en task slutförs — vänta inte till handoff
-- **Direkt** när en task blockeras eller scopet ändras
-- ⬜ = ej klar, 🔄 = pågår/blockerad, ✅ = klar
+Uppdatera **direkt** (inte vid handoff) när:
+- En task slutförs under sessionen → ⬜ → ✅
+- En task blockeras → ⬜ → 🔄 med notering
+- Scopet på en task ändras
 
-### Vem ansvarar?
+### Statusflaggor
+- ⬜ = ej klar
+- 🔄 = pågår eller blockerad (lägg till kort notering)
+- ✅ = klar
 
-- **Boot:** Läser listan, presenterar den, påminner om nästa ⬜-task
-- **Under session:** Uppdaterar direkt när task läggs till eller slutförs
-- **Sync:** Speglar aktuell lista i active_context.md omedelbart
-- **Handoff:** Verifierar att listan är korrekt, committar
+### Ansvar per protokoll
+- **Boot:** Läser listan, presenterar den exakt, påminner om nästa ⬜-task
+- **Under session:** Opt-out-förslag när relevant, uppdaterar direkt vid slutförd task
+- **Sync:** Speglar aktuell lista i active_context.md omedelbart vid förändring
+- **Handoff:** Verifierar att listan är komplett och korrekt, committar
 
 ---
 
@@ -169,7 +181,7 @@ Lägg **INTE** till vid:
 
 Uppdatera `state/active_context.md` **direkt** när:
 - Gustav godkänner ett beslut eller plan
-- En Engrams todo-task ändrar status
+- En Engrams todo-task ändrar status (inkl opt-out-godkännanden)
 - En prioritet ändras
 - Teknisk state förändras
 
@@ -193,8 +205,6 @@ Uppdatera `state/active_context.md` **direkt** när:
 alias sync='curl -s https://raw.githubusercontent.com/gustavkall/styr-ai/main/state/active_context.md'
 ```
 
-> Sync är realtidsverktyg — CC kör det mitt i session för att se vad Claude.ai beslutat.
-
 ---
 
 ## ═══════════════════════════════════════════
@@ -211,7 +221,7 @@ Uppdaterad prioritetsordning.
 
 ### 3. `state/engrams_todo.md` — KRITISK
 - Varje slutförd task: ⬜ → ✅, flytta till KLART-tabell med datum
-- Varje ny godkänd task: lägg till med ⬜
+- Varje opt-out-godkänd task som inte redan lagts till: lägg till nu
 - Verifiera att listan är komplett och korrekt innan commit
 
 ### 4. `project_memory/decisions.md`
