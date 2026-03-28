@@ -1,83 +1,62 @@
 # active_context.md — Delat whiteboard CC ↔ Claude.ai
 *Uppdateras av Claude.ai vid varje beslut. Läses av CC vid boot och vid `sync`.*
-*Senast uppdaterad: 2026-03-28 av Claude.ai*
+*Senast uppdaterad: 2026-03-28 EOD av Claude.ai*
 
 ---
 
-## NULÄGE — 2026-03-28
+## NÄSTA SESSION — PRIORITETSORDNING
 
-### Gjort denna session
-- CC↔Claude.ai bidirektionellt sync-protokoll byggt och live
-- `state/active_context.md` + `state/cc_session_log.md` skapade
-- CLAUDE.md uppdaterad i styr-ai + tradesys1337 med sync-protokoll
-- **Engrams** — produktnamn beslutat, domän engrams.app köpt (180 kr)
-- `gustavkall/engrams` repo skapat, landningssida + waitlist-API pushat
-- Vercel + DNS live, waitlist-tabell i styr-ai Supabase-projekt
+1. **ENGRAMS-MULTI-PROJECT-001** — SQL migration i Supabase (blockerare för Anna + Stripe)
+   - Steg 1: `ALTER TABLE projects ADD COLUMN project_name TEXT`
+   - Se `project_memory/architecture/multi_project_design.md`
+   - Anna-draft Gmail ID: r5404878031968918972 — SKICKA EJ förrän klar
 
-### Öppna uppgifter kvar idag
-- MULTI-PROJECT-001 — SQL migration i Supabase (blockerare för Anna + Stripe)
-- FMP Starter $29/mån — låser upp short interest
-- Warner-frist 29 mars imorgon — inga fler åtgärder beslutade
+2. **ENGRAMS-ONBOARD-001** — Skicka mail till Anna (efter #1)
+
+3. **ENGRAMS-STRIPE-001** — Självbetjäning, betalning → nyckel automatiskt
+
+4. **ENGRAMS-MCP-CONNECTOR-001** — Officiell Claude Connector
+   - openapi.yaml → engrams.app/api/mcp-server → Anthropic MCP-register
+
+5. **TRADESYS-SECTOR-HOT-001** — Expandera Defense/Financials watchlist
+   - Agent 4+6 behöver omstart med ny kod
+
+6. **TRADESYS-FMP-001** — FMP Starter $29/mån (short interest live)
 
 ---
 
 ## ENGRAMS — NULÄGE
 
-- **Produkt:** AI memory for founders
-- **Live:** https://engrams.app
-- **Repo:** gustavkall/engrams
-- **Supabase:** styr-ai projektet (hxikaojzwjtztyuwlxra) — waitlist-tabell
-- **Stack:** Static HTML + Vercel serverless API
-- **Status:** Landningssida live, waitlist aktiv
-- **Nästa:** MULTI-PROJECT-001 → Anna onboarding → Stripe → MCP-register
+- Live: https://engrams.app
+- Repo: gustavkall/engrams
+- Stack: Static HTML + Vercel serverless + Supabase (styr-ai projekt)
+- Waitlist aktiv, formulär live
+- MCP-server: https://app.savageroar.se/api/mcp-server (ska flyttas till engrams.app)
 
 ---
 
-## PRIO-ORDNING NÄSTA STEG
+## TRADESYS — NULÄGE
 
-1. **MULTI-PROJECT-001** — SQL migration i Supabase (blockerare för Anna + Stripe)
-   - Se `project_memory/architecture/multi_project_design.md` i styr-ai
-   - Anna-draft i Gmail (ID: r5404878031968918972) — SKICKA EJ förrän klar
-
-2. **ENGRAMS-STRIPE-001** — Stripe-integration, självbetjäning
-
-3. **ENGRAMS-MCP-REGISTER** — Ansök till Anthropics MCP-register (kräver stabil domän ✅)
-
-4. **FMP Starter $29/mån** — https://financialmodelingprep.com/pricing
-
----
-
-## TRADESYS — AKTIVT NULÄGE
-
-- ML-modell v10 live, 69% BREAKOUT precision
-- 6 ShadowBot-agenter aktiva
-- squeeze-probability.js live (short interest väntar FMP)
-- Marknadsregim: RISK-OFF (SPY $656.82, VIXY $33.21)
+- Agent 4: SECTOR_HOT (ny strategi, 71.8% WR) — behöver omstart
+- Agent 6: SC_TREND (ny strategi, 62.6% WR) — behöver omstart
+- ML v10 + bugfix live (BUY_BREAKOUT 68.8%)
+- Marknadsregim: RISK-OFF
 
 **Öppna positioner:**
 - Agent2: STRL, ETN, CAT, EME, PWR
-- Agent4: OXY, AGX, STRL, ETN, CAT (AGX inne @ $541)
+- Agent4: OXY, AGX, STRL, ETN, CAT
 - Agent5: ETN, PWR, EME
 - Agent6: COIN, NOC, RTX, HII, LMT
 
 ---
 
-## SAVAGE ROAR / WARNER — KRITISKT
+## SAVAGE ROAR / WARNER
 
-- Frist 29 mars passerar IMORGON utan formellt svar
-- Mattias uppskattning 60k SEK — avvisat, minimum 200k SEK
-- Audit §8.3 startar 22 april (25 dagar)
-- Jennie Runnedahl = primär juridisk kontakt (jennie.runnedahl@warnermusic.com)
-- Believe-förhandling blockerad av Warner-processen
-
----
-
-## STYRAI-PRODUCT (nu: Engrams)
-
-- MCP-server live: https://app.savageroar.se/api/mcp
-- Bearer: e5a93009-8ad9-4b44-9f6f-840d9c8c32da
-- VERIFY-001 ✅, PROTOCOL-001 ✅, DOMAIN-001 ✅
-- MULTI-PROJECT-001 = nästa blockerare
+- Frist 29 mars passerar IMORGON — inget formellt svar
+- Stärkt juridiskt läge ju längre de dröjer
+- Audit §8.3: 22 april (25 dagar)
+- Minimum settlement: 200k SEK
+- Jennie Runnedahl: jennie.runnedahl@warnermusic.com
 
 ---
 

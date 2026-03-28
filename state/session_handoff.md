@@ -1,81 +1,65 @@
 # styr-ai — SESSION HANDOFF
-*Session close: 2026-03-27 FINAL EOD*
+*Session close: 2026-03-28*
 
 ---
 
 ## DENNA SESSION — SAMMANFATTNING
 
 ### Claude.ai
-1. VERIFY-001, PROTOCOL-001, DOMAIN-001, AGENT-PAUSE-001, ONBOARD-001, STRIPE-001 (queue)
-2. Namnbrainstorm — Engram, Exocortex, Axon, Mnemo
-3. Personlig utvecklingsfil skapad + boot-protokoll
-4. Glidningsanalys — identifierat två minnessystem i tradesys som inte synkar
-5. MULTI-PROJECT-001 + CC-SYNC-001 designade och sparade
-
-### Claude Code (tradesys)
-1. 6 ShadowBot-agenter live (BREAKOUT, VIX_SWING, RS_MOMENTUM, VIX_STREAK, SECTOR_CONTAGION, CONTRARIAN)
-2. Supabase-sync daemon live
-3. AGENTS-tab med live P&L i dashboard
-4. catalyst-researcher.js — 74 cases, RSI<30 → avg +84% gain
-5. squeeze-probability.js — float + earnings via Polygon live, short interest väntar FMP
-6. fetchShortInterest + calcSqueezeScore + 🔥-marker i watchlist deployad
-7. Options flow research klar — rekommendation: MarketData.app $30/mån
-8. auto-memory uppdaterad i CC
+1. **CC↔Claude.ai bidirektionellt sync byggt** — `state/active_context.md` + `state/cc_session_log.md` live. CLAUDE.md uppdaterad i styr-ai + tradesys1337. Alias `sync` för CC.
+2. **Engrams** — produktnamn beslutat, engrams.app köpt (180 kr), landningssida live på Vercel, waitlist-API mot styr-ai Supabase.
+3. **Work queue omstrukturerad** — Engrams-projekt tillagt med korrekt prioritetsordning.
+4. **CC-session (tradesys-models)** — Agent 4+6 redesign: SECTOR_HOT 71.8% WR, SC_TREND 62.6% WR. agent-trainer.js leaf node bugfix +11.4pp. Trailing stop implementerat.
 
 ---
 
-## IMORGON — EXAKT ORDNING
+## NÄSTA SESSION — EXAKT ORDNING
 
-### 1. MULTI-PROJECT-001 — GÖR DETTA ABSOLUT FÖRST
+### 1. ENGRAMS-MULTI-PROJECT-001 — GÖR DETTA ABSOLUT FÖRST
 Se `project_memory/architecture/multi_project_design.md`
-- Steg 1 SQL i Supabase (5 min) → Anna kan onboardas
-- Steg 2 parallellt med Stripe (2h)
+- Steg 1: SQL migration i Supabase — lägg till `project_name` i projects-tabell
+- Steg 2: accounts-tabell ovanför projects (1 konto → N projekt)
 Anna får INTE onboardas förrän Steg 1 är klar.
 
-### 2. CC-SYNC — klistra in i CC
-```
-curl -X POST https://app.savageroar.se/api/mcp \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer e5a93009-8ad9-4b44-9f6f-840d9c8c32da" \
-  -d '{"tool": "write_session", "input": {
-    "summary": "[vad vi gjorde]",
-    "changes": ["..."],
-    "next_steps": ["..."],
-    "project_phase": "build",
-    "energy": "momentum",
-    "agent_id": "cc-tradesys"
-  }}'
-```
+### 2. ENGRAMS-ONBOARD-001 — Skicka mail till Anna
+Gmail draft ID: r5404878031968918972
 
-### 3. FMP Starter uppgradera ($29/mån)
+### 3. ENGRAMS-STRIPE-001 — Betalning → nyckel automatiskt
+Bygg parallellt med MULTI-PROJECT Steg 2.
+
+### 4. ENGRAMS-MCP-CONNECTOR-001 — Officiell Claude Connector
+- Skriv openapi.yaml
+- Flytta MCP-server till engrams.app/api/mcp-server
+- Ansök till Anthropics MCP-register
+
+### 5. TRADESYS-SECTOR-HOT-001 — Expandera watchlist
+Defense + Financials, 8-10 tickers per sektor → 60-80 trades/år
+
+### 6. TRADESYS-FMP-001 — FMP Starter $29/mån
 https://financialmodelingprep.com/pricing
-Sedna: node scripts/squeeze-probability.js --watchlist
-
-### 4. MarketData.app testa gratis
-https://marketdata.app — 100 req/dag gratis
-GET /v1/options/chain/AGX/?token=KEY
-
-### 5. STYRAI-STRIPE-001
-Bygg parallellt med MULTI-PROJECT Steg 2
 
 ---
 
 ## TEKNISK STATE
 
-**styrAI-product**
-- Live: https://app.savageroar.se
-- Anna draft: Gmail ID r5404878031968918972 — SKICKA INTE förrän MULTI-PROJECT-001 klar
+**Engrams**
+- Live: https://engrams.app
+- Repo: gustavkall/engrams
+- Supabase: styr-ai projektet (hxikaojzwjtztyuwlxra) — waitlist-tabell
+- MCP-server (gammal domän): https://app.savageroar.se/api/mcp-server
+- Bearer: e5a93009-8ad9-4b44-9f6f-840d9c8c32da
 
 **TRADESYS**
-- v10 GB live (69.0% BREAKOUT)
-- 6 ShadowBot-agenter aktiva
+- Agent 4: SECTOR_HOT (ny) — behöver omstart med ny kod
+- Agent 6: SC_TREND (ny) — behöver omstart med ny kod
+- ML v10 live (69.0% BREAKOUT, BUY_BREAKOUT nu 68.8% efter bugfix)
 - squeeze-probability.js live (short interest väntar FMP)
-- AGENTS-tab live
-- AGX: Agent4 inne @ $541 (+37% idag)
 
 **Savage Roar / Warner**
-- Audit §8.3: 22 april
+- Frist 29 mars — IMORGON, inget formellt svar ännu
+- Audit §8.3: 22 april (25 dagar)
 - Cure period: 22 maj
+- Minimum settlement: 200k SEK
 
 **Öppna positioner:**
 - Agent2: STRL, ETN, CAT, EME, PWR
