@@ -21,44 +21,61 @@
 **Why:** Juridiska förhandlingar kräver personlig bedömning.
 **Impact:** COO ska inte eskalera WARNER-DEADLINE framöver.
 
-### 2026-03-26 — MODEL-002 och MODEL-003 bekräftat byggda
-**Context:** COO flaggade EMS/FPS/STS och EPS surprise som saknade.
-**Decision:** Gustav bekräftar att båda är implementerade.
-**Why:** State-filer reflekterade inte faktiskt läge.
-**Impact:** Båda markerade completed. MODEL-004 är nästa steg.
-
 ### 2026-03-26 — styrAI-product arkitektur
 **Context:** Behövde bestämma arkitektur för persistent memory-produkten.
-**Decision:** MCP-server (Vercel) + Supabase PostgreSQL + pgvector + OpenAI embeddings. Managed hosting hos Gustav.
-**Why:** MCP är rätt leveransmekanism. Managed ger zero friktion för kund. pgvector i Supabase eliminerar separat vektordatabas.
+**Decision:** MCP-server (Vercel) + Supabase PostgreSQL + pgvector + OpenAI embeddings.
+**Why:** MCP är rätt leveransmekanism. Managed ger zero friktion. pgvector eliminerar separat vektordatabas.
 **Impact:** Fas 1 byggd och live samma dag. COGS <$1/mån per kund.
 
 ### 2026-03-26 — Separata repos för meta-system och produkt
-**Context:** styr-ai repot används som meta-system med state-filer och agenter.
-**Decision:** styrAI-product är separat repo — deployas på Vercel. styr-ai förblir internt.
-**Why:** Separation of concerns. Produktkod ska inte blandas med state-filer.
-**Impact:** Ren arkitektur. Vercel deployar styrAI-product, inte styr-ai.
+**Decision:** styrAI-product (nu: engrams) är separat repo från styr-ai.
+**Impact:** Ren arkitektur. Vercel deployar engrams, inte styr-ai.
 
 ### 2026-03-28 — Produktnamn: Engrams
-**Context:** styrAI-product behövde ett produktnamn för publik lansering.
-**Decision:** Engrams. Domän: engrams.app (180 kr/år, köpt 2026-03-28).
-**Why:** Engram = etablerat vetenskapligt begrepp (minnesspår i hjärnan). Korrekt plural i litteraturen. .app-domän signalerar produkt. Starkare än alternativ (Axon, Mnemo, Exocortex).
-**Impact:** Repo gustavkall/engrams skapad. Landningssida + waitlist live samma dag.
+**Decision:** Engrams. Domän: engrams.app (180 kr/år).
+**Why:** Engram = vetenskapligt begrepp för minnessspår i hjärnan. Exakt vad vi bygger digitalt.
+**Impact:** Landningssida + waitlist + docs live samma dag.
 
-### 2026-03-28 — Engrams arkitektur: Database-only (default)
-**Context:** Designfråga — ska kunder behöva ett eget GitHub-repo, eller ska allt leva i Engrams databas?
-**Decision:** Database-only som default. Hybrid (repo + Engrams) som enterprise-option senare.
-**Why:** Konsumenter vill inte hantera repos. De vill att AI:n minns. Repo-krav är onboarding-friktion. Database-only = kund betalar → får API-nyckel → klistrar in i Claude → klar. Engrams skriver ALDRIG till kundens repo eller databas.
-**Impact:** Onboarding-plan designad. SQL-schema klart (accounts + projects + sessions + decisions). Stripe → webhook → API-nyckel → mail är hela flödet.
+### 2026-03-28 — Database-only arkitektur
+**Decision:** Kunder behöver inget eget repo. Allt i Engrams Supabase, isolerat per API-nyckel.
+**Why:** Noll onboarding-friktion. Kund betalar → nyckel → klistrar in → klar.
+**Impact:** SQL-schema designat och kört. accounts/projects/memory_items live.
+
+### 2026-03-28 — Fyra minnestyper (Engram-inspirerat)
+**Decision:** profile (permanent/alltid), context (projekt/aktivt), learning (semantisk sökning), episode (session/alltid).
+**Why:** Direkt parallell med hjärnans minnessystem — hippocampus, cortex, cerebellum, amygdala. Lazy loading per typ.
+**Impact:** memory_items-tabell med pgvector 1536-dim live. Semantic search via ivfflat-index.
 
 ### 2026-03-28 — CC↔Claude.ai bidirektionellt sync
-**Context:** CC och Claude.ai jobbade i separata silos utan delat minne.
-**Decision:** state/active_context.md (Claude.ai skriver) + state/cc_session_log.md (CC skriver). Alias `sync` i CC.
-**Why:** Varje CC-session startade blank. Beslut tagna i Claude.ai var osynliga för CC och vice versa.
-**Impact:** CLAUDE.md uppdaterad i styr-ai + tradesys1337. Steg 0 i CC boot-protokoll.
+**Decision:** active_context.md (Claude.ai skriver) + cc_session_log.md (CC skriver). Alias `sync`.
+**Impact:** Alla sessioner delar samma whiteboard. Ingen silos.
 
-### 2026-03-28 — Handoff och sync ska skriva till decisions + learnings
-**Context:** Viktiga beslut och resonemang (t.ex. database-only-arkitekturen, marknadsanalysen) fångades inte i state-filer vid handoff.
-**Decision:** Session handoff och sync ska ALLTID uppdatera decisions.md och cross_project_learnings.md om något substantiellt beslutats eller lärts under sessionen. Inte bara session_handoff.md och work_queue.md.
-**Why:** Boot-protokollet läser decisions.md och learnings.md. Om de inte uppdateras tappar nästa session kritiskt resonemang.
-**Impact:** CLAUDE.md uppdaterad med explicit instruktion. Gäller även CC via cc_session_log.md.
+### 2026-03-28 — COMMANDS.md — central kommandoreferens
+**Decision:** COMMANDS.md i styr-ai repo = enda källan för alla kommandon. Läses vid boot.
+**Why:** Gustav ska aldrig behöva förklara ett kommando två gånger.
+**Impact:** `session boot [projekt]`, `todo`, `sync` etc dokumenterade. Alla repos uppdaterade.
+
+### 2026-03-28 — Supabase MCP kör SQL autonomt
+**Decision:** Claude använder Supabase MCP direkt för migrations och queries — frågar inte Gustav.
+**Why:** Eliminerar manuellt arbete. Gustav behöver inte öppna SQL Editor.
+**Impact:** #1 SQL-schema kört autonomt. För CC: koppla via claude mcp add.
+
+### 2026-03-28 — `session boot [projekt]` — projektspecifik boot
+**Decision:** Boot kan ta ett projektnamn som argument för fokuserad session.
+**Why:** Minskar brus vid projektspecifikt arbete. Gustav behöver inte filtrera all info.
+**Impact:** COMMANDS.md uppdaterad med tabell över alla projekt + format.
+
+### 2026-03-28 — Opt-out todo-modell
+**Decision:** Claude föreslår tasks med `→ Todo-förslag: [beskr]. Lägger till om du inte invänder.`
+**Why:** Ingen friktion. Gustav godkänner implicit. Listan kladdar inte till.
+**Impact:** CLAUDE.md uppdaterad med triggrar för när tasks läggs till/uppdateras.
+
+### 2026-03-28 — Engrams är Styr.AI:s produkt (tills vidare)
+**Decision:** Engrams delar Styr.AI Supabase-projekt tills Gustav köper Supabase Pro.
+**Why:** Free-tier tillåter inte fler projekt.
+**Impact:** När Pro köps: skapa dedikerat projekt, kör migrations, uppdatera project_id i COMMANDS.md och engrams/CLAUDE.md.
+
+### 2026-03-28 — V1 för Anna, V2 för team
+**Decision:** Bygg och validera V1 (Anna, singel-user) först. V2 (team, enterprise) byggs när V1 funkar.
+**Why:** Om det inte funkar för Anna funkar det inte för enterprise.
+**Impact:** engrams_todo strukturerad i V1/V2-sektioner.

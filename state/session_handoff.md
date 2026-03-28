@@ -1,68 +1,81 @@
 # styr-ai — SESSION HANDOFF
-*Session close: 2026-03-28*
+*Session close: 2026-03-28 EOD*
 
 ---
 
 ## DENNA SESSION — SAMMANFATTNING
 
-### Claude.ai
-1. **CC↔Claude.ai bidirektionellt sync byggt** — `state/active_context.md` + `state/cc_session_log.md` live. CLAUDE.md uppdaterad i styr-ai + tradesys1337. Alias `sync` för CC.
-2. **Engrams** — produktnamn beslutat, engrams.app köpt (180 kr), landningssida live på Vercel, waitlist-API mot styr-ai Supabase.
-3. **Work queue omstrukturerad** — Engrams-projekt tillagt med korrekt prioritetsordning.
-4. **CC-session (tradesys-models)** — Agent 4+6 redesign: SECTOR_HOT 71.8% WR, SC_TREND 62.6% WR. agent-trainer.js leaf node bugfix +11.4pp. Trailing stop implementerat.
+### Byggt
+1. **CC↔Claude.ai bidirektionellt sync** — active_context.md + cc_session_log.md live
+2. **Engrams** — namn beslutat, engrams.app live, landningssida + waitlist + docs
+3. **SQL-schema i Supabase** — kört via Supabase MCP (accounts, projects, engrams_sessions, engrams_decisions, memory_items med pgvector, waitlist)
+4. **Memory-arkitektur designad** — fyra minnestyper, lazy loading, semantisk sökning
+5. **COMMANDS.md** — alla kommandon + `session boot [projekt]` + MCP-autonomi-regel
+6. **Alla underprojekts CLAUDE.md uppdaterade** — savage-roar, adminassistent, engrams, tradesys1337
+7. **engrams_todo.md** — master todo-lista skapad, #1 klar, #2-#12 dokumenterade
+8. **Opt-out todo-modell** — Claude föreslår tasks med `→ Todo-förslag`, Gustav behöver inte svara
+9. **Engrams/Anna-produktdesign** — fyra minnestyper parallell med hjärnans minnessystem (Wikipedia Engram)
+
+### CC (tradesys-models)
+- Agent 4: SECTOR_HOT (ny strategi, 71.8% WR)
+- Agent 6: SC_TREND (ny strategi, 62.6% WR)
+- agent-trainer.js leaf node bugfix (+11.4pp precision)
+- Trailing stop implementerat
 
 ---
 
 ## NÄSTA SESSION — EXAKT ORDNING
 
-### 1. ENGRAMS-MULTI-PROJECT-001 — GÖR DETTA ABSOLUT FÖRST
-Se `project_memory/architecture/multi_project_design.md`
-- Steg 1: SQL migration i Supabase — lägg till `project_name` i projects-tabell
-- Steg 2: accounts-tabell ovanför projects (1 konto → N projekt)
-Anna får INTE onboardas förrän Steg 1 är klar.
+Kör: `session boot engrams` för att få fokuserad boot.
 
-### 2. ENGRAMS-ONBOARD-001 — Skicka mail till Anna
-Gmail draft ID: r5404878031968918972
+### 1. #3 STRIPE-001 — Betalning → API-nyckel automatiskt (~2h)
+Först: lägg till miljövariabler i Vercel (engrams):
+- STRIPE_SECRET_KEY
+- STRIPE_WEBHOOK_SECRET
+- RESEND_API_KEY
+- OPENAI_API_KEY
 
-### 3. ENGRAMS-STRIPE-001 — Betalning → nyckel automatiskt
-Bygg parallellt med MULTI-PROJECT Steg 2.
+Claude bygger sedan: `lib/api-key.js` + `lib/email.js` + `api/stripe-webhook.js`
 
-### 4. ENGRAMS-MCP-CONNECTOR-001 — Officiell Claude Connector
-- Skriv openapi.yaml
-- Flytta MCP-server till engrams.app/api/mcp-server
-- Ansök till Anthropics MCP-register
+### 2. #8 MEMORY-001 — remember/recall/forget/profile (~3h)
+Databas klar. Kod saknas. Claude bygger:
+- `lib/embeddings.js` — OpenAI text-embedding-3-small
+- `api/mcp` endpoints: remember, recall, forget, profile
 
-### 5. TRADESYS-SECTOR-HOT-001 — Expandera watchlist
-Defense + Financials, 8-10 tickers per sektor → 60-80 trades/år
+### 3. #2 ONBOARD-001 — Skicka mail till Anna (5 min)
+Efter Stripe är klart. Gmail draft ID: r5404878031968918972
 
-### 6. TRADESYS-FMP-001 — FMP Starter $29/mån
-https://financialmodelingprep.com/pricing
+### 4. #12 CC-SUPABASE-MCP-001 — Koppla Supabase MCP till CC (2 min)
+```bash
+claude mcp add --scope project --transport http supabase "https://mcp.supabase.com/mcp?project_ref=crsonxfrylkpgrddovhu"
+```
 
 ---
 
 ## TEKNISK STATE
 
-**Engrams**
-- Live: https://engrams.app
+**Engrams (engrams.app)**
+- Landningssida + docs + waitlist: live
+- Supabase: accounts, projects, memory_items (pgvector) live
+- MCP-server: https://app.savageroar.se/api/mcp (ska flyttas till engrams.app)
 - Repo: gustavkall/engrams
-- Supabase: styr-ai projektet (hxikaojzwjtztyuwlxra) — waitlist-tabell
-- MCP-server (gammal domän): https://app.savageroar.se/api/mcp-server
-- Bearer: e5a93009-8ad9-4b44-9f6f-840d9c8c32da
+
+**Saknas i Vercel (engrams):**
+- STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY, OPENAI_API_KEY
 
 **TRADESYS**
-- Agent 4: SECTOR_HOT (ny) — behöver omstart med ny kod
-- Agent 6: SC_TREND (ny) — behöver omstart med ny kod
-- ML v10 live (69.0% BREAKOUT, BUY_BREAKOUT nu 68.8% efter bugfix)
-- squeeze-probability.js live (short interest väntar FMP)
-
-**Savage Roar / Warner**
-- Frist 29 mars — IMORGON, inget formellt svar ännu
-- Audit §8.3: 22 april (25 dagar)
-- Cure period: 22 maj
-- Minimum settlement: 200k SEK
+- Agent 4 (SECTOR_HOT) + Agent 6 (SC_TREND) — ny kod, behöver omstart i CC
+- ML v10 + bugfix (BUY_BREAKOUT 68.8%)
+- squeeze-probability.js väntar på FMP $29/mån
 
 **Öppna positioner:**
 - Agent2: STRL, ETN, CAT, EME, PWR
 - Agent4: OXY, AGX, STRL, ETN, CAT
 - Agent5: ETN, PWR, EME
 - Agent6: COIN, NOC, RTX, HII, LMT
+
+**Savage Roar / Warner**
+- Frist 29 mars passerade — inget formellt svar
+- Audit §8.3: 22 april (25 dagar)
+- Cure period: 22 maj
+- Minimum settlement: 200k SEK
