@@ -5,32 +5,89 @@
 
 ---
 
+## VERSION 1 — ANNA (singel-user, persistent memory)
+*Mål: Anna kan starta en ny chat och få full kontext från tidigare sessioner automatiskt.*
+*När V1 funkar för Anna, bygger vi V2 (team/enterprise).*
+
+---
+
 ## BLOCKERARE — måste göras i ordning
 
 ### #1 MULTI-PROJECT-001 — SQL-schema i Supabase
 **Status:** ⬜ EJ KLAR
 **Tid:** 30 min
-**Blockerare för:** #2, #3, #6
+**Blockerare för:** #2, #3, #6, #8
 **Vad:** Kör SQL-schema i styr-ai Supabase-projekt (hxikaojzwjtztyuwlxra)
-```sql
--- accounts, projects, sessions, decisions tabeller
--- Se: project_memory/architecture/engrams_onboarding_plan.md
-```
+Se: `project_memory/architecture/engrams_onboarding_plan.md`
 
 ### #2 ONBOARD-001 — Skicka onboarding-mail till Anna Garmen
 **Status:** ⬜ EJ KLAR (väntar på #1)
 **Tid:** 5 min
-**Vad:** Gmail draft ID: r5404878031968918972 — skicka när #1 är klar
+**Vad:** Gmail draft ID: r5404878031968918972
 
 ### #3 STRIPE-001 — Betalning → API-nyckel automatiskt
 **Status:** ⬜ EJ KLAR (väntar på #1)
 **Tid:** ~2h
 **Vad:** Stripe webhook + lib/api-key.js + lib/email.js (Resend)
-**Miljövariabler saknas i Vercel:**
-- STRIPE_SECRET_KEY
-- STRIPE_WEBHOOK_SECRET
-- RESEND_API_KEY
-**Design:** project_memory/architecture/engrams_onboarding_plan.md
+**Saknas i Vercel:** STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY
+
+---
+
+## MINNES-ARKITEKTUR (kärnan i V1)
+
+### #8 MEMORY-001 — Fyra minnestyper + pgvector semantisk sökning
+**Status:** ⬜ EJ KLAR (väntar på #1)
+**Tid:** ~3h
+**Prioritet:** HÖG — detta är vad Engrams faktiskt är
+**Vad:**
+Bygg `memory_items`-tabell med fyra typer:
+- `profile` — vem är användaren, hur vill de bli hjälpte (permanent, laddas alltid)
+- `context` — projektspecifik bakgrund, avtal, dokument (laddas när relevant)
+- `learning` — beslut, strategier, lärdomar (söks semantiskt)
+- `episode` — senaste session-handoff (laddas alltid)
+
+SQL:
+```sql
+CREATE TABLE memory_items (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+  type TEXT CHECK (type IN ('profile', 'context', 'learning', 'episode')),
+  content TEXT NOT NULL,
+  embedding VECTOR(1536),          -- OpenAI text-embedding-3-small
+  tags TEXT[],                     -- valfria komplement
+  relevance_score FLOAT DEFAULT 1.0, -- förstärks när minnet hämtas
+  created_at TIMESTAMPTZ DEFAULT now(),
+  last_accessed_at TIMESTAMPTZ
+);
+CREATE INDEX ON memory_items USING ivfflat (embedding vector_cosine_ops);
+CREATE INDEX ON memory_items (project_id, type);
+```
+
+API-endpoints att bygga:
+- `remember` — spara minne + generera embedding
+- `recall` — semantisk sökning, returnerar top-N relevanta minnen
+- `forget` — ta bort minne
+- `profile` — läs/skriv användarprofil
+
+Lazy loading-logik:
+1. Ladda alltid: profil + senaste episode
+2. Sök semantiskt: learnings med similarity > 0.75
+3. Ladda context: bara om projektet är aktivt
+
+Design: `project_memory/architecture/memory_architecture.md`
+
+### #9 MEMORY-002 — Auto-remember vid handoff
+**Status:** ⬜ EJ KLAR (väntar på #8)
+**Tid:** ~1h
+**Vad:** Vid session handoff: kalla `remember` automatiskt på beslut och lärdomar.
+Ingen manuell taggning. Claude bedömer själv vad som är värt att minnas.
+
+### #10 MEMORY-003 — Auto-recall vid session boot
+**Status:** ⬜ EJ KLAR (väntar på #8)
+**Tid:** ~1h
+**Vad:** Vid boot: kalla `recall` baserat på Gustavs/Annas första meddelande.
+Laddar semantiskt relevanta minnen tyst — presenterar dem inte som en lista,
+använder dem som kontext för svaret.
 
 ---
 
@@ -39,17 +96,11 @@
 ### #4 MCP-CONNECTOR-001 — Officiell Claude Connector
 **Status:** ⬜ EJ KLAR
 **Tid:** ~2h
-**Vad:**
-1. Flytta MCP-server från app.savageroar.se → engrams.app/api/mcp
-2. Skriv openapi.yaml för alla MCP-endpoints
-3. Ansök till Anthropics MCP-register
-**Värde:** Engrams syns i Claude.ai connector-meny för alla användare
+**Vad:** Flytta MCP till engrams.app/api/mcp → openapi.yaml → Anthropic MCP-register
 
 ### #5 OPENAPI-001 — ChatGPT + Gemini-kompatibel spec
 **Status:** ⬜ EJ KLAR (väntar på #4)
 **Tid:** ~1h
-**Vad:** Samma MCP-server exponerad som OpenAI plugin + Gemini extension
-**Värde:** Tredubblar distribution utan ny infrastruktur
 
 ---
 
@@ -58,16 +109,21 @@
 ### #6 PRICING-001 — Prissektion + Stripe Checkout-knappar
 **Status:** ⬜ EJ KLAR (väntar på #3)
 **Tid:** 30 min
-**Tiers:**
-- Free — 1 projekt, 30 dagars minne, 0 kr
-- Pro — 5 projekt, obegränsat minne, 190 kr/mån
-- Team — 20 projekt, team-delning, 490 kr/mån
+**Tiers:** Free (0kr) / Pro 190kr / Team 490kr
 
 ### #7 DASHBOARD-001 — Kund-dashboard
 **Status:** ⬜ EJ KLAR
 **Tid:** ~2-3h
-**Vad:** Enkel inloggad vy där kunden ser sina projekt, API-nycklar, minneshistorik
-**Blockerare för:** Skalning bortom manuell onboarding
+**Vad:** Inloggad vy: projekt, API-nycklar, minneshistorik
+
+---
+
+## VERSION 2 (byggs när V1 valideras med Anna)
+
+### #11 ENGRAMS-TEAM-001 — Team-plan arkitektur
+**Status:** ⬜ PLANERAD (V2)
+**Vad:** Delad todo, member-isolation, @assign, team_todo-tabell.
+Byggs EFTER att V1 funkar för Anna.
 
 ---
 
@@ -82,12 +138,10 @@
 | - | MCP-server live (app.savageroar.se) | 2026-03-26 |
 | - | Arkitekturplan (database-only) | 2026-03-28 |
 | - | SQL-schema designat | 2026-03-28 |
+| - | COMMANDS.md + opt-out todo-modell | 2026-03-28 |
 
 ---
 
 ## UPPDATERINGSINSTRUKTION
 
-När en task slutförs:
-1. Ändra ⬜ → ✅ och flytta till KLART-tabellen
-2. Uppdatera active_context.md med ny status
-3. Commit: `state: engrams_todo #{nummer} klar`
+När en task slutförs: ändra ⬜ → ✅, flytta till KLART, commit `state: engrams_todo #{nr} klar`
