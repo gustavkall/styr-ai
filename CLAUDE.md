@@ -44,17 +44,14 @@ Claude ska aktivt:
 
 ## Session-längd — OBLIGATORISK VARNING
 
-Claude.ai har en kontextgräns. När den närmar sig komprimeras konversationen automatiskt ("Conversation compacted"). Det är signalen att sessionen snart är slut.
+Claude.ai har en kontextgräns. När den närmar sig komprimeras konversationen automatiskt. Det är signalen att sessionen snart är slut.
 
 **Claude ska proaktivt påminna om handoff när:**
-- Konversationen känns lång (många meddelanden, mycket kod eller långa dokument)
-- Viktiga beslut eller byggen har gjorts som måste sparas
+- Konversationen känns lång
+- Viktiga beslut eller byggen har gjorts
 - Innan Gustav avslutar för dagen
 
-**Påminnelsens form:**
 > "Vi har jobbat länge — dags för session handoff innan vi tappar kontext. Ska jag köra det nu?"
-
-**Gustav behöver inte hålla koll på detta själv.**
 
 ---
 
@@ -108,6 +105,7 @@ Det övervakar, analyserar, prioriterar och exekverar inom definierade autonomig
 - `governance/system_rules.md` — vad som får göras autonomt
 - `project_memory/personal_development.md` — Gustavs utmaningar + träningsplan
 - `state/daily_briefing.md` — COO-agentens dagliga briefing (om den finns)
+- `state/cc_session_log.md` — **NY: vad CC gjorde senast** (läs alltid)
 - `project_memory/next_session_brief.md` — om den finns: specifika instruktioner
 - `governance/architecture_changelog.md` — om CLAUDE.md kan vara inaktuell
 
@@ -116,13 +114,13 @@ Det övervakar, analyserar, prioriterar och exekverar inom definierade autonomig
 ## Underprojekt
 
 | Projekt | Repo | Syfte |
-|---------|------|-------|
+|---------|------|---------|
 | Savage Roar Music | gustavkall/savage-roar-music | Musiklabel, Warner-tvist, Vali Miron, G3ox_em |
 | TRADESYS | gustavkall/tradesys1337 | Trading dashboard v37, 6-modells-arkitektur |
 | tradesys-models | gustavkall/tradesys-models | Modellträning, regime-agent, TW CSV-data |
 | Adminassistent | gustavkall/adminassistent | Executive assistant — mail, kalender, presentationer |
 
-*min-analytiker är sammanslått med TRADESYS — agenter körs från styr-ai, output till tradesys1337.*
+*min-analytiker är sammanslaget med TRADESYS — agenter körs från styr-ai, output till tradesys1337.*
 
 Varje underprojekt har `project_memory/project_context.md` — läs den för projektets egna mål.
 
@@ -148,12 +146,13 @@ Varje underprojekt har `project_memory/project_context.md` — läs den för pro
 1. `state/daily_briefing.md` — COO-briefing (om den finns)
 2. `state/session_handoff.md`
 3. `state/work_queue.md`
-4. `project_memory/goals.md`
-5. `project_memory/personal_development.md` — utmaningar + progress
-6. `governance/system_rules.md`
-7. `project_memory/cross_project_learnings.md`
-8. `project_memory/next_session_brief.md` — om den finns, följ instruktionerna
-9. `governance/architecture_changelog.md` — kontrollera om CLAUDE.md är aktuell
+4. `state/cc_session_log.md` — **NY: vad CC gjorde senast** — läs alltid
+5. `project_memory/goals.md`
+6. `project_memory/personal_development.md`
+7. `governance/system_rules.md`
+8. `project_memory/cross_project_learnings.md`
+9. `project_memory/next_session_brief.md` — om den finns, följ instruktionerna
+10. `governance/architecture_changelog.md`
 
 ### Steg 2: Underprojektens state
 För varje underprojekt:
@@ -188,8 +187,9 @@ REJECT: ITEM-ID
 4. Uppdatera `project_memory/cross_project_learnings.md`
 5. Ta bort `project_memory/next_session_brief.md` om den följts
 6. Skriv `state/global_status.md`
-7. **Kontrollera flaggningsregeln** — uppdatera CLAUDE.md om strukturellt nytt tillkommit
-8. Commit och push:
+7. **Uppdatera `state/active_context.md`** — **NY: skriv nuvarande prioriteringar, öppna frågor och beslut så CC kan läsa dem**
+8. **Kontrollera flaggningsregeln** — uppdatera CLAUDE.md om strukturellt nytt tillkommit
+9. Commit och push:
    ```bash
    git add state/ project_memory/ governance/ CLAUDE.md && git commit -m "state: session handoff YYYY-MM-DD" && git push
    ```
@@ -214,6 +214,8 @@ state/session_handoff.md
 state/work_queue.md
 state/global_status.md
 state/autonomous_report.md
+state/active_context.md          <- NY: Claude.ai skriver, CC läser
+state/cc_session_log.md          <- NY: CC skriver, Claude.ai läser
 project_memory/goals.md
 project_memory/personal_development.md
 project_memory/cross_project_learnings.md
