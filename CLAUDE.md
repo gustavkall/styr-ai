@@ -138,13 +138,14 @@ Det övervakar, analyserar, prioriterar och exekverar inom definierade autonomig
 2. `state/session_handoff.md`
 3. `state/work_queue.md`
 4. `state/cc_session_log.md` — vad CC gjorde senast
-5. `project_memory/goals.md`
-6. `project_memory/personal_development.md`
-7. `project_memory/decisions.md` — strukturella beslut och resonemang
-8. `project_memory/cross_project_learnings.md` — insikter och strategiska lärdomar
-9. `governance/system_rules.md`
-10. `project_memory/next_session_brief.md` — om den finns, följ instruktionerna
-11. `governance/architecture_changelog.md`
+5. `state/engrams_todo.md` — **MASTER TODO för Engrams** (läs alltid, redovisa status)
+6. `project_memory/goals.md`
+7. `project_memory/personal_development.md`
+8. `project_memory/decisions.md` — strukturella beslut och resonemang
+9. `project_memory/cross_project_learnings.md` — insikter och strategiska lärdomar
+10. `governance/system_rules.md`
+11. `project_memory/next_session_brief.md` — om den finns, följ instruktionerna
+12. `governance/architecture_changelog.md`
 
 ### Steg 2: Underprojektens state
 För varje aktivt underprojekt:
@@ -154,8 +155,8 @@ För varje aktivt underprojekt:
 
 ### Steg 3: Aggregera och presentera
 1. Status per projekt mot PROJEKTETS EGNA MÅL
-2. Cross-project patterns, synergier, konflikter
-3. Prioritering baserat på `goals.md`
+2. **Engrams todo-status** — visa tabellen från engrams_todo.md
+3. Cross-project patterns, synergier, konflikter
 4. Flagga vad som kräver Gustavs uppmärksamhet
 5. **Föreslå minst en systemförbättring** om en identifierats under boot
 
@@ -163,22 +164,23 @@ För varje aktivt underprojekt:
 
 ## Session Handoff Protocol (OBLIGATORISK — kör automatiskt vid sessionslut)
 
-**Skriv ALLTID alla fem:**
+**Skriv ALLTID alla sex:**
 
 1. `state/session_handoff.md` — summary, vad som gjorts, teknisk state
 2. `state/work_queue.md` — uppdaterad prioritetsordning
-3. `project_memory/decisions.md` — **APPEND** alla strukturella beslut från sessionen med context + motivering
-4. `project_memory/cross_project_learnings.md` — **APPEND** insikter, strategiska resonemang, marknadsanalys, arkitekturlärdommar
-5. `state/active_context.md` — live whiteboard för CC: prioriteringar, öppna frågor, teknisk state
+3. `state/engrams_todo.md` — **uppdatera status på tasks som slutförts eller ändrats**
+4. `project_memory/decisions.md` — **APPEND** alla strukturella beslut från sessionen
+5. `project_memory/cross_project_learnings.md` — **APPEND** insikter, resonemang, lärdomar
+6. `state/active_context.md` — live whiteboard för CC inkl engrams todo-tabell
 
 Sedan:
-6. Ta bort `project_memory/next_session_brief.md` om den följts
-7. Skriv `state/global_status.md`
-8. Kontrollera flaggningsregeln — uppdatera CLAUDE.md om strukturellt nytt tillkommit
-9. Commit och push:
-   ```bash
-   git add state/ project_memory/ governance/ CLAUDE.md && git commit -m "state: session handoff YYYY-MM-DD" && git push
-   ```
+7. Ta bort `project_memory/next_session_brief.md` om den följts
+8. Skriv `state/global_status.md`
+9. Kontrollera flaggningsregeln — uppdatera CLAUDE.md om strukturellt nytt tillkommit
+10. Commit och push:
+    ```bash
+    git add state/ project_memory/ governance/ CLAUDE.md && git commit -m "state: session handoff YYYY-MM-DD" && git push
+    ```
 
 ---
 
@@ -187,16 +189,16 @@ Sedan:
 `state/active_context.md` ska uppdateras **direkt** när:
 - Ett arkitekturbeslut tas
 - En prioritet ändras
-- Något substantiellt resonemang förs som CC behöver känna till
+- En Engrams todo-task slutförs eller ändrar status
 - Gustav godkänner en plan
 
-**Inte bara vid sessionslut.** CC kör `sync` för att hämta filen när som helst under sin session.
-
-För att sync ska vara komplett ska active_context.md alltid innehålla:
+active_context.md ska alltid innehålla:
+- **Engrams todo-tabell** (spegling av engrams_todo.md)
 - Senaste beslut med kort motivering
-- Nuvarande prioritetsordning
 - Teknisk state per projekt
-- Öppna frågor som behöver svar
+- Öppna frågor
+
+CC kör `sync` för att hämta när som helst.
 
 ---
 
@@ -217,7 +219,8 @@ state/daily_briefing.md
 state/session_handoff.md
 state/work_queue.md
 state/global_status.md
-state/active_context.md          <- Claude.ai skriver, CC läser
+state/engrams_todo.md            <- MASTER TODO för Engrams
+state/active_context.md          <- Claude.ai skriver, CC läser (inkl todo-tabell)
 state/cc_session_log.md          <- CC skriver, Claude.ai läser
 project_memory/goals.md
 project_memory/personal_development.md
