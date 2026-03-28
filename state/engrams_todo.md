@@ -14,27 +14,28 @@
 ## BLOCKERARE — måste göras i ordning
 
 ### #1 MULTI-PROJECT-001 — SQL-schema i Supabase
-**Status:** ✅ KLAR (2026-03-28 — kört via Supabase MCP)
-**Tabeller skapade:**
-- `accounts` — en per kund
-- `projects` — N per account, med api_key_hash
-- `engrams_sessions` — episodiskt minne per projekt
-- `engrams_decisions` — strukturella beslut per projekt
-- `memory_items` — fyra minnestyper + pgvector (1536 dim)
-- `waitlist` — befintlig
-- pgvector extension aktiverad
-- ivfflat-index på embedding (cosine similarity)
+**Status:** ✅ KLAR (2026-03-28 — kört via Supabase MCP av Claude)
 
 ### #2 ONBOARD-001 — Skicka onboarding-mail till Anna Garmen
-**Status:** ⬜ EJ KLAR (väntar på #3 — Stripe + API-nyckel-generering)
-**Tid:** 5 min
+**Status:** ⬜ EJ KLAR (väntar på #3 — API-nyckel måste kunna genereras först)
 **Vad:** Gmail draft ID: r5404878031968918972
 
 ### #3 STRIPE-001 — Betalning → API-nyckel automatiskt
 **Status:** ⬜ EJ KLAR
 **Tid:** ~2h
 **Vad:** Stripe webhook + lib/api-key.js + lib/email.js (Resend)
-**Saknas i Vercel:** STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY, OPENAI_API_KEY
+**Saknas i Vercel (engrams-projekt):** STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY, OPENAI_API_KEY
+**Design:** `project_memory/architecture/engrams_onboarding_plan.md`
+
+### #12 CC-SUPABASE-MCP-001 — Koppla Supabase MCP till Claude Code
+**Status:** ⬜ EJ KLAR
+**Tid:** 2 min
+**Vad:** Kör detta en gång i terminal (kopplar CC till samma Supabase som Claude.ai):
+```bash
+claude mcp add --scope project --transport http supabase "https://mcp.supabase.com/mcp?project_ref=crsonxfrylkpgrddovhu"
+# Sedan: claude /mcp → välj supabase → Authenticate
+```
+**Värde:** CC kan köra SQL-migrations och läsa/skriva databas utan att Gustav behöver göra det manuellt
 
 ---
 
@@ -47,8 +48,8 @@
 - `lib/embeddings.js` — wrapper runt OpenAI text-embedding-3-small
 - `api/mcp` endpoints: remember, recall, forget, profile
 - Lazy loading: profil + episode alltid, learnings via semantisk sökning (>0.75)
-**Design:** `project_memory/architecture/memory_architecture.md`
 **Saknas i Vercel:** OPENAI_API_KEY
+**Design:** `project_memory/architecture/memory_architecture.md`
 
 ### #9 MEMORY-002 — Auto-remember vid handoff
 **Status:** ⬜ EJ KLAR (väntar på #8)
