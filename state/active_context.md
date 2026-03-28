@@ -4,6 +4,10 @@
 
 ---
 
+**SYNC-TEST: Om du ser detta fungerar CC↔Claude.ai-synken. 2026-03-28**
+
+---
+
 ## NULÄGE — 2026-03-28
 
 ### Vad vi just diskuterat (Claude.ai)
@@ -75,10 +79,10 @@ Lösning implementerad nu:
 ## FÖR AKTIV CC-SESSION — KÖR DETTA NU
 
 ```bash
-cd ~/tradesys1337 && git pull && cat ~/styr-ai-local/state/active_context.md 2>/dev/null || curl -s https://raw.githubusercontent.com/gustavkall/styr-ai/main/state/active_context.md
+curl -s https://raw.githubusercontent.com/gustavkall/styr-ai/main/state/active_context.md
 ```
 
-Eller kortare via alias (lägg till i ~/.zshrc eller kör direkt):
+Alias (lägg till i ~/.zshrc):
 ```bash
-alias sync='git -C ~/styr-ai pull -q 2>/dev/null; curl -s https://raw.githubusercontent.com/gustavkall/styr-ai/main/state/active_context.md'
+alias sync='curl -s https://raw.githubusercontent.com/gustavkall/styr-ai/main/state/active_context.md'
 ```
