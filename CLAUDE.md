@@ -105,13 +105,14 @@ Autonomt meta-system ovanför alla underprojekt. Syfte: ge Gustav maximal levera
 3. `state/work_queue.md`
 4. `state/cc_session_log.md`
 5. `state/engrams_todo.md` — **ENGRAMS MASTER TODO**
-6. `project_memory/goals.md`
-7. `project_memory/personal_development.md`
-8. `project_memory/decisions.md`
-9. `project_memory/cross_project_learnings.md`
-10. `governance/system_rules.md`
-11. `project_memory/next_session_brief.md` — om den finns, följ instruktionerna
-12. `governance/architecture_changelog.md`
+6. `COMMANDS.md` — **ALLA KOMMANDON** (läs alltid — nya kommandon tillkommer)
+7. `project_memory/goals.md`
+8. `project_memory/personal_development.md`
+9. `project_memory/decisions.md`
+10. `project_memory/cross_project_learnings.md`
+11. `governance/system_rules.md`
+12. `project_memory/next_session_brief.md` — om den finns, följ instruktionerna
+13. `governance/architecture_changelog.md`
 
 ### Steg 2: Underprojektens state
 För varje aktivt underprojekt: `project_memory/project_context.md`, `state/session_handoff.md`, `state/work_queue.md`
@@ -131,6 +132,8 @@ NÄSTA: [första ⬜-task i ordning]
 KRÄVER GUSTAVS UPPMÄRKSAMHET: [om något finns]
 ```
 
+> Efter boot: Claude känner till alla kommandon i COMMANDS.md och exekverar dem direkt utan förklaring.
+
 ---
 
 ## ENGRAMS TODO — REGLER
@@ -143,9 +146,7 @@ KRÄVER GUSTAVS UPPMÄRKSAMHET: [om något finns]
 - En blockerare identifieras som kräver separat åtgärd
 
 **Använd opt-out-modellen när Claude identifierar en möjlig task:**
-Claude lägger INTE till utan synlighet. Istället — i slutet av svaret där det är relevant:
-
-> `→ Todo-förslag: [ID] — [beskrivning]. Lägger till i listan om du inte invänder.`
+> `→ Todo-förslag: [ID] — [beskrivning]. Lägger till om du inte invänder.`
 
 Om Gustav inte invänder i nästa meddelande = godkänt. Claude lägger till direkt.
 Om Gustav skriver "nej", "skippa", "inte nu" = läggs inte till.
@@ -157,21 +158,19 @@ Om Gustav skriver "nej", "skippa", "inte nu" = läggs inte till.
 
 ### Triggrar för att UPPDATERA status
 
-Uppdatera **direkt** (inte vid handoff) när:
-- En task slutförs under sessionen → ⬜ → ✅
-- En task blockeras → ⬜ → 🔄 med notering
-- Scopet på en task ändras
+- **Direkt** när task slutförs → ⬜ → ✅
+- **Direkt** när task blockeras → ⬜ → 🔄 med notering
 
 ### Statusflaggor
 - ⬜ = ej klar
-- 🔄 = pågår eller blockerad (lägg till kort notering)
+- 🔄 = pågår eller blockerad
 - ✅ = klar
 
 ### Ansvar per protokoll
-- **Boot:** Läser listan, presenterar den exakt, påminner om nästa ⬜-task
-- **Under session:** Opt-out-förslag när relevant, uppdaterar direkt vid slutförd task
-- **Sync:** Speglar aktuell lista i active_context.md omedelbart vid förändring
-- **Handoff:** Verifierar att listan är komplett och korrekt, committar
+- **Boot:** Läser, presenterar, påminner om nästa ⬜-task
+- **Under session:** Opt-out-förslag, uppdaterar direkt vid förändring
+- **Sync:** Speglar i active_context.md omedelbart
+- **Handoff:** Verifierar, committar
 
 ---
 
@@ -179,31 +178,9 @@ Uppdatera **direkt** (inte vid handoff) när:
 ## SYNC PROTOCOL — OBLIGATORISK
 ## ════════════════════════════════════
 
-Uppdatera `state/active_context.md` **direkt** när:
-- Gustav godkänner ett beslut eller plan
-- En Engrams todo-task ändrar status (inkl opt-out-godkännanden)
-- En prioritet ändras
-- Teknisk state förändras
+Uppdatera `state/active_context.md` direkt när Gustav godkänner beslut, task ändrar status, prioritet ändras, eller teknisk state förändras.
 
-### active_context.md måste ALLTID innehålla
-
-```
-## ENGRAMS TODO
-| # | Task | Status |
-[aktuell spegling av engrams_todo.md]
-
-## SENASTE BESLUT
-[beslut med motivering]
-
-## TEKNISK STATE
-[per projekt]
-
-## ÖPPNA FRÅGOR
-[om några finns]
-
-## SYNC-ALIAS FÖR CC
-alias sync='curl -s https://raw.githubusercontent.com/gustavkall/styr-ai/main/state/active_context.md'
-```
+active_context.md måste alltid innehålla: engrams todo-tabell, senaste beslut, teknisk state per projekt, öppna frågor, sync-alias för CC.
 
 ---
 
@@ -213,31 +190,14 @@ alias sync='curl -s https://raw.githubusercontent.com/gustavkall/styr-ai/main/st
 
 **Alla sex. Alltid. Ingen undantag.**
 
-### 1. `state/session_handoff.md`
-Vad gjordes, teknisk state, öppna frågor.
+1. `state/session_handoff.md` — vad gjordes, teknisk state, öppna frågor
+2. `state/work_queue.md` — uppdaterad prioritetsordning
+3. `state/engrams_todo.md` — uppdatera ⬜/✅, lägg till nya godkända tasks
+4. `project_memory/decisions.md` — APPEND strukturella beslut med motivering
+5. `project_memory/cross_project_learnings.md` — APPEND insikter och lärdomar
+6. `state/active_context.md` — sessionens resultat inkl todo-tabell
 
-### 2. `state/work_queue.md`
-Uppdaterad prioritetsordning.
-
-### 3. `state/engrams_todo.md` — KRITISK
-- Varje slutförd task: ⬜ → ✅, flytta till KLART-tabell med datum
-- Varje opt-out-godkänd task som inte redan lagts till: lägg till nu
-- Verifiera att listan är komplett och korrekt innan commit
-
-### 4. `project_memory/decisions.md`
-APPEND alla strukturella beslut från sessionen med context och motivering.
-
-### 5. `project_memory/cross_project_learnings.md`
-APPEND insikter, strategiska resonemang, marknadsanalys, tekniska lärdomar.
-
-### 6. `state/active_context.md`
-Uppdatera med sessionens resultat inkl aktuell engrams_todo-tabell.
-
-### Sedan
-7. Ta bort `project_memory/next_session_brief.md` om den följts
-8. Skriv `state/global_status.md`
-9. Kontrollera flaggningsregeln
-10. Commit och push:
+Sedan: ta bort next_session_brief om följts, skriv global_status.md, kontrollera flaggningsregel, commit och push:
 ```bash
 git add state/ project_memory/ governance/ CLAUDE.md && git commit -m "state: session handoff YYYY-MM-DD" && git push
 ```
@@ -254,9 +214,10 @@ Kräver godkännande: merga till main, skicka mail, transagera, starta projekt, 
 ## Repo-struktur
 
 ```
-state/engrams_todo.md            <- MASTER TODO — uppdateras direkt när status ändras
-state/active_context.md          <- Claude.ai skriver, CC läser — inkl todo-tabell
-state/cc_session_log.md          <- CC skriver, Claude.ai läser vid boot
+COMMANDS.md                      <- ALLA KOMMANDON — läs vid boot, uppdatera när nytt tillkommer
+state/engrams_todo.md            <- MASTER TODO
+state/active_context.md          <- Claude.ai skriver, CC läser
+state/cc_session_log.md          <- CC skriver, Claude.ai läser
 state/session_handoff.md
 state/work_queue.md
 state/global_status.md
