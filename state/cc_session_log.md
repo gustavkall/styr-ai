@@ -32,3 +32,22 @@ agent_id: cc-tradesys
 ### Öppna frågor för Claude.ai
 - ADD-VIX-FILTER-001 i work queue kan stängas (vixElevated=0 redan live i SECTOR_HOT)
 - RS_MOMENTUM: ska agent 3 stängas eller redesignas?
+
+## CC Session — 2026-03-31 11:45
+agent_id: cc-tradesys
+### Gjort
+- Lade till 17 Finance + 7 Defense tickers i SECTOR_MAP + data/csv
+- Win-factor analysis → 3 filter identifierade för SECTOR_HOT (relVolNorm, vixElevated, adxNorm)
+- SECTOR_HOT WR: 22% → 58.1% (43 trades, avg P&L +0.79%)
+- Agent 4 omstartad med ny kod (secMom>4, nya filter)
+- Credit-analys: styr-ai agenter kör Sonnet dagligen → HAIKU-001 tillagd i work queue
+- Gustav bekräftad på Max-plan (CC kostar ej extra)
+### Beslut
+- secMom tröskel sänkt 6→4 för SECTOR_HOT (fler trades vid bibehållen WR med filter)
+- adxNorm<0 = nyckelfynd: laggard ej i rörelse = bättre setup
+### Nästa steg
+- HAIKU-001: byt styr-ai agenter till claude-haiku (20x billigare)
+- RS-MOMENTUM-FIX-001: agent 3 kör 31.8% WR, under break-even
+- DATA-EXTEND-001: full historik 2019-2026 för nya tickers
+### Öppna frågor för Claude.ai
+- Styr-ai active_context är ej uppdaterad sedan 2026-03-29 — kan du uppdatera med TRADESYS nuläge?
