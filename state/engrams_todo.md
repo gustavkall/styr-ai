@@ -16,9 +16,30 @@
 | 11 | ENGRAMS-TEAM-001 (V2) | ⬜ | |
 | 12 | CC-SUPABASE-MCP-001 | ⬜ | |
 | 13 | AGENT-HAIKU-001 | ⬜ | |
-| — | ENGRAMS-RECALL-FIX | ⬜ BLOCKER | recall() returnerar 0 minnen — sänk threshold till 0.3, kolla pgvector-index |
+| — | ENGRAMS-RECALL-FIX | ⬜ BLOCKER | recall() returnerar 0 minnen — sänk threshold 0.75→0.3, kolla pgvector-index |
 | — | ENGRAMS-SUPABASE-SPLIT | ⬜ | Migrera från TradeSys till eget projekt |
 | — | PLATFORM-AGNOSTIC-001 | ⬜ | Se plan nedan |
+| — | MEMORY-FORGETTING-001 | ⬜ V2 | Forgetting curve — nattlig cron sänker relevance_score på oanvända minnen |
+| — | MEMORY-CONSOLIDATION-001 | ⬜ V2 | Konsolidering — episode-minnen som nås upprepade gånger → learning automatiskt |
+
+---
+
+## Minnessystemet — neurobiologisk grund
+
+Engrams är modellerat på hjärnans minnessystem. Varje minnestyp mappar till ett neurologiskt system:
+
+| Minnestyp | Neurologiskt system | Funktion |
+|-----------|--------------------|----|
+| `profile` | Cerebellum | Permanent identitet, "vem är detta" — förändras sällan |
+| `context` | Amygdala | Projektspecifik kontext, prioritet, emotionell vikt |
+| `learning` | Cerebral cortex | Långtidsminne — fakta, beslut, arkitektur |
+| `episode` | Hippocampus | Sessionshandoff, korttidsminne → konsolideras till learning |
+
+**Konsolidering (boost_relevance):** Precis som hippocampus stärker minnen som repeteras, ökar `boost_relevance()` relevance_score vid varje recall. Spaced repetition inbyggt.
+
+**Forgetting curve (saknas):** Hjärnan försvagar oanvända minnen. Engrams saknar detta — MEMORY-FORGETTING-001 lägger till nattlig decay på minnen utan recent access.
+
+**Distribuerad lagring:** Hjärnans minne är inte på ett ställe. Engrams löser detta med cross-tool shared memory via samma project_id — PLATFORM-AGNOSTIC-001.
 
 ---
 
