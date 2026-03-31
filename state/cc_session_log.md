@@ -51,3 +51,24 @@ agent_id: cc-tradesys
 - DATA-EXTEND-001: full historik 2019-2026 för nya tickers
 ### Öppna frågor för Claude.ai
 - Styr-ai active_context är ej uppdaterad sedan 2026-03-29 — kan du uppdatera med TRADESYS nuläge?
+
+## CC Session — 2026-03-31 12:05
+agent_id: cc-tradesys
+
+### Gjort
+- Win-factor analysis på SC_TREND (agent6): drawdownFrom52w<-5, adxNorm<0, vixElevated=0 → WR 50.4%→75.9% (29 trades, +2.59% avg P&L)
+- Win-factor analysis på SECTOR_CONTAGION (agent5): drawdownFrom52w<-20, atrPct>12.41 → 5101→692 trades, avgP&L 0.36%→0.57%
+- Omstartade agenter 5+6 med ny kod
+- Session handoff uppdaterad
+
+### Beslut
+- DEC-017: SC_TREND triple filter (75.9% WR)
+- DEC-018: SECTOR_CONTAGION quality filters (volymspel, 47.7% WR accepterat)
+
+### Nästa steg
+- ADD-NEW-AGENT3-001: Ny strategi för agent3 (RISK-OFF bounce, creditStress corr=0.480)
+- DATA-EXTEND-001: BAC, BAM historik 2019-2022 saknas
+- MODEL-SCOREBOARD-001: Bygg precision-scoreboard för v5-v10
+
+### Öppna frågor för Claude.ai
+- SECTOR_CONTAGION bör eventuellt ersättas med en strategi som kan nå 60%+ WR
