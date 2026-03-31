@@ -1,10 +1,5 @@
 # active_context.md — Delat whiteboard CC ↔ Claude.ai
-*Uppdaterad: 2026-03-29 session boot*
-
----
-
-## ✅ SYNC-TEST — 2026-03-29
-**CC: Kör `sync` och bekräfta att du ser denna rad. Rapportera tillbaka till Gustav.**
+*Uppdaterad: 2026-03-31*
 
 ---
 
@@ -25,31 +20,30 @@
 | 11 | ENGRAMS-TEAM-001 (V2) | ⬜ planerad |
 | 12 | CC-SUPABASE-MCP-001 | ⬜ 2 min, Gustav kör |
 
-**NÄSTA: #3 STRIPE-001 (kräver env vars i Vercel)**
+**NÄSTA: #3 kräver env vars i Vercel**
 
 ---
 
-## TRADESYS — NULÄGE
+## TRADESYS — NULÄGE (uppdaterat från CC session 2026-03-31)
 
-- TRAINER-COST-001: stängd — falskt alarm, inga API-anrop i trainer
-- Agent 4 (SECTOR_HOT) + Agent 6 (SC_TREND) — behöver omstart med ny kod
-- SECTOR-HOT-001 är nu #1 i work queue
+**SECTOR_HOT breakthrough:** WR 22% → 58.1% efter tre nya filter (relVolNorm>-0.3, vixElevated=0, adxNorm<0)
+**Dataset:** 72,225 snapshots (+6,766 Finance+Defense)
+**Agent 4:** omstartad med ny kod ✅
+
+**Aktiva positioner:** NBIS +36% | COIN +13% | PWR +3.9% | MU, STX, RTX, GLDD
+
+**Work queue #1:** RS-MOMENTUM-FIX-001 — agent 3 på 31.8% WR (under break-even)
+**ADD-VIX-FILTER-001:** kan stängas — vixElevated=0 redan implementerat i SECTOR_HOT (DEC-015)
 
 ---
 
 ## STYRNING
-
-- GOVERNANCE.md live — grundlagar alla projekt
-- PROJECT.md i alla 6 repos
-- system_projects i Supabase
-- Boot Steg 0: GOVERNANCE.md + PROJECT.md
+- GOVERNANCE.md live | PROJECT.md i alla 6 repos | Boot Steg 0: GOVERNANCE + PROJECT
 
 ---
 
-## TEKNISK STATE
-
-**Engrams:** engrams.app live. lib/ + api/ klar. Saknar env vars i Vercel.
-**Warner:** Audit 22/4 (24 dagar). Cure 22/5. Min 200k SEK.
+## WARNER
+Audit 22/4 (22 dagar). Cure 22/5. Min 200k SEK.
 
 ---
 
