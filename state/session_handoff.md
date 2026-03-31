@@ -1,71 +1,38 @@
 # styr-ai — SESSION HANDOFF
-*Session close: 2026-03-28 FINAL*
+*Session close: 2026-03-31*
 
 ---
 
 ## DENNA SESSION — SAMMANFATTNING
 
-### Byggt
-1. CC↔Claude.ai bidirektionellt sync (active_context.md + cc_session_log.md)
-2. Engrams live — engrams.app, landningssida, waitlist, docs
-3. SQL-schema kört via Supabase MCP (accounts, projects, memory_items pgvector, engrams_sessions, engrams_decisions)
-4. Memory-arkitektur designad (4 typer, lazy loading, semantisk sökning)
-5. COMMANDS.md — alla kommandon + `session boot [projekt]`
-6. Alla CLAUDE.md uppdaterade (savage-roar, adminassistent, engrams, tradesys1337)
-7. engrams_todo.md — master todo, #1 klar
-8. Opt-out todo-modell implementerad
-9. Memory API byggt (remember, recall, profile, embeddings, api-key, email)
-10. match_memories() + boost_relevance() Supabase-funktioner live
-11. **GOVERNANCE.md** — grundlagar för alla projekt (tvånivå-styrning)
-12. **PROJECT.md** — projektidentitet i alla 6 repos
-13. **system_projects** — Supabase-tabell med alla projekt registrerade
-14. Boot läser GOVERNANCE.md + PROJECT.md som Steg 0
+### Gjort
+1. Session boot körd och verifierad
+2. TRAINER-COST-001 undersökt — falskt alarm, inga API-anrop i agent-trainer.js. Credits åt pga CC API-billing (nu Max-plan = inget problem)
+3. Sync-test mellan Claude.ai och CC — bekräftat fungerande
+4. CC visade hela Engrams todo-tabellen korrekt efter CLAUDE.md-fix
+5. cc_session_log.md synkad med CC:s session (SECTOR_HOT 22%→58.1% WR)
+6. Symmetri i handoff-protokoll: båda parter skriver till varandra
+7. #13 AGENT-HAIKU-001 lagd till i todo (byt agenter Sonnet→Haiku, 80% kostnadsbesparing)
 
-### Kritisk insikt loggad
-Gustav föreslog GOVERNANCE.md/PROJECT.md-lösningen själv — Claude borde ha sett den proaktivt.
-Det är ett systemfel: om problemet (inkonsistenta regler, ingen isolation) är synligt borde lösningen (grundlagar + projektidentitet) föreslås. Noterat i learnings.
+### CC:s session (från cc_session_log.md)
+- SECTOR_HOT WR: 22% → 58.1% (tre nya filter)
+- Finance+Defense data: 65k → 72k snapshots
+- Aktiva positioner: NBIS +36%, COIN +13%, PWR +3.9%
+- RS_MOMENTUM agent 3: 31.8% WR — öppen fråga: stäng eller redesigna?
 
 ---
 
-## NÄSTA SESSION — EXAKT ORDNING
+## NÄSTA SESSION — ORDNING
 
-Kommando: `session boot engrams`
-
-### Gustav gör först (kräver manuellt):
-Lägg till i Vercel → engrams-projekt → Environment Variables:
-```
-OPENAI_API_KEY        sk-...
-STRIPE_SECRET_KEY     sk_test_... (testa först med test-nyckel)
-STRIPE_WEBHOOK_SECRET whsec_...
-RESEND_API_KEY        re_...
-```
-
-### Claude kör direkt (ingen manuell insats):
-1. #3 STRIPE-001 — api/stripe-webhook.js (lib/ är redan klar)
-2. #8 MEMORY-001 — testa remember/recall-endpoints live
-3. #2 ONBOARD-001 — skicka mail till Anna (Gmail draft r5404878031968918972)
-4. #12 CC-SUPABASE-MCP-001 — påminn Gustav att koppla CC
+1. **#13 AGENT-HAIKU-001** — byt agenter Sonnet→Haiku. 15 min. Gör i CC.
+2. **#3 STRIPE-001** — kräver env vars i Vercel först (Gustav lägger till)
+3. **RS_MOMENTUM agent 3** — besluta: stäng (31.8% WR) eller redesigna med creditStress-filter?
 
 ---
 
 ## TEKNISK STATE
 
-**Engrams:**
-- Live: engrams.app
-- Supabase: memory_items, accounts, projects, match_memories() live
-- lib/: embeddings.js, api-key.js, supabase.js, email.js ✅
-- api/: remember.js, recall.js, profile.js ✅
-- Saknas i Vercel: OPENAI_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY
-
-**Styrning:**
-- GOVERNANCE.md live (grundlagar)
-- PROJECT.md i alla 6 repos
-- system_projects-tabell i Supabase
-
-**TRADESYS:**
-- Agent 4 (SECTOR_HOT) + Agent 6 (SC_TREND) — behöver omstart i CC
-- Öppna positioner: Agent2/STRL/ETN/CAT/EME/PWR, Agent4/OXY/AGX/STRL/ETN/CAT, Agent5/ETN/PWR/EME, Agent6/COIN/NOC/RTX/HII/LMT
-
-**Warner:**
-- Frist 29 mars passerade, inget svar — stärkt juridiskt läge
-- Audit §8.3: 22 april | Cure period: 22 maj | Min: 200k SEK
+**Engrams:** engrams.app live. Kod klar. Saknar: OPENAI_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY i Vercel.
+**TRADESYS:** 6 agenter live. SECTOR_HOT 58.1% WR. NBIS/COIN/PWR öppna positioner.
+**Warner:** Audit 22/4 (22 dagar). Cure 22/5. Min 200k SEK.
+**Kostnader:** Max-plan täcker CC. GitHub Actions-agenter ~$0.30-0.45/dag med Sonnet → fixas med #13.
