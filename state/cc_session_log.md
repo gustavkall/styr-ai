@@ -72,3 +72,37 @@ agent_id: cc-tradesys
 
 ### Öppna frågor för Claude.ai
 - SECTOR_CONTAGION bör eventuellt ersättas med en strategi som kan nå 60%+ WR
+
+## CC Session — 2026-03-31 19:50
+agent_id: cc-tradesys
+
+### Gjort
+- **Engrams API live och fungerande** — remember(), profile(), recall() alla returnerar 200
+- E2e-tester: 4/5 pass. Enda fail: recall() hittar inte just sparat minne (search-relevance, ej infra)
+- Debuggat Supabase-koppling i ~1h:
+  - Felet: SUPABASE_SERVICE_KEY i Vercel pekade på fel Supabase-projekt (Styr.AI/crsonxfrylkpgrddovhu istf TradeSys/hxikaojzwjtztyuwlxra)
+  - Dessutom: nyckeln hade radbrytning (\n) från paste → "invalid header value"
+  - Fix: rätt nyckel + `.replace(/\s/g, '')` i alla API-filer som sanitering
+- GitHub Actions e2e-workflow live (.github/workflows/e2e-test.yml)
+- `git config --global user.email "me@gustavkall.com"` — fixar Vercel Hobby deploy-blockering
+- Vercel CLI installerat globalt
+- CC bekräftat på Max-plan (flat rate, inga API-kostnader)
+- DATA-EXTEND-001 analys: 85 tickers har <3 år data, 56 st har bara 1 år (225 rader). Gustav exporterar från TW.
+
+### Beslut
+- Engrams delar Supabase med TradeSys (hxikaojzwjtztyuwlxra) tills vidare — ska separeras (TODO)
+- Behåll Haiku på GitHub Actions-agenter (kostar API-credits, ej täckt av Max)
+- Debug-logging borttagen ur Engrams API efter fix
+
+### Nästa steg — ENGRAMS
+1. **ENGRAMS-RECALL-FIX** — recall() returnerar 0 minnen vid e2e-test. Search-relevance/embedding-matchning behöver finjusteras.
+2. **ENGRAMS-SUPABASE-SPLIT** — Engrams bör få eget Supabase-projekt (nu delar med TradeSys). Styr.AI-projektet (crsonxfrylkpgrddovhu) finns redan — migrera Engrams-tabeller dit.
+
+### Nästa steg — TRADESYS
+1. ADD-NEW-AGENT3-001 — Ny strategi agent 3
+2. DATA-EXTEND-001 — 85 tickers behöver TW-export 2019-2026
+3. MODEL-SCOREBOARD-001 — Precision-scoreboard v5-v10
+
+### Öppna frågor för Claude.ai
+- Supabase har två projekt: Styr.AI (crsonxfrylkpgrddovhu) och TradeSys (hxikaojzwjtztyuwlxra). Engrams tabeller ligger i TradeSys. Ska vi migrera till Styr.AI-projektet? Eller vänta på Supabase Pro?
+- recall() e2e-fail: är det embedding-likhetsträskeln som är för hög, eller saknas indexering?
