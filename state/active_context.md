@@ -1,5 +1,10 @@
 # active_context.md — Delat whiteboard CC ↔ Claude.ai
-*Uppdaterad: 2026-03-28 FINAL EOD*
+*Uppdaterad: 2026-03-29 session boot*
+
+---
+
+## ✅ SYNC-TEST — 2026-03-29
+**CC: Kör `sync` och bekräfta att du ser denna rad. Rapportera tillbaka till Gustav.**
 
 ---
 
@@ -20,34 +25,31 @@
 | 11 | ENGRAMS-TEAM-001 (V2) | ⬜ planerad |
 | 12 | CC-SUPABASE-MCP-001 | ⬜ 2 min, Gustav kör |
 
-**NÄSTA: Gustav lägger till env vars i Vercel → Claude kör #3 + #8**
+**NÄSTA: #3 STRIPE-001 (kräver env vars i Vercel)**
 
 ---
 
-## TRADESYS — KRITISKT IMORGON
+## TRADESYS — NULÄGE
 
-**TRAINER-COST-001** — agent-trainer.js anropar Anthropic API under träning och äter credits.
-CC ska lösa detta FÖRST nästa session. Se tradesys1337/state/work_queue.md.
-
-**Agent 4 + 6** — SECTOR_HOT + SC_TREND behöver omstart med ny kod.
+- TRAINER-COST-001: stängd — falskt alarm, inga API-anrop i trainer
+- Agent 4 (SECTOR_HOT) + Agent 6 (SC_TREND) — behöver omstart med ny kod
+- SECTOR-HOT-001 är nu #1 i work queue
 
 ---
 
 ## STYRNING
 
-- GOVERNANCE.md live — grundlagar alla projekt följer (en ändring = gäller alla)
-- PROJECT.md i alla 6 repos — projektidentitet, Supabase-ref, regler
-- system_projects-tabell i Supabase — alla projekt registrerade
-- Boot Steg 0: hämta GOVERNANCE.md + PROJECT.md före allt annat
+- GOVERNANCE.md live — grundlagar alla projekt
+- PROJECT.md i alla 6 repos
+- system_projects i Supabase
+- Boot Steg 0: GOVERNANCE.md + PROJECT.md
 
 ---
 
 ## TEKNISK STATE
 
-**Engrams:** engrams.app live. lib/ + api/ kod klar.
-**Saknas i Vercel (engrams):** OPENAI_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY
-
-**Warner:** Frist 29/3 passerade utan svar. Audit 22/4 (25 dagar). Cure 22/5. Min 200k SEK.
+**Engrams:** engrams.app live. lib/ + api/ klar. Saknar env vars i Vercel.
+**Warner:** Audit 22/4 (24 dagar). Cure 22/5. Min 200k SEK.
 
 ---
 
