@@ -1,14 +1,22 @@
 # active_context.md — Delat whiteboard CC ↔ Claude.ai
-*Uppdaterad: 2026-03-31 session handoff*
+*Uppdaterad: 2026-03-31 17:15*
 
 ---
 
-## SENASTE BESLUT FRÅN CLAUDE.AI — 2026-03-31
-- Max-plan bekräftat — CC-sessioner är flat rate, ingen API-kostnad
-- GitHub Actions-agenter (top-gainers, market-regime, memory-integrity) kör Sonnet — byt till Haiku sparar 80%
-- #13 AGENT-HAIKU-001 lagd till i todo
-- Handoff-protokoll nu symmetriskt: Claude.ai skriver active_context.md, CC skriver cc_session_log.md
-- RS_MOMENTUM agent 3: 31.8% WR — stäng eller redesigna? Gustav avgör.
+## ⚡ ENGRAMS FELSÖKNING — TESTA NU (CC)
+
+Kör detta och rapportera svaret:
+```bash
+curl -s -X POST https://www.engrams.app/api/remember \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eng_c8c20c283b1bfc93c8b330ae31c0a31035dfe6228f851850647e76587c28558e" \
+  -d '{"content":"test service_role","type":"learning"}'
+```
+
+Fixat sedan förra sync:
+- SUPABASE_SERVICE_KEY bytt till service_role i Vercel
+- match_memories() och boost_relevance() omskrivna med SECURITY DEFINER + SET search_path = public
+- PostgREST schema-cache reloadad
 
 ---
 
@@ -23,7 +31,7 @@
 | 5 | OPENAPI-001 | ⬜ väntar på #4 |
 | 6 | PRICING-001 — Prissektion | ⬜ väntar på #3 |
 | 7 | DASHBOARD-001 | ⬜ |
-| 8 | MEMORY-001 — API-endpoints | ⬜ kod klar, saknar env vars |
+| 8 | MEMORY-001 — API-endpoints | ⬜ kod klar, env vars fixade |
 | 9 | MEMORY-002 — Auto-remember | ⬜ väntar på #8 |
 | 10 | MEMORY-003 — Auto-recall boot | ⬜ väntar på #8 |
 | 11 | ENGRAMS-TEAM-001 (V2) | ⬜ planerad |
@@ -32,18 +40,11 @@
 
 ---
 
-## ÖPPNA FRÅGOR FÖR CC
-- #13 AGENT-HAIKU-001: byt `claude-sonnet-4` → `claude-haiku-4-5-20251001` i scripts/ i styr-ai repo
-- RS_MOMENTUM agent 3: 31.8% WR — fråga Gustav om stäng eller redesigna
-- ADD-VIX-FILTER-001 i tradesys work queue: kan stängas (vixElevated=0 redan live)
-
----
-
 ## TEKNISK STATE
 
-**Engrams:** engrams.app live. lib/ + api/ klar. Saknar env vars i Vercel.
-**TRADESYS:** SECTOR_HOT 58.1% WR. NBIS +36%, COIN +13%, PWR +3.9% aktiva.
-**Warner:** Audit 22/4 (22 dagar). Cure 22/5. Min 200k SEK.
+**Engrams:** engrams.app live. service_role-nyckel satt i Vercel. Testar nu.
+**TRADESYS:** SECTOR_HOT 58.1% WR. Agenter live.
+**Warner:** Audit 22/4. Cure 22/5.
 
 ---
 
