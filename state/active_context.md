@@ -1,22 +1,26 @@
 # active_context.md — Delat whiteboard CC ↔ Claude.ai
-*Uppdaterad: 2026-03-31 19:55 — session handoff*
+*Uppdaterad: 2026-03-31 20:15 — session handoff*
+
+---
+
+## PRIORITET 1 IMORGON — ENGRAMS-RECALL-FIX
+
+remember() fungerar (200 OK). recall() returnerar 0 minnen.
+Trolig orsak: embedding-likhetströskel för hög (0.75) eller pgvector-index saknas.
+Fix: sänk threshold till 0.3 i recall.js, testa. Om ej — kontrollera att ivfflat-index finns på memory_items.embedding.
+
+När recall fungerar → skicka onboarding-mail till Anna direkt.
 
 ---
 
 ## NULÄGE — ENGRAMS
 
-**Status:** API live men ej fullt fungerande. 4/5 e2e-tester passerar.
+**API:** remember() ✅ | recall() ❌ 0 minnen | profile() ✅
+**Vercel:** production READY (service_role-nyckel satt)
+**Supabase:** hxikaojzwjtztyuwlxra (delar med TradeSys)
+**Sajt:** uppdaterad till platform-agnostic copy (Claude · ChatGPT · Cursor · Gemini)
 
-**Rotproblem kvarstår:**
-- `SUPABASE_SERVICE_KEY` i Vercel pekade på fel Supabase-projekt (Styr.AI istf TradeSys)
-- CC fixade: rätt nyckel + `.replace(/\s/g, '')` sanitering i API-filerna
-- Men: Runtime-loggar visar fortfarande 500 på `/api/remember` — oklart om CC:s fix är deployad
-- `recall()` returnerar 0 minnen (search-relevance/embedding-threshold, ej infra)
-
-**Öppen fråga — prioritet 1 imorgon:**
-Kör e2e-test och verifiera att remember() returnerar `{ok:true, id:"..."}`. Om ej — kolla Vercel runtime logs.
-
-**Anna Garmen:** Onboarding-mail ej skickat. Väntar på att API fungerar.
+**Anna Garmen:** konto skapat, API-nyckel klar, onboarding-draft i Gmail. Väntar på recall-fix.
 
 ---
 
@@ -31,45 +35,15 @@ Kör e2e-test och verifiera att remember() returnerar `{ok:true, id:"..."}`. Om 
 | 5 | SECTOR_CONTAGION | 47.7% | Kör |
 | 6 | SC_TREND | 75.9% | Kör |
 
-**Aktiva positioner:** NBIS +36% | COIN +13% | PWR +3.9% | MU, STX, RTX, GLDD
-
----
-
-## ENGRAMS TODO (master)
-
-| # | Task | Status |
-|---|------|--------|
-| 1 | SQL-schema i Supabase | ✅ KLAR |
-| 2 | Onboarding-mail till Anna | ⬜ väntar på API-fix |
-| 3 | STRIPE-001 — Betalning → nyckel | ⬜ |
-| 4 | MCP-CONNECTOR-001 | ⬜ |
-| 5 | OPENAPI-001 | ⬜ |
-| 6 | PRICING-001 — Prissektion | ⬜ |
-| 7 | DASHBOARD-001 | ⬜ |
-| 8 | MEMORY-001 — API-endpoints | ⬜ kod klar, env var-fix deployad |
-| 9 | MEMORY-002 — Auto-remember | ⬜ väntar på #8 |
-| 10 | MEMORY-003 — Auto-recall boot | ⬜ väntar på #8 |
-| 11 | ENGRAMS-TEAM-001 (V2) | ⬜ |
-| 12 | CC-SUPABASE-MCP-001 | ⬜ |
-| 13 | AGENT-HAIKU-001 | ⬜ |
-| — | ENGRAMS-RECALL-FIX | ⬜ recall() 0 minnen |
-| — | ENGRAMS-SUPABASE-SPLIT | ⬜ migrera från TradeSys-projekt |
-
----
-
-## TRADESYS WORK QUEUE
-
-1. ADD-NEW-AGENT3-001 — Ny strategi agent 3 (RISK-OFF bounce, creditStress corr=0.480)
-2. DATA-EXTEND-001 — 85 tickers behöver TW-export 2019-2026 (56 st har bara 1 år)
-3. MODEL-SCOREBOARD-001 — Precision-scoreboard v5-v10
+**Positioner:** NBIS +36% | COIN +13% | PWR +3.9% | MU, STX, RTX, GLDD aktiva
 
 ---
 
 ## ÖPPNA BESLUT FÖR GUSTAV
 
 1. **RS_MOMENTUM agent 3** — 31.8% WR. Stäng permanent eller redesigna med RISK-OFF bounce?
-2. **ENGRAMS-SUPABASE-SPLIT** — Migrera Engrams-tabeller till Styr.AI-projektet (crsonxfrylkpgrddovhu) nu eller vänta på Supabase Pro?
-3. **DATA-EXTEND-001** — Exportera TW CSV 2019-2026 för ~85 tickers (CC väntar på datan)
+2. **ENGRAMS-SUPABASE-SPLIT** — Migrera Engrams till eget Supabase-projekt nu eller vänta på Pro?
+3. **DATA-EXTEND-001** — Exportera TW CSV 2019-2026 för ~85 tickers när du har tid
 
 ---
 
