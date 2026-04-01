@@ -1,58 +1,44 @@
 # active_context.md
-*Uppdaterad: 2026-04-01 17:00 — SUPABASE MIGRATION KLAR*
-*Skriven av CC. CA/CC: referens vid sync, boot-data hämtas från Supabase.*
+*Uppdaterad: 2026-04-01 CA session handoff*
+*Boot-data hämtas från Supabase (crsonxfrylkpgrddovhu). Denna fil är sekundär referens.*
 
 ---
 
-## MIGRERINGSSTATUS: KLAR ✓
+## SUPABASE ÄR SSOT
 
-Supabase-migrationen (projekt `crsonxfrylkpgrddovhu`) är genomförd.
-
-**Vad som gjordes:**
-- 4 tabeller skapade: `styr_system_state`, `styr_global_todo`, `styr_decisions`, `styr_session_log`
-- 20 tasks migrerade från `state/global_todo.md` till `styr_global_todo`
-- Första `styr_system_state` (id='global') skriven
-- Session loggad i `styr_session_log`
-
-**Supabase är nu SSOT** för:
-- Tasks → `styr_global_todo`
-- System state → `styr_system_state`
-- Beslut → `styr_decisions`
-- Sessioner → `styr_session_log`
-
-GitHub state-filer (`state/`) finns kvar som backup-referens men är **inte längre auktoritativa**. All läsning och skrivning sker mot Supabase.
+Alla tasks, beslut, sessioner och state läses från Supabase — inte från GitHub-filer.
+Boot-protokoll: se CLAUDE.md steg 1 (SQL-queries mot crsonxfrylkpgrddovhu).
 
 ---
 
-## BOOT-PROTOKOLL
+## DAGENS BESLUT (2026-04-01)
 
-Se `CLAUDE.md` — boot-sekvensen hämtar nu state från Supabase (Steg 1), inte från GitHub state-filer. Grundlagar (`GOVERNANCE.md`, `PROJECT.md`, `CLAUDE.md`) ligger kvar i git.
+1. Arkitekturskifte: GitHub state-filer → Supabase realtid. Eliminerar CA/CC-drift.
+2. E7 KLAR: ChatGPT Custom GPT live — https://chatgpt.com/g/g-69cd232e3d488191af492dc12a9931f1-engrams
+3. Engrams.app uppdaterad: från waitlist till live produkt med integrations-sektion
+4. Anna-onboarding: GPT-länk + API-nyckel är enklaste vägen. Zero-friction app är V2.
+5. Chrome-tillägg fel platform för Anna (Android-användare, mobil-first).
 
 ---
 
-## NUVARANDE PRIORITETSORDNING
+## NÄSTA FÖR CC
 
-### ENGRAMS
-1. **E7 — OPENAPI-001** ChatGPT Action (blockerare för Anna) ← **NÄSTA AKTIV TASK FÖR CC**
-2. E8 — Anna onboarding (väntar på E7)
-3. E9 — SUPABASE-SPLIT (lägre prio, ej blockerare)
+1. E8-förberedelse: granska Anna-mail i Gmail (draft finns)
+2. E9 SUPABASE-SPLIT: migrera Engrams-tabeller från TradeSys till Styr.AI-projekt
+3. T1 ADD-NEW-AGENT3-001: ny TRADESYS-strategi
 
-### TRADESYS
-1. T1 — ADD-NEW-AGENT3-001
-2. T2 — DATA-EXTEND-001 (kräver Gustav)
-3. T3 — MODEL-SCOREBOARD-001
+## NÄSTA FÖR CA (nästa session)
 
-### WARNER
-NEDPRIORITERAT. Bevakas passivt.
-
-### META
-1. S4 — PAT_TOKEN tradesys1337
+1. Hämta Anna-mail från Gmail → Gustav granskar → skicka
+2. Beslut: hello@engrams.app — sätt upp eller byt till Gustavs adress i sajten
+3. GPT Beskrivning: lägg till i Engrams Custom GPT
 
 ---
 
 ## TEKNISK STATE
 
-**Engrams:** live, 5/5 e2e, API + MCP fungerar
-**Styr.AI Supabase:** `crsonxfrylkpgrddovhu` — SSOT för all state
-**TradeSys Supabase:** `hxikaojzwjtztyuwlxra` — oförändrat, egna operativa tabeller
-**Engrams nyckel Anna:** eng_d98ad48a4fe579e04b8abc61aa3ea6ba562e4fa5331c1aef1d1847087c966cd8
+**Engrams API:** live, 5/5 e2e, /api/remember /api/recall /api/profile /api/load_project /api/openapi
+**ChatGPT GPT:** https://chatgpt.com/g/g-69cd232e3d488191af492dc12a9931f1-engrams — 5 actions live
+**Styr.AI Supabase:** crsonxfrylkpgrddovhu — 4 tabeller, 20 tasks, SSOT
+**TradeSys Supabase:** hxikaojzwjtztyuwlxra — oförändrat
+**Annas API-nyckel:** eng_d98ad48a4fe579e04b8abc61aa3ea6ba562e4fa5331c1aef1d1847087c966cd8
