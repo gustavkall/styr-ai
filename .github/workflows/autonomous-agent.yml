@@ -1,28 +1,24 @@
 name: Autonomous Agent
 
+on:
+  workflow_dispatch:  # Manuell trigger — pausad från schema
+  # schedule:
+  #   - cron: '0 3 * * *'  # 03:00 CET — avkommenteras när redo
 
 jobs:
   run-agent:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - name: Install dependencies
-        run: npm install
-
+      - run: npm install
       - name: Run autonomous agent
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: node scripts/autonomous-agent.js
-        
