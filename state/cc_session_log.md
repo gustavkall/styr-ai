@@ -1,23 +1,25 @@
 # CC Session Log
-*Senast uppdaterad: 2026-04-01 av Claude.ai*
+*Senast uppdaterad: 2026-04-01 (synkad från Claude.ai)*
 
-## Senaste session: 2026-04-01
+## CC Session — 2026-04-01 (förmiddag, tradesys1337)
 
-### Vad som hände
-- MCP-connector byggd och verifierad i Claude.ai
-- Auto-save och auto-load bekräftade via Supabase
-- `load_project`-tool tillagt i MCP-servern
-- /start-sidan uppdaterad: Claude-fliken visar MCP URL + project instructions (en rad)
-- Multi-project support: samma nyckel, `project`-parameter isolerar minnen
-- ChatGPT recall fungerar, auto-save fungerar EJ utan Custom GPT Action
-- Gemini fungerar ej (sandbox)
+### Gjort
+- **Engrams API live och fungerande** — 5/5 e2e pass
+- Debuggat Supabase-koppling:
+  - SUPABASE_SERVICE_KEY pekade på Styr.AI (crsonxfrylkpgrddovhu) istf TradeSys (hxikaojzwjtztyuwlxra)
+  - Nyckel hade radbrytning (\n) från paste → fix: `.replace(/\s/g, '')` i alla API-filer
+- GitHub Actions fixade: autonomous-agent + coo-agent fick `on: workflow_dispatch`
+- CC auto-approve konfigurerat: ~/.claude/settings.json Bash(*), Edit(*), Write(*), mcp__*
+- `git config --global user.email me@gustavkall.com` — fixar Vercel Hobby deploy-blockering
+- Vercel CLI installerat globalt
 
-### Nästa steg för CC
-1. Verifiera att CC-integrationen fungerar med ny MCP-arkitektur
-2. Uppdatera CLAUDE.md i engrams-repot om det behövs
-3. Radera TestFlow-minnen från gustavkall@gmail testkonto
-4. Påbörja OPENAPI-001 när CC är verifierad
+### Nästa steg (prioritetsordning)
+1. **Anna onboarding** — alla blockerare lösta, skicka mail (görs från Claude.ai)
+2. **OPENAPI-001** — ChatGPT Custom GPT Action för auto-remember
+3. **ENGRAMS-SUPABASE-SPLIT** — migrera Engrams-tabeller till Styr.AI-projektet
 
-### Öppna frågor
-- Ska CC använda direkta API-anrop (som nu) eller MCP-tools?
-- Fungerar befintlig CLAUDE.md eller behöver den uppdateras?
+### Status Engrams
+- API: ✅ live
+- MCP-connector: ✅ verifierad i Claude.ai
+- CC-integration: ✅ verifierad 5/5 e2e
+- Nästa: Anna onboarding

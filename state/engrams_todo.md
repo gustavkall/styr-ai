@@ -1,25 +1,16 @@
 # Engrams Todo — Master
-*Uppdaterad: 2026-04-01*
+*Uppdaterad: 2026-04-01 (synkad från CC-session)*
 
 ## Integration-status per plattform
 
 | Plattform | Recall | Remember | Metod | Status |
 |-----------|--------|----------|-------|--------|
 | Claude.ai (MCP) | ✅ | ✅ | MCP-connector + project instructions | VERIFIERAD |
-| Claude Code (CC) | ✅ | ✅ | CLAUDE.md direkt API | EJ TESTAD efter MCP-rebuild |
+| Claude Code (CC) | ✅ | ✅ | CLAUDE.md direkt API | VERIFIERAD (5/5 e2e pass) |
 | ChatGPT Custom Instructions | ✅ boot | ❌ auto-save | Recall OK, save kräver trigger | Halvt |
 | ChatGPT Custom GPT | ✅ | ✅ | OpenAI Action | OPENAPI-001 |
 | Cursor | ✅ | ✅ | .cursorrules | Otestat |
 | Gemini Gems | ❌ sandbox | ❌ sandbox | Kräver native | GEMINI-NATIVE-001 |
-
----
-
-## Lansering-plan
-
-1. **CC-verifiering** → uppdatera CLAUDE.md för MCP-tools → testa
-2. **Anna onboardas** → när CC bekräftad
-3. **OPENAPI-001** → ChatGPT Custom GPT Action
-4. **Bredare lansering**
 
 ---
 
@@ -29,55 +20,54 @@
 |---|------|--------|-----|
 | 1 | SQL-schema | ✅ KLAR | |
 | 2 | MCP-CONNECTOR-001 | ✅ KLAR | Verifierad i Claude.ai |
-| 3 | **CC-VERIFY-001** — verifiera CC + uppdatera CLAUDE.md | ⬜ PRIORITET 1 | Blockar Anna |
-| 4 | **Anna onboarding** | ⬜ PRIORITET 2 | Väntar på #3 |
-| 5 | **OPENAPI-001** — ChatGPT Custom GPT Action | ⬜ PRIORITET 3 | Auto-remember kräver Actions |
-| 6 | CLEANUP-001 — radera TaskFlow-testminnen | ⬜ | gustavkall@gmail.com |
-| 7 | STRIPE-001 | ⬜ | |
-| 8 | GEMINI-NATIVE-001 | ⬜ V2 | |
-| 9 | PRICING-001 | ⬜ | |
-| 10 | DASHBOARD-001 | ⬜ | |
-| 11 | CONNECT-001 | ⬜ | Väntar på dashboard |
-| — | ENGRAMS-SUPABASE-SPLIT | ⬜ | Migrera från TradeSys till eget projekt |
+| 3 | CC-VERIFY-001 | ✅ KLAR | 5/5 e2e pass |
+| 4 | ENGRAMS-RECALL-FIX | ✅ KLAR | Threshold 0.3, fungerar |
+| 5 | **Anna onboarding** | ⬜ PRIORITET 1 | Alla blockerare lösta |
+| 6 | **OPENAPI-001** — ChatGPT Custom GPT Action | ⬜ PRIORITET 2 | Auto-remember kräver Actions |
+| 7 | **ENGRAMS-SUPABASE-SPLIT** | ⬜ PRIORITET 3 | Engrams delar nu DB med TradeSys |
+| 8 | STRIPE-001 | ⬜ | |
+| 9 | GEMINI-NATIVE-001 | ⬜ V2 | |
+| 10 | PRICING-001 | ⬜ | |
+| 11 | DASHBOARD-001 | ⬜ | |
+| 12 | CONNECT-001 | ⬜ | Väntar på dashboard |
 | — | MEMORY-FORGETTING-001 | ⬜ V2 | |
 | — | MEMORY-CONSOLIDATION-001 | ⬜ V2 | |
 
 ---
 
-## Vad som är byggt och verifierat (2026-04-01)
+## Vad som är byggt och verifierat
 
 **API (live på www.engrams.app):**
-- `remember`, `recall`, `profile` — alla endpoints live
+- `remember`, `recall`, `profile` — alla endpoints live, 5/5 e2e pass
 - Multi-project: samma nyckel, isolerade minnen via `project`-parameter
 - `get_or_create_project()` Supabase-funktion
+- Whitespace-strippning på env vars (fix för Vercel paste-radbrytning)
 
 **MCP-server (`/api/mcp`):**
-- JSON-RPC 2.0, CommonJS
-- Auth via URL `?key=eng_...`
+- JSON-RPC 2.0, CommonJS, auth via URL `?key=eng_...`
 - Tools: `remember`, `recall`, `profile`, `load_project`
-- `load_project` returnerar strukturerad briefing
 - CORS-headers satta
 
 **Verifierat i Claude.ai:**
-- MCP-connector installerad med nyckel i URL
-- Auto-save: Claude sparade `profile` + `context` automatiskt
-- Auto-load: ny chat laddade minnen från föregående session
-- Minnen bekräftade i Supabase
+- Auto-save och auto-load bekräftade
+- `load_project` returnerar strukturerad briefing
 
-**Claude flöde (rätt arkitektur):**
-- Steg 1: MCP URL i Settings → Connections (en gång globalt)
-- Steg 2: En rad i varje Claude Project Instructions (projekt-isolation)
-- Kommando: `load_project "projektnamn"` — full briefing on demand
+**Verifierat i CC:**
+- 5/5 e2e pass efter Supabase-fix
+- SUPABASE_SERVICE_KEY pekade på fel projekt (Styr.AI istf TradeSys) — fixat
+- Nyckel hade radbrytning från paste — fixat med `.replace(/\s/g, '')`
 
-**ChatGPT:**
-- Recall fungerar vid boot via Custom Instructions
-- Auto-remember fungerar INTE — kräver Custom GPT Action (OPENAPI-001)
+**Infra:**
+- `git config --global user.email me@gustavkall.com` — fixar Vercel Hobby deploy-blockering
+- Vercel CLI installerat globalt på Gustavs Mac
+- CC auto-approve konfigurerat i ~/.claude/settings.json
 
 ---
 
 ## Nycklar och IDs
 
 - Supabase TradeSys (engrams DB): `hxikaojzwjtztyuwlxra`
+- Supabase Styr.AI (framtida engrams DB): `crsonxfrylkpgrddovhu`
 - Vercel engrams: `prj_oQk5XQfJmBLJy70FIgApFJZnlHBZ`
 - Vercel team: `team_pp2fvMpvzRPz7AfSGFMVttPs`
 - Anna API-nyckel: `eng_d98ad48a4fe579e04b8abc61aa3ea6ba562e4fa5331c1aef1d1847087c966cd8`
