@@ -4,6 +4,14 @@
 
 ---
 
+### 2026-04-01 — work_queue.md borttagen
+**Vad:** `state/work_queue.md` raderad. `state/global_todo.md` är nu ensam SSOT för alla tasks. CLAUDE.md uppdaterad: referens till work_queue borttagen från boot-protokoll och repo-struktur. Ansvarsmodell CA/CC dokumenterad explicit i sync-tabellen.
+**Bakgrund:** Drift uppstod när CA bootade mot work_queue.md istället för global_todo.md — två parallella filer med överlappande ansvar skapade inkonsekvens.
+**Påverkar CLAUDE.md:** Boot protocol steg 1, GLOBAL TODO-sektion, repo-struktur
+**Åtgärd:** Uppdaterad ✅
+
+---
+
 ### 2026-03-24 — COO-agent byggd
 **Vad:** `scripts/coo-agent.js` + `.github/workflows/coo-agent.yml`. Orchestrerar alla specialistagenter, skriver `state/daily_briefing.md` kl 06:00 CET vardagar. Eskalerar beslut till `governance/approvals.md`.
 **Påverkar CLAUDE.md:** Agent-schema, repo-struktur, boot protocol (daily_briefing som primärkort)
@@ -14,24 +22,9 @@
 **Påverkar CLAUDE.md:** Agent-schema-sektion tillagd
 **Åtgärd:** Uppdaterad ✅
 
-### 2026-03-24 — top-gainers-agent v2
-**Vad:** Full pre-move analys: 25d OHLCV, alla tekniska indikatorer, macro (SPY/VIXY/HYG), nyheter via Polygon, fundamentals via Alpha Vantage, ENTRY-score 1/3/5 dagar före move, Claude post-mortem, auto-genererade case-filer för modell-träning.
-**Påverkar CLAUDE.md:** Agent-beskrivning
-**Åtgärd:** Uppdaterad ✅
-
 ### 2026-03-24 — min-analytiker sammanslått med TRADESYS
-**Vad:** min-analytiker är inte längre ett separat projekt. Agenternas output går direkt till tradesys1337/state/. TRADESYS project_context uppdaterad.
+**Vad:** min-analytiker är inte längre ett separat projekt.
 **Påverkar CLAUDE.md:** Underprojektstabell
-**Åtgärd:** Uppdaterad ✅
-
-### 2026-03-24 — CLAUDE.md uppdaterad till fullständigt tillstånd
-**Vad:** CLAUDE.md reskriven med goals.md, project_context.md, autonomous agent, 6-modells-arkitektur, next_session_brief-protokoll, architecture_changelog
-**Påverkar CLAUDE.md:** Hela dokumentet
-**Åtgärd:** Uppdaterad ✅
-
-### 2026-03-24 — Architecture changelog skapad
-**Vad:** `governance/architecture_changelog.md` skapad.
-**Påverkar CLAUDE.md:** Boot protocol, Handoff protocol, Repo-struktur
 **Åtgärd:** Uppdaterad ✅
 
 ### 2026-03-24 — goals.md + system_rules.md + approvals.md
