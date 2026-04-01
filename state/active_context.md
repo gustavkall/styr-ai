@@ -1,76 +1,67 @@
-# Active Context
-*Skriven av Claude.ai — 2026-04-01*
-
-## Aktivt projekt: Engrams
-
-## Vad som hände idag (2026-04-01)
-
-### MCP-connector — KLAR OCH VERIFIERAD
-- MCP-server byggd på `https://www.engrams.app/api/mcp`
-- JSON-RPC 2.0, CommonJS, auth via URL `?key=eng_...`
-- Tools: `remember`, `recall`, `profile`, `load_project`
-- Auto-save och auto-load verifierade i Claude.ai
-- Minnen bekräftade i Supabase (profile + context sparades automatiskt)
-
-### Arkitektur för Claude.ai
-- Steg 1: MCP URL i Settings → Connections (globalt, en gång)
-- Steg 2: En rad i varje Project Instructions för projekt-isolation
-- Kommando: `load_project "projektnamn"` — returnerar strukturerad briefing
-
-### /start-sidan uppdaterad
-- Claude-fliken: MCP URL + project instructions (en rad)
-- ChatGPT-fliken: komprimerat block <1500 tecken
-- Gemini borttagen (sandbox-begränsning)
-- `load_project`-kommandot dokumenterat på sidan
-
-### Multi-project
-- Samma nyckel, isolerade minnen via `project`-parameter
-- `get_or_create_project()` Supabase-funktion skapar automatiskt nya projekt
-
-### Testkonto (gustavkall@gmail.com)
-- Nyckel: `eng_d848fe5b5bda0cf7fbb2ff000a43a19a6bf3e7c88a34882986a591e4596bdf3c`
-- Testminnen raderade (TaskFlow/Gusten)
-- Projektet i Claude.ai behålls för vidare testning
+# active_context.md
+*Uppdaterad: 2026-04-01 — session handoff*
+*Skriven av Claude.ai, läses av CC via `session boot`*
 
 ---
 
-## Nästa steg (prioritetsordning)
+## SENASTE BESLUT FRÅN CLAUDE.AI — 2026-04-01
 
-### PRIORITET 1 — CC-VERIFY-001
-Verifiera att CC-integrationen fungerar med ny MCP-arkitektur.
-- Kolla befintlig CLAUDE.md i engrams-repot
-- Testa recall + remember via direkta API-anrop
-- Uppdatera CLAUDE.md om nödvändigt
-- CC kan använda direkta API-anrop (Bearer token) eller MCP-tools
-
-### PRIORITET 2 — Anna onboardas
-- Väntar på CC-verifiering
-- Nyckel: `eng_d98ad48a4fe579e04b8abc61aa3ea6ba562e4fa5331c1aef1d1847087c966cd8`
-- Onboarding-mail finns i Gmail drafts
-
-### PRIORITET 3 — OPENAPI-001
-- ChatGPT Custom GPT med Actions
-- Auto-remember fungerar EJ med Custom Instructions
-- Kräver OpenAPI JSON-schema på `/openapi.json`
+- MCP-connector verifierad i Claude.ai — auto-save och auto-load fungerar
+- Claude.ai-arkitektur: MCP URL globalt + en rad project instructions per projekt
+- `load_project "namn"` — nytt MCP-tool som returnerar strukturerad briefing
+- Global todo (state/global_todo.md) skapad — SSOT för alla tasks alla projekt
+- TERMINAL-ONBOARDING-001 klar: /api/claudemd endpoint + Terminal-flik Mac/Windows
+- ChatGPT recall fungerar, auto-remember fungerar EJ — kräver OPENAPI-001
+- Gemini fungerar ej (sandbox) — deprioriterad
+- Testkonto gustavkall@gmail.com rensat (TaskFlow-minnen raderade)
 
 ---
 
-## Integration-status
+## GLOBAL TODO (aktiva ⎹)
 
-| Plattform | Recall | Remember | Status |
-|-----------|--------|----------|--------|
-| Claude.ai (MCP) | ✅ | ✅ | VERIFIERAD |
-| Claude Code | ✅ | ✅ | EJ TESTAD efter MCP-rebuild |
-| ChatGPT Custom Instructions | ✅ boot | ❌ auto | Halvt |
-| ChatGPT Custom GPT | ✅ | ✅ | OPENAPI-001 |
-| Cursor | ✅ | ✅ | Otestat |
-| Gemini | ❌ | ❌ | Sandbox |
+### ENGRAMS
+| # | Task | Prio |
+|---|------|------|
+| E7 | OPENAPI-001 — ChatGPT Custom GPT Action | 1 |
+| E8 | Anna onboarding | 2 |
+| E9 | ENGRAMS-SUPABASE-SPLIT | 3 |
+| E10 | STRIPE-001 | — |
+| E11 | PRICING-001 | — |
+| E12 | DASHBOARD-001 | — |
+| E13 | CONNECT-001 | — |
+
+### TRADESYS
+| # | Task |
+|---|------|
+| T1 | ADD-NEW-AGENT3-001 |
+| T2 | DATA-EXTEND-001 (kräver Gustav) |
+| T3 | MODEL-SCOREBOARD-001 |
+
+### META
+| # | Task |
+|---|------|
+| S4 | PAT_TOKEN scope mot tradesys1337 |
 
 ---
 
-## Nycklar och IDs
-- Supabase engrams DB: `hxikaojzwjtztyuwlxra`
-- Vercel engrams: `prj_oQk5XQfJmBLJy70FIgApFJZnlHBZ`
-- Vercel team: `team_pp2fvMpvzRPz7AfSGFMVttPs`
-- Anna: `eng_d98ad48a4fe579e04b8abc61aa3ea6ba562e4fa5331c1aef1d1847087c966cd8`
-- Testkonto: `eng_d848fe5b5bda0cf7fbb2ff000a43a19a6bf3e7c88a34882986a591e4596bdf3c`
+## TEKNISK STATE
+
+**Engrams (www.engrams.app):**
+- API: live, 5/5 e2e pass
+- MCP-server: /api/mcp?key=eng_... — 4 tools: remember, recall, profile, load_project
+- /api/claudemd: returnerar ren text CLAUDE.md för terminal-användare
+- Supabase: TradeSys-projektet (hxikaojzwjtztyuwlxra) — ska splitas till eget
+- Auth: SUPABASE_SERVICE_KEY strippar whitespace (.replace(/\s/g, ''))
+- Vercel: prj_oQk5XQfJmBLJy70FIgApFJZnlHBZ
+
+**Nycklar:**
+- Anna: eng_d98ad48a4fe579e04b8abc61aa3ea6ba562e4fa5331c1aef1d1847087c966cd8
+- gustavkall@gmail test: eng_d848fe5b5bda0cf7fbb2ff000a43a19a6bf3e7c88a34882986a591e4596bdf3c
+
+---
+
+## ÖPPNA FRÅGOR FÖR CC
+
+- OPENAPI-001: bygg OpenAI Action JSON-schema för ChatGPT Custom GPT
+- ENGRAMS-SUPABASE-SPLIT: migrera tabeller till Styr.AI-projektet (crsonxfrylkpgrddovhu)?
+- DATA-EXTEND-001: påminn Gustav om TW CSV-export när redo
