@@ -1,38 +1,49 @@
 # styr-ai — SESSION HANDOFF
-*Session close: 2026-03-31*
+*Session: 2026-04-01 CA — sync-session*
 
 ---
 
 ## DENNA SESSION — SAMMANFATTNING
 
 ### Gjort
-1. Session boot körd och verifierad
-2. TRAINER-COST-001 undersökt — falskt alarm, inga API-anrop i agent-trainer.js. Credits åt pga CC API-billing (nu Max-plan = inget problem)
-3. Sync-test mellan Claude.ai och CC — bekräftat fungerande
-4. CC visade hela Engrams todo-tabellen korrekt efter CLAUDE.md-fix
-5. cc_session_log.md synkad med CC:s session (SECTOR_HOT 22%→58.1% WR)
-6. Symmetri i handoff-protokoll: båda parter skriver till varandra
-7. #13 AGENT-HAIKU-001 lagd till i todo (byt agenter Sonnet→Haiku, 80% kostnadsbesparing)
+1. Full boot enligt CLAUDE.md-protokoll
+2. CC session log absorberad — 5 stale punkter korrigerade
+3. work_queue.md synkad mot verifierat CC-state
+4. Ansvarsmodell CA/CC klargjord och dokumenterad
 
-### CC:s session (från cc_session_log.md)
-- SECTOR_HOT WR: 22% → 58.1% (tre nya filter)
-- Finance+Defense data: 65k → 72k snapshots
-- Aktiva positioner: NBIS +36%, COIN +13%, PWR +3.9%
-- RS_MOMENTUM agent 3: 31.8% WR — öppen fråga: stäng eller redesigna?
+### Korrigerat state (var stale i CA)
+| Punkt | Var | Är |
+|-------|-----|----|
+| OPENAI_API_KEY | Saknas i Vercel | Finns — 5/5 e2e pass |
+| HAIKU-001 | Ej gjord | ✅ klar 2026-03-31 |
+| Agent 4+6 restart | Behövs | ✅ klar 2026-03-31 |
+| vixElevated filter | Ej implementerat | ✅ live DEC-015/017 |
+| Agent-kostnader | ~$0.30-0.45/dag | Haiku = betydligt lägre |
 
 ---
 
 ## NÄSTA SESSION — ORDNING
 
-1. **#13 AGENT-HAIKU-001** — byt agenter Sonnet→Haiku. 15 min. Gör i CC.
-2. **#3 STRIPE-001** — kräver env vars i Vercel först (Gustav lägger till)
-3. **RS_MOMENTUM agent 3** — besluta: stäng (31.8% WR) eller redesigna med creditStress-filter?
+1. **ENGRAMS-ONBOARD-001** — Gustav godkänner → CA skickar Anna-mail (draft redo)
+2. **TRADESYS-ADD-NEW-AGENT3** — Gustav beslutar: stäng eller redesigna RS_MOMENTUM agent 3 (31.8% WR)?
+3. **TRADESYS-DATA-EXTEND-001** — Gustav: TW CSV-export 85 tickers
+4. **ENGRAMS-OPENAPI-001** — CC bygger ChatGPT Action schema
+5. **ENGRAMS-SUPABASE-SPLIT** — CC migrerar tabeller
 
 ---
 
 ## TEKNISK STATE
 
-**Engrams:** engrams.app live. Kod klar. Saknar: OPENAI_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY i Vercel.
-**TRADESYS:** 6 agenter live. SECTOR_HOT 58.1% WR. NBIS/COIN/PWR öppna positioner.
-**Warner:** Audit 22/4 (22 dagar). Cure 22/5. Min 200k SEK.
-**Kostnader:** Max-plan täcker CC. GitHub Actions-agenter ~$0.30-0.45/dag med Sonnet → fixas med #13.
+**Engrams:** API live, 5/5 e2e, MCP-connector verifierad. Blockerare kvar: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY saknas i Vercel.
+**TRADESYS:** 6 agenter live, Haiku, vixElevated filter live. SECTOR_HOT 71.8% WR, SC_TREND 62.6% WR.
+**Warner:** Frist 29/3 passerad utan svar. Audit 22 april = 21 dagar. Cure 22 maj.
+**Agent-kostnader:** Haiku sedan 31/3 — budget under kontroll.
+
+---
+
+## ÖPPNA BESLUT FÖR GUSTAV
+
+1. Anna-mail — godkänn för utskick
+2. RS_MOMENTUM agent 3 — stäng (31.8% WR) eller redesigna?
+3. Warner — har de hört av sig sedan 29/3?
+4. Stripe env vars — lägger du till i Vercel?
