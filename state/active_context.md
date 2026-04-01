@@ -1,26 +1,53 @@
 # active_context.md — Delat whiteboard CC ↔ Claude.ai
-*Uppdaterad: 2026-03-31 20:15 — session handoff*
+*Uppdaterad: 2026-04-01 — session handoff kväll*
 
 ---
 
 ## PRIORITET 1 IMORGON — ENGRAMS-RECALL-FIX
 
 remember() fungerar (200 OK). recall() returnerar 0 minnen.
-Trolig orsak: embedding-likhetströskel för hög (0.75) eller pgvector-index saknas.
-Fix: sänk threshold till 0.3 i recall.js, testa. Om ej — kontrollera att ivfflat-index finns på memory_items.embedding.
-
-När recall fungerar → skicka onboarding-mail till Anna direkt.
+Fix: sänk threshold 0.75→0.3 i recall.js, deploy, testa.
+Om fortfarande 0 — kontrollera pgvector ivfflat-index på memory_items.embedding.
+När recall fungerar → skicka Anna-onboarding-mail (draft klar i Gmail).
 
 ---
 
 ## NULÄGE — ENGRAMS
 
 **API:** remember() ✅ | recall() ❌ 0 minnen | profile() ✅
-**Vercel:** production READY (service_role-nyckel satt)
-**Supabase:** hxikaojzwjtztyuwlxra (delar med TradeSys)
-**Sajt:** uppdaterad till platform-agnostic copy (Claude · ChatGPT · Cursor · Gemini)
+**Vercel:** production READY, service_role-nyckel satt
+**Sajt:** platform-agnostic copy, opak (ingen impl-info exponerad)
+**Anna:** konto klart, onboarding-draft klar, väntar på recall-fix
+**Supabase Styr.AI:** RLS fixat (projects + waitlist var exponerade — nu stängt)
 
-**Anna Garmen:** konto skapat, API-nyckel klar, onboarding-draft i Gmail. Väntar på recall-fix.
+## GJORT IDAG (2026-03-31)
+
+- Supabase service_role-nyckel satt i Vercel (var anon → fixat)
+- match_memories() + boost_relevance() omskrivna med SECURITY DEFINER + SET search_path
+- RLS-policies på TradeSys (projects, memory_items, accounts)
+- RLS fixat på Styr.AI-projektet (projects + waitlist var publikt exponerade)
+- Sajt uppdaterad: platform-agnostic (Claude · ChatGPT · Cursor · Gemini)
+- Sajt uppdaterad: opak copy — ingen impl-detaljer exponerade
+- Anna-onboarding-mail omskrivet (ingen API-nyckel, ingen teknisk info)
+- DASHBOARD-001 + CONNECT-001 planerade (zero-technical UX)
+- Minnessystem neurobiologiskt mappat (profile/context/learning/episode)
+- MEMORY-FORGETTING-001 + MEMORY-CONSOLIDATION-001 tillagda i todo
+- GitHub Actions: autonomous-agent + coo-agent saknade on: — CC fixar nu
+- GitHub Actions: top-gainers failade — troligen PAT_TOKEN scope mot tradesys1337
+
+---
+
+## GITHUB ACTIONS STATUS
+
+| Agent | Status | Problem |
+|-------|--------|---------|
+| autonomous-agent | ⚠️ | Saknade on: — CC lägger till workflow_dispatch |
+| coo-agent | ⚠️ | Saknade on: — CC lägger till workflow_dispatch |
+| top-gainers | ❌ | Kraschade i scriptet — troligen PAT_TOKEN write-access till tradesys1337 |
+| market-regime | ✅ | Kör på schema |
+| memory-integrity | ✅ | Kör söndagar |
+
+**PAT_TOKEN-check:** Verifiera att PAT_TOKEN har repo-scope på tradesys1337 i GitHub Settings → Developer settings → Personal access tokens.
 
 ---
 
@@ -35,15 +62,16 @@ När recall fungerar → skicka onboarding-mail till Anna direkt.
 | 5 | SECTOR_CONTAGION | 47.7% | Kör |
 | 6 | SC_TREND | 75.9% | Kör |
 
-**Positioner:** NBIS +36% | COIN +13% | PWR +3.9% | MU, STX, RTX, GLDD aktiva
+**Positioner:** NBIS +36% | COIN +13% | PWR +3.9% | MU, STX, RTX, GLDD
 
 ---
 
 ## ÖPPNA BESLUT FÖR GUSTAV
 
-1. **RS_MOMENTUM agent 3** — 31.8% WR. Stäng permanent eller redesigna med RISK-OFF bounce?
-2. **ENGRAMS-SUPABASE-SPLIT** — Migrera Engrams till eget Supabase-projekt nu eller vänta på Pro?
-3. **DATA-EXTEND-001** — Exportera TW CSV 2019-2026 för ~85 tickers när du har tid
+1. RS_MOMENTUM agent 3 — stäng permanent eller redesigna?
+2. ENGRAMS-SUPABASE-SPLIT — migrera nu eller vänta på Pro?
+3. DATA-EXTEND-001 — exportera TW CSV 2019-2026 för ~85 tickers
+4. PAT_TOKEN — kontrollera repo-scope mot tradesys1337
 
 ---
 
