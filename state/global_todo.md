@@ -1,6 +1,7 @@
 # Global Todo — Alla Projekt
 *Single source of truth. Läses vid varje session boot oavsett projekt.*
 *Uppdateras av både Claude.ai och CC vid session close/sync.*
+*Senast synkad: 2026-04-01 CA — absorberat CC-sessioner 31/3 + 1/4*
 
 ---
 
@@ -11,13 +12,13 @@
 | E1 | SQL-schema + API endpoints | ✅ KLAR | remember/recall/profile/load_project live |
 | E2 | MCP-CONNECTOR-001 | ✅ KLAR | Verifierad Claude.ai + CC |
 | E3 | CC-VERIFY-001 | ✅ KLAR | 5/5 e2e pass |
-| E4 | ENGRAMS-RECALL-FIX | ✅ KLAR | Threshold 0.3, fungerar |
+| E4 | ENGRAMS-RECALL-FIX | ✅ KLAR | Threshold 0.3, 5/5 e2e pass 2026-04-01 |
 | E5 | Multi-project support | ✅ KLAR | `project`-parameter, get_or_create_project() |
 | E6 | TERMINAL-ONBOARDING-001 | ✅ KLAR | /api/claudemd + Terminal-flik Mac/Windows |
-| E7 | **OPENAPI-001** — ChatGPT Custom GPT Action | ⬜ PRIORITET 1 | Auto-remember kräver Actions, ej Custom Instructions |
-| E8 | **Anna onboarding** | ⬜ PRIORITET 2 | Alla blockerare lösta. Mail klart i Gmail drafts |
-| E9 | **ENGRAMS-SUPABASE-SPLIT** | ⬜ PRIORITET 3 | Engrams delar nu DB med TradeSys (hxikaojzwjtztyuwlxra) |
-| E10 | STRIPE-001 — Betalning | ⬜ | |
+| E7 | **OPENAPI-001** — ChatGPT Custom GPT Action | ⬜ PRIORITET 1 | Auto-remember kräver Actions. CC bygger. |
+| E8 | **Anna onboarding** | ⬜ PRIORITET 2 | Alla blockerare lösta. Mail klart i Gmail drafts. Gustav godkänner. |
+| E9 | **ENGRAMS-SUPABASE-SPLIT** | ⬜ PRIORITET 3 | Engrams delar DB med TradeSys (hxikaojzwjtztyuwlxra). Styr.AI-projekt redo. |
+| E10 | STRIPE-001 — Betalning | ⬜ | Saknar: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY i Vercel |
 | E11 | PRICING-001 — Prissektion på sajten | ⬜ | |
 | E12 | DASHBOARD-001 — Inloggning + projektsida | ⬜ | |
 | E13 | CONNECT-001 — Connect-flow per plattform | ⬜ | Väntar på E12 |
@@ -38,14 +39,21 @@
 | T5 | INFRA-003 — Stateful backend | ⬜ | Stort jobb |
 | T6 | WQ-008 / WQ-001 — Scanners + watchlist live | ⬜ | Kräver öppen marknad |
 
+### Verifierat klar (CC 31/3–1/4)
+| # | Task | Status | Not |
+|---|------|--------|-----|
+| TX1 | AGENT-HAIKU-001 | ✅ KLAR | Alla styr-ai agenter kör Haiku sedan 31/3 |
+| TX2 | Agent 4+6 omstart | ✅ KLAR | Nya filter live 31/3 |
+| TX3 | vixElevated filter | ✅ KLAR | Live DEC-015 + DEC-017 (SECTOR_HOT + SC_TREND) |
+
 ---
 
 ## SAVAGE ROAR / WARNER
 
 | # | Task | Status | Not |
 |---|------|--------|-----|
-| W1 | Warner audit §8.3 — cure period aktiv | ⬜ | Gustav hanterar personligen |
-| W2 | Settlement-strategi | ⬜ | Nils (legal advisor) involverad |
+| W1 | Warner audit §8.3 — 22 april | ⬜ | 21 dagar kvar. Gustav hanterar personligen. |
+| W2 | Settlement-strategi | ⬜ | Min 200k SEK. Nils involverad. Frist 29/3 passerad utan svar. |
 
 ---
 
@@ -58,6 +66,7 @@
 | S3 | GLOBAL-TODO-001 — denna fil | ✅ KLAR | |
 | S4 | PAT_TOKEN scope mot tradesys1337 | ⬜ | top-gainers-agent failar |
 | S5 | styrai-product repo — radera? | ⬜ | Rekommendation: ja |
+| S6 | work_queue.md borttagen | ✅ KLAR | global_todo.md är SSOT |
 
 ---
 
@@ -67,7 +76,9 @@
 |---|-------|--------|
 | D1 | Agent 3 — stäng permanent eller redesigna? | RS_MOMENTUM 31.8% WR |
 | D2 | ENGRAMS-SUPABASE-SPLIT — nu eller vänta på Pro? | Styr.AI-projekt redo |
-| D3 | DATA-EXTEND-001 — exportera TW CSV när du har tid | ~85 tickers |
+| D3 | DATA-EXTEND-001 — exportera TW CSV | ~85 tickers |
+| D4 | Anna onboarding — godkänn utskick | Mail klart i Gmail drafts |
+| D5 | Warner — hörde de av sig efter 29/3? | Audit 22 april |
 
 ---
 
@@ -75,4 +86,4 @@
 
 Vid session boot: läs denna fil först, rapportera aktiva ⬜-tasks.
 Vid session close/sync: uppdatera ⬜→✅ för slutförda, lägg till nya.
-Denna fil är SSOT — projektspecifika todo-filer är backup.
+Denna fil är SSOT — work_queue.md existerar inte längre.
