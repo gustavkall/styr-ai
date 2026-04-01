@@ -1,5 +1,5 @@
 # active_context.md
-*Uppdaterad: 2026-04-01 CA session handoff*
+*Uppdaterad: 2026-04-01 CA+CC session handoff*
 *Boot-data hämtas från Supabase (crsonxfrylkpgrddovhu). Denna fil är sekundär referens.*
 
 ---
