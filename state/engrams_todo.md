@@ -1,91 +1,84 @@
 # Engrams Todo — Master
 *Uppdaterad: 2026-04-01*
 
-| # | Task | Status | Not |
-|---|------|--------|-----|
-| 1 | SQL-schema i Supabase | ✅ KLAR | |
-| 2 | Onboarding-mail till Anna | ⬜ | Väntar på MCP-connector |
-| 3 | STRIPE-001 — Betalning → konto skapas | ⬜ | |
-| 4 | **MCP-CONNECTOR-001** | ⬜ PRIORITET 1 | Claude.ai kräver MCP — inte sandbox |
-| 5 | OPENAPI-001 — ChatGPT Custom GPT Action | ⬜ PRIORITET 2 | Auto-remember kräver Action, inte Custom Instructions |
-| 6 | GEMINI-NATIVE-001 — Gemini native integration | ⬜ PRIORITET 3 | Gems stöder ej fetch() |
-| 7 | PRICING-001 — Prissektion | ⬜ | Väntar på #3 |
-| 8 | DASHBOARD-001 — Inloggning + projektsida | ⬜ | |
-| 9 | CONNECT-001 — Connect-flow per plattform | ⬜ | Väntar på #8 |
-| 10 | MEMORY-001 — API-endpoints | ✅ KLAR | remember/recall/profile live |
-| 11 | MEMORY-002 — Auto-remember | ✅ KLAR | Fungerar i ChatGPT + CC |
-| 12 | MEMORY-003 — Auto-recall boot | ✅ KLAR | Fungerar i ChatGPT + CC |
-| 13 | ENGRAMS-TEAM-001 (V2) | ⬜ | |
-| 14 | AGENT-HAIKU-001 | ⬜ | |
-| — | ENGRAMS-SUPABASE-SPLIT | ⬜ | Migrera från TradeSys till eget projekt |
-| — | MEMORY-FORGETTING-001 | ⬜ V2 | Forgetting curve — nattlig decay |
-| — | MEMORY-CONSOLIDATION-001 | ⬜ V2 | episode → learning automatiskt |
-
----
-
 ## Integration-status per plattform
 
-| Plattform | Recall (läsa) | Remember (spara) | Metod | Status |
-|-----------|--------------|-----------------|-------|--------|
-| Claude Code | ✅ | ✅ | CLAUDE.md | Fungerar |
-| ChatGPT Custom Instructions | ✅ | ❌ | Kräver explicit trigger | Halvt |
+| Plattform | Recall | Remember | Metod | Status |
+|-----------|--------|----------|-------|--------|
+| Claude.ai (MCP) | ✅ | ✅ | MCP-connector + project instructions | VERIFIERAD |
+| Claude Code (CC) | ✅ | ✅ | CLAUDE.md direkt API | EJ TESTAD efter MCP-rebuild |
+| ChatGPT Custom Instructions | ✅ boot | ❌ auto-save | Recall OK, save kräver trigger | Halvt |
 | ChatGPT Custom GPT | ✅ | ✅ | OpenAI Action | OPENAPI-001 |
-| Claude.ai | ❌ sandbox | ❌ sandbox | Kräver MCP | MCP-CONNECTOR-001 |
-| Gemini Gems | ❌ sandbox | ❌ sandbox | Kräver native | GEMINI-NATIVE-001 |
 | Cursor | ✅ | ✅ | .cursorrules | Otestat |
+| Gemini Gems | ❌ sandbox | ❌ sandbox | Kräver native | GEMINI-NATIVE-001 |
 
 ---
 
-## Lansering‐plan
+## Lansering-plan
 
-**Inga kunder onboardas förrän MCP-connector är klar.**
-Anna väntar. Rätt beslut.
-
-1. MCP-CONNECTOR-001 → Claude.ai fungerar → Anna onboardas
-2. OPENAPI-001 → ChatGPT full integration
-3. GEMINI-NATIVE-001 → Gemini full integration
-4. Bredare lansering
+1. **CC-verifiering** → uppdatera CLAUDE.md för MCP-tools → testa
+2. **Anna onboardas** → när CC bekräftad
+3. **OPENAPI-001** → ChatGPT Custom GPT Action
+4. **Bredare lansering**
 
 ---
 
-## MCP-CONNECTOR-001 — Plan
+## Todo
 
-Engrams som MCP-server som Claude.ai kan ansluta via Settings → Connections.
-
-**Vad som krävs:**
-- MCP-server endpoint (SSE eller HTTP) på `mcp.engrams.app`
-- Tools: `remember`, `recall`, `profile`
-- Auth: Bearer-token via MCP auth-flöde
-- Publicering i Anthropic connector registry (eller self-hosted)
-
-**Stack:**
-- Vercel Edge Function som MCP-server
-- Använder befintliga API-endpoints internt
-- Ny subdomain: `mcp.engrams.app`
-
-**Blockas av:** Inget — kan starta nu.
-
----
-
-## OPENAPI-001 — Plan
-
-ChatGPT Custom GPT med tre Actions: remember, recall, profile.
-
-**Vad som krävs:**
-- `openapi.json` på `www.engrams.app/openapi.json`
-- Custom GPT skapad i OpenAI med Actions kopplat till Engrams API
-- Auth: API Key (Bearer) som användaren anger vid setup
-- Publicering: privat eller publik GPT
-
-**Blockas av:** Inget — kan starta efter MCP.
+| # | Task | Status | Not |
+|---|------|--------|-----|
+| 1 | SQL-schema | ✅ KLAR | |
+| 2 | MCP-CONNECTOR-001 | ✅ KLAR | Verifierad i Claude.ai |
+| 3 | **CC-VERIFY-001** — verifiera CC + uppdatera CLAUDE.md | ⬜ PRIORITET 1 | Blockar Anna |
+| 4 | **Anna onboarding** | ⬜ PRIORITET 2 | Väntar på #3 |
+| 5 | **OPENAPI-001** — ChatGPT Custom GPT Action | ⬜ PRIORITET 3 | Auto-remember kräver Actions |
+| 6 | CLEANUP-001 — radera TaskFlow-testminnen | ⬜ | gustavkall@gmail.com |
+| 7 | STRIPE-001 | ⬜ | |
+| 8 | GEMINI-NATIVE-001 | ⬜ V2 | |
+| 9 | PRICING-001 | ⬜ | |
+| 10 | DASHBOARD-001 | ⬜ | |
+| 11 | CONNECT-001 | ⬜ | Väntar på dashboard |
+| — | ENGRAMS-SUPABASE-SPLIT | ⬜ | Migrera från TradeSys till eget projekt |
+| — | MEMORY-FORGETTING-001 | ⬜ V2 | |
+| — | MEMORY-CONSOLIDATION-001 | ⬜ V2 | |
 
 ---
 
-## Minnessystemet — neurobiologisk grund
+## Vad som är byggt och verifierat (2026-04-01)
 
-| Minnestyp | Neurologiskt system | Funktion |
-|-----------|--------------------|-----------|
-| `profile` | Cerebellum | Permanent identitet |
-| `context` | Amygdala | Projektspecifik kontext |
-| `learning` | Cerebral cortex | Beslut, fakta, arkitektur |
-| `episode` | Hippocampus | Sessionshandoff |
+**API (live på www.engrams.app):**
+- `remember`, `recall`, `profile` — alla endpoints live
+- Multi-project: samma nyckel, isolerade minnen via `project`-parameter
+- `get_or_create_project()` Supabase-funktion
+
+**MCP-server (`/api/mcp`):**
+- JSON-RPC 2.0, CommonJS
+- Auth via URL `?key=eng_...`
+- Tools: `remember`, `recall`, `profile`, `load_project`
+- `load_project` returnerar strukturerad briefing
+- CORS-headers satta
+
+**Verifierat i Claude.ai:**
+- MCP-connector installerad med nyckel i URL
+- Auto-save: Claude sparade `profile` + `context` automatiskt
+- Auto-load: ny chat laddade minnen från föregående session
+- Minnen bekräftade i Supabase
+
+**Claude flöde (rätt arkitektur):**
+- Steg 1: MCP URL i Settings → Connections (en gång globalt)
+- Steg 2: En rad i varje Claude Project Instructions (projekt-isolation)
+- Kommando: `load_project "projektnamn"` — full briefing on demand
+
+**ChatGPT:**
+- Recall fungerar vid boot via Custom Instructions
+- Auto-remember fungerar INTE — kräver Custom GPT Action (OPENAPI-001)
+
+---
+
+## Nycklar och IDs
+
+- Supabase TradeSys (engrams DB): `hxikaojzwjtztyuwlxra`
+- Vercel engrams: `prj_oQk5XQfJmBLJy70FIgApFJZnlHBZ`
+- Vercel team: `team_pp2fvMpvzRPz7AfSGFMVttPs`
+- Anna API-nyckel: `eng_d98ad48a4fe579e04b8abc61aa3ea6ba562e4fa5331c1aef1d1847087c966cd8`
+- gustavkall@gmail testkonto: `eng_d848fe5b5bda0cf7fbb2ff000a43a19a6bf3e7c88a34882986a591e4596bdf3c`

@@ -1,108 +1,23 @@
-# cc_session_log.md — CC skriver hit, Claude.ai läser vid boot
-*Uppdateras av CC vid varje session handoff.*
+# CC Session Log
+*Senast uppdaterad: 2026-04-01 av Claude.ai*
 
----
+## Senaste session: 2026-04-01
 
-## CC Session — 2026-03-31
-agent_id: cc-tradesys
+### Vad som hände
+- MCP-connector byggd och verifierad i Claude.ai
+- Auto-save och auto-load bekräftade via Supabase
+- `load_project`-tool tillagt i MCP-servern
+- /start-sidan uppdaterad: Claude-fliken visar MCP URL + project instructions (en rad)
+- Multi-project support: samma nyckel, `project`-parameter isolerar minnen
+- ChatGPT recall fungerar, auto-save fungerar EJ utan Custom GPT Action
+- Gemini fungerar ej (sandbox)
 
-### Gjort
-- Ny Finance-data inlagd (17 tickers: APO, AXP, BAC, BAM, BLK, BRK.B, C, CME, COF, GS, MS, SCHW, SPGI, URI, WFC + PWR)
-- Ny Defense-data inlagd (7 tickers: AXON, CACI, KTOS, LDOS, LHX, SAIC, TDY)
-- Dataset expanderat: 65,459 → 72,225 snapshots (+6,766 rader)
-- Win-factor analys körd på SECTOR_HOT
-- Tre filter identifierade: relVolNorm>-0.3, vixElevated=0, adxNorm<0
-- SECTOR_HOT WR: 22% → 58.1% (43 trades 2022-2026)
-- Agent 4 omstartad med ny kod (tre nya filter live)
-- ADD-VIX-FILTER-001 kan stängas — vixElevated=0 redan implementerat (DEC-015)
+### Nästa steg för CC
+1. Verifiera att CC-integrationen fungerar med ny MCP-arkitektur
+2. Uppdatera CLAUDE.md i engrams-repot om det behövs
+3. Radera TestFlow-minnen från gustavkall@gmail testkonto
+4. Påbörja OPENAPI-001 när CC är verifierad
 
-### Beslut
-- Agent-trainer kördes men modell EJ uppdaterad (regression guard aktiverades)
-- SC_TREND: 139 trades, 50.4% WR — marginell edge
-- RS_MOMENTUM: 66 trades, 31.8% WR — under break-even, kräver fix
-
-### Aktiva positioner (2026-03-31)
-- NBIS +36% | COIN +13% | PWR +3.9% | MU, STX, RTX, GLDD aktiva
-
-### Nästa steg
-1. RS-MOMENTUM-FIX-001 — 31.8% WR under break-even. creditStress corr=0.480. Omdesign eller stäng.
-2. Mer TW-data för Finance+Defense (full 2019-2026)
-3. Dedikerade SECTOR_HOT modeller
-
-### Öppna frågor för Claude.ai
-- ADD-VIX-FILTER-001 i work queue kan stängas (vixElevated=0 redan live i SECTOR_HOT)
-- RS_MOMENTUM: ska agent 3 stängas eller redesignas?
-
-## CC Session — 2026-03-31 11:45
-agent_id: cc-tradesys
-### Gjort
-- Lade till 17 Finance + 7 Defense tickers i SECTOR_MAP + data/csv
-- Win-factor analysis → 3 filter identifierade för SECTOR_HOT (relVolNorm, vixElevated, adxNorm)
-- SECTOR_HOT WR: 22% → 58.1% (43 trades, avg P&L +0.79%)
-- Agent 4 omstartad med ny kod (secMom>4, nya filter)
-- Credit-analys: styr-ai agenter kör Sonnet dagligen → HAIKU-001 tillagd i work queue
-- Gustav bekräftad på Max-plan (CC kostar ej extra)
-### Beslut
-- secMom tröskel sänkt 6→4 för SECTOR_HOT (fler trades vid bibehållen WR med filter)
-- adxNorm<0 = nyckelfynd: laggard ej i rörelse = bättre setup
-### Nästa steg
-- HAIKU-001: byt styr-ai agenter till claude-haiku (20x billigare)
-- RS-MOMENTUM-FIX-001: agent 3 kör 31.8% WR, under break-even
-- DATA-EXTEND-001: full historik 2019-2026 för nya tickers
-### Öppna frågor för Claude.ai
-- Styr-ai active_context är ej uppdaterad sedan 2026-03-29 — kan du uppdatera med TRADESYS nuläge?
-
-## CC Session — 2026-03-31 12:05
-agent_id: cc-tradesys
-
-### Gjort
-- Win-factor analysis på SC_TREND (agent6): drawdownFrom52w<-5, adxNorm<0, vixElevated=0 → WR 50.4%→75.9% (29 trades, +2.59% avg P&L)
-- Win-factor analysis på SECTOR_CONTAGION (agent5): drawdownFrom52w<-20, atrPct>12.41 → 5101→692 trades, avgP&L 0.36%→0.57%
-- Omstartade agenter 5+6 med ny kod
-- Session handoff uppdaterad
-
-### Beslut
-- DEC-017: SC_TREND triple filter (75.9% WR)
-- DEC-018: SECTOR_CONTAGION quality filters (volymspel, 47.7% WR accepterat)
-
-### Nästa steg
-- ADD-NEW-AGENT3-001: Ny strategi för agent3 (RISK-OFF bounce, creditStress corr=0.480)
-- DATA-EXTEND-001: BAC, BAM historik 2019-2022 saknas
-- MODEL-SCOREBOARD-001: Bygg precision-scoreboard för v5-v10
-
-### Öppna frågor för Claude.ai
-- SECTOR_CONTAGION bör eventuellt ersättas med en strategi som kan nå 60%+ WR
-
-## CC Session — 2026-03-31 19:50
-agent_id: cc-tradesys
-
-### Gjort
-- **Engrams API live och fungerande** — remember(), profile(), recall() alla returnerar 200
-- E2e-tester: 4/5 pass. Enda fail: recall() hittar inte just sparat minne (search-relevance, ej infra)
-- Debuggat Supabase-koppling i ~1h:
-  - Felet: SUPABASE_SERVICE_KEY i Vercel pekade på fel Supabase-projekt (Styr.AI/crsonxfrylkpgrddovhu istf TradeSys/hxikaojzwjtztyuwlxra)
-  - Dessutom: nyckeln hade radbrytning (\n) från paste → "invalid header value"
-  - Fix: rätt nyckel + `.replace(/\s/g, '')` i alla API-filer som sanitering
-- GitHub Actions e2e-workflow live (.github/workflows/e2e-test.yml)
-- `git config --global user.email "me@gustavkall.com"` — fixar Vercel Hobby deploy-blockering
-- Vercel CLI installerat globalt
-- CC bekräftat på Max-plan (flat rate, inga API-kostnader)
-- DATA-EXTEND-001 analys: 85 tickers har <3 år data, 56 st har bara 1 år (225 rader). Gustav exporterar från TW.
-
-### Beslut
-- Engrams delar Supabase med TradeSys (hxikaojzwjtztyuwlxra) tills vidare — ska separeras (TODO)
-- Behåll Haiku på GitHub Actions-agenter (kostar API-credits, ej täckt av Max)
-- Debug-logging borttagen ur Engrams API efter fix
-
-### Nästa steg — ENGRAMS
-1. **ENGRAMS-RECALL-FIX** — recall() returnerar 0 minnen vid e2e-test. Search-relevance/embedding-matchning behöver finjusteras.
-2. **ENGRAMS-SUPABASE-SPLIT** — Engrams bör få eget Supabase-projekt (nu delar med TradeSys). Styr.AI-projektet (crsonxfrylkpgrddovhu) finns redan — migrera Engrams-tabeller dit.
-
-### Nästa steg — TRADESYS
-1. ADD-NEW-AGENT3-001 — Ny strategi agent 3
-2. DATA-EXTEND-001 — 85 tickers behöver TW-export 2019-2026
-3. MODEL-SCOREBOARD-001 — Precision-scoreboard v5-v10
-
-### Öppna frågor för Claude.ai
-- Supabase har två projekt: Styr.AI (crsonxfrylkpgrddovhu) och TradeSys (hxikaojzwjtztyuwlxra). Engrams tabeller ligger i TradeSys. Ska vi migrera till Styr.AI-projektet? Eller vänta på Supabase Pro?
-- recall() e2e-fail: är det embedding-likhetsträskeln som är för hög, eller saknas indexering?
+### Öppna frågor
+- Ska CC använda direkta API-anrop (som nu) eller MCP-tools?
+- Fungerar befintlig CLAUDE.md eller behöver den uppdateras?
