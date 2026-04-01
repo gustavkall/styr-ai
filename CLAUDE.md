@@ -85,28 +85,27 @@ Hämta och läs via GitHub MCP:
 
 ### Steg 1: Läs state-filer i ordning
 
-1. `state/global_todo.md` — **GLOBAL TODO ALLA PROJEKT — LÄS ALLTID FÖRST**
+1. `state/global_todo.md` — **SSOT FÖR ALLA TASKS. LÄS ALLTID FÖRST. work_queue.md existerar inte längre.**
 2. `state/daily_briefing.md`
 3. `state/session_handoff.md`
-4. `state/work_queue.md`
-5. `state/cc_session_log.md` — vad CC gjort senast
-6. `COMMANDS.md`
-7. `project_memory/goals.md`
-8. `project_memory/personal_development.md`
-9. `project_memory/decisions.md`
-10. `project_memory/cross_project_learnings.md`
-11. `governance/system_rules.md`
-12. `project_memory/next_session_brief.md` — om den finns, följ den
+4. `state/cc_session_log.md` — vad CC gjort senast (absorbera innan du presenterar status)
+5. `COMMANDS.md`
+6. `project_memory/goals.md`
+7. `project_memory/personal_development.md`
+8. `project_memory/decisions.md`
+9. `project_memory/cross_project_learnings.md`
+10. `governance/system_rules.md`
+11. `project_memory/next_session_brief.md` — om den finns, följ den
 
 ### Steg 2: Underprojektens state
-För varje aktivt underprojekt: `PROJECT.md`, `state/session_handoff.md`, `state/work_queue.md`
+För varje aktivt underprojekt: `PROJECT.md`, `state/session_handoff.md`
 
 ### Steg 3: Presentera
 ```
 SESSION BOOT — [PROJEKT] — YYYY-MM-DD
 
-GLOBAL TODO (aktiva):
-[lista ⬜-tasks från global_todo.md per projekt]
+GLOBAL TODO (aktiva ⬜):
+[lista från global_todo.md per projekt]
 
 NÄSTA: [första ⬜-task med högst prio]
 KRÄVER GUSTAVS UPPMÄRKSAMHET: [om något]
@@ -117,14 +116,13 @@ KRÄVER GUSTAVS UPPMÄRKSAMHET: [om något]
 ## GLOBAL TODO — REGLER
 
 **`state/global_todo.md` är single source of truth för alla tasks.**
+**`state/work_queue.md` är borttagen — används inte längre.**
+
 - Läses av Claude.ai vid boot
 - Läses av CC vid `session boot`
 - Uppdateras av båda vid session close/sync
-- Projektspecifika todo-filer är backup — global_todo.md gäller
-
-**Lägg till direkt:** Gustav godkänner, uppföljningstask uppstår, blockerare identifieras.
-**Opt-out:** `→ Todo-förslag: [ID] — [beskr]. Lägger till om du inte invänder.`
-**Statusflaggor:** ⬜ ej klar | 🔄 pågår/blockerad | ✅ klar
+- Statusflaggor: ⬜ ej klar | 🔄 pågår/blockerad | ✅ klar
+- Opt-out: `→ Todo-förslag: [ID] — [beskr]. Lägger till om du inte invänder.`
 
 ---
 
@@ -132,8 +130,16 @@ KRÄVER GUSTAVS UPPMÄRKSAMHET: [om något]
 ## SYNC PROTOCOL — OBLIGATORISK
 ## ════════════════════════════════════
 
-Uppdatera `state/active_context.md` **direkt** vid beslut, task-statusändring, prioritetsändring.
-Uppdatera `state/global_todo.md` **direkt** när tasks slutförs eller läggs till.
+**CA skriver, CC läser. CC skriver, CA läser. Du (Gustav) gör ingenting.**
+
+| Fil | Ägare | Syfte |
+|-----|-------|-------|
+| `state/global_todo.md` | Båda uppdaterar | SSOT för alla tasks |
+| `state/active_context.md` | CA skriver → CC läser | CA:s beslut och kontext till CC |
+| `state/cc_session_log.md` | CC skriver → CA läser vid boot | CC:s rapport till CA |
+| `state/session_handoff.md` | CA skriver | Sessionsöverlämning |
+
+Uppdatera `state/active_context.md` och `state/global_todo.md` **direkt** vid beslut eller statusändring.
 
 ---
 
@@ -146,19 +152,16 @@ Uppdatera `state/global_todo.md` **direkt** när tasks slutförs eller läggs ti
 ### Steg 1 — Uppdatera styr-ai state-filer
 - `state/global_todo.md` — ⬜→✅ för slutförda, lägg till nya **(ALLTID FÖRST)**
 - `state/session_handoff.md` — vad gjordes, teknisk state
-- `state/work_queue.md` — uppdaterad prioritetsordning
 - `project_memory/decisions.md` — APPEND beslut med motivering
 - `project_memory/cross_project_learnings.md` — APPEND insikter
 
-### Steg 2 — Skriv till active_context.md så CC ser vad Claude.ai gjort
-`state/active_context.md` ska innehålla:
-
+### Steg 2 — Skriv active_context.md
 ```
 ## SENASTE BESLUT FRÅN CLAUDE.AI — YYYY-MM-DD
-- [beslut 1 med kort motivering]
+- [beslut med kort motivering]
 
 ## GLOBAL TODO (aktiva ⬜)
-[lista aktiva tasks från global_todo.md]
+[lista från global_todo.md]
 
 ## TEKNISK STATE
 [per projekt]
@@ -184,11 +187,11 @@ Se GOVERNANCE.md för grundregler. Projektspecifika gränser i PROJECT.md.
 GOVERNANCE.md                    <- GRUNDLAGAR
 PROJECT.md                       <- Projektidentitet
 COMMANDS.md                      <- Alla kommandon
-state/global_todo.md             <- MASTER TODO ALLA PROJEKT
-state/active_context.md          <- Claude.ai skriver → CC läser via sync
-state/cc_session_log.md          <- CC skriver → Claude.ai läser vid boot
-state/session_handoff.md
-state/work_queue.md
+state/global_todo.md             <- MASTER TODO ALLA PROJEKT (SSOT)
+state/active_context.md          <- CA skriver → CC läser
+state/cc_session_log.md          <- CC skriver → CA läser vid boot
+state/session_handoff.md         <- CA:s sessionsöverlämning
+state/daily_briefing.md          <- COO-agentens dagliga briefing
 project_memory/
 governance/
 scripts/
