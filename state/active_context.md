@@ -1,67 +1,120 @@
 # active_context.md
-*Uppdaterad: 2026-04-01 — session handoff*
-*Skriven av Claude.ai, läses av CC via `session boot`*
+*Uppdaterad: 2026-04-01 15:30 — ARKITEKTURBESLUT*
+*Skriven av CA. CC: läs detta innan du gör något annat.*
 
 ---
 
-## SENASTE BESLUT FRÅN CLAUDE.AI — 2026-04-01
+## KRITISKT ARKITEKTURBESLUT — IMPLEMENTERA NU
 
-- MCP-connector verifierad i Claude.ai — auto-save och auto-load fungerar
-- Claude.ai-arkitektur: MCP URL globalt + en rad project instructions per projekt
-- `load_project "namn"` — nytt MCP-tool som returnerar strukturerad briefing
-- Global todo (state/global_todo.md) skapad — SSOT för alla tasks alla projekt
-- TERMINAL-ONBOARDING-001 klar: /api/claudemd endpoint + Terminal-flik Mac/Windows
-- ChatGPT recall fungerar, auto-remember fungerar EJ — kräver OPENAPI-001
-- Gemini fungerar ej (sandbox) — deprioriterad
-- Testkonto gustavkall@gmail.com rensat (TaskFlow-minnen raderade)
+Gustav har godkänt ett arkitekturskifte. Du implementerar det. Ingen diskussion behövs.
+
+### Beslutet
+GitHub state-filer ersätts med Supabase. All state lever i Styr.AI-projektet (`crsonxfrylkpgrddovhu`). Båda instanser (CA + CC) läser och skriver mot samma källa i realtid. Ingen drift, ingen sync, ingen latens.
+
+### Varför
+CA och CC har haft återkommande drift — CA bootar mot gamla filer, CC vet inte vad CA gjort. Supabase löser detta strukturellt: realtid, delad källa, inga merge-konflikter.
+
+### Vad som INTE ändras
+- TradeSys Supabase (`hxikaojzwjtztyuwlxra`) — oförändrat, egna operativa tabeller
+- GitHub — kod, CLAUDE.md, GitHub Actions stannar kvar
+- Engrams API och tabeller — oförändrat tills vidare
 
 ---
 
-## GLOBAL TODO (aktiva ⎹)
+## DIN UPPGIFT — KÖR I DENNA ORDNING
+
+### Steg 1: Skapa tabeller i Styr.AI Supabase (`crsonxfrylkpgrddovhu`)
+
+```sql
+-- System state: ersätter active_context.md + session_handoff.md
+CREATE TABLE IF NOT EXISTS styr_system_state (
+  id          text PRIMARY KEY,
+  project     text,
+  content     jsonb,
+  updated_by  text,
+  updated_at  timestamptz DEFAULT now()
+);
+
+-- Global todo: ersätter global_todo.md
+CREATE TABLE IF NOT EXISTS styr_global_todo (
+  id          text PRIMARY KEY,
+  project     text,
+  title       text,
+  status      text DEFAULT 'todo',
+  priority    int,
+  notes       text,
+  blocked_by  text,
+  updated_at  timestamptz DEFAULT now()
+);
+
+-- Decisions log: ersätter decisions.md
+CREATE TABLE IF NOT EXISTS styr_decisions (
+  id          bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  project     text,
+  decision    text,
+  rationale   text,
+  decided_by  text,
+  decided_at  timestamptz DEFAULT now()
+);
+
+-- Session log: ersätter cc_session_log.md + daily_briefing.md
+CREATE TABLE IF NOT EXISTS styr_session_log (
+  id          bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  agent       text,
+  project     text,
+  summary     text,
+  decisions   jsonb,
+  next_steps  jsonb,
+  logged_at   timestamptz DEFAULT now()
+);
+```
+
+### Steg 2: Migrera global_todo.md till styr_global_todo
+
+Läs `state/global_todo.md` och INSERT alla aktiva tasks i tabellen. Använd ID från filen (E7, T1, S4 etc).
+
+### Steg 3: Skriv första system_state
+
+```sql
+INSERT INTO styr_system_state (id, project, content, updated_by)
+VALUES (
+  'global',
+  'styr-ai',
+  '{"status": "migration complete", "ca_last_decision": "Supabase-arkitektur godkänd av Gustav 2026-04-01", "cc_task": "implementera migration"}',
+  'CA'
+);
+```
+
+### Steg 4: Rapportera tillbaka
+
+När migrationen är klar — skriv en rad i `styr_session_log` med vad du gjort. CA läser det vid nästa boot.
+
+### Steg 5: Bekräfta till Gustav
+
+Skriv i terminalen vad som är klart och vad som eventuellt behöver Gustavs input.
+
+---
+
+## NUVARANDE PRIORITETSORDNING (oförändrad under migrationen)
 
 ### ENGRAMS
-| # | Task | Prio |
-|---|------|------|
-| E7 | OPENAPI-001 — ChatGPT Custom GPT Action | 1 |
-| E8 | Anna onboarding | 2 |
-| E9 | ENGRAMS-SUPABASE-SPLIT | 3 |
-| E10 | STRIPE-001 | — |
-| E11 | PRICING-001 | — |
-| E12 | DASHBOARD-001 | — |
-| E13 | CONNECT-001 | — |
+1. E7 — OPENAPI-001 ChatGPT Action (blockerare för Anna)
+2. E8 — Anna onboarding (väntar på E7)
+3. E9 — SUPABASE-SPLIT (lägre prio, ej blockerare)
 
 ### TRADESYS
-| # | Task |
-|---|------|
-| T1 | ADD-NEW-AGENT3-001 |
-| T2 | DATA-EXTEND-001 (kräver Gustav) |
-| T3 | MODEL-SCOREBOARD-001 |
+1. T1 — ADD-NEW-AGENT3-001
+2. T2 — DATA-EXTEND-001 (kräver Gustav)
+3. T3 — MODEL-SCOREBOARD-001
 
 ### META
-| # | Task |
-|---|------|
-| S4 | PAT_TOKEN scope mot tradesys1337 |
+1. S4 — PAT_TOKEN tradesys1337
 
 ---
 
 ## TEKNISK STATE
 
-**Engrams (www.engrams.app):**
-- API: live, 5/5 e2e pass
-- MCP-server: /api/mcp?key=eng_... — 4 tools: remember, recall, profile, load_project
-- /api/claudemd: returnerar ren text CLAUDE.md för terminal-användare
-- Supabase: TradeSys-projektet (hxikaojzwjtztyuwlxra) — ska splitas till eget
-- Auth: SUPABASE_SERVICE_KEY strippar whitespace (.replace(/\s/g, ''))
-- Vercel: prj_oQk5XQfJmBLJy70FIgApFJZnlHBZ
-
-**Nycklar:**
-- Anna: eng_d98ad48a4fe579e04b8abc61aa3ea6ba562e4fa5331c1aef1d1847087c966cd8
-- gustavkall@gmail test: eng_d848fe5b5bda0cf7fbb2ff000a43a19a6bf3e7c88a34882986a591e4596bdf3c
-
----
-
-## ÖPPNA FRÅGOR FÖR CC
-
-- OPENAPI-001: bygg OpenAI Action JSON-schema för ChatGPT Custom GPT
-- ENGRAMS-SUPABASE-SPLIT: migrera tabeller till Styr.AI-projektet (crsonxfrylkpgrddovhu)?
-- DATA-EXTEND-001: påminn Gustav om TW CSV-export när redo
+**Engrams:** live, 5/5 e2e, API + MCP fungerar
+**Styr.AI Supabase:** `crsonxfrylkpgrddovhu` — hit ska ny state
+**TradeSys Supabase:** `hxikaojzwjtztyuwlxra` — oförändrat
+**Engrams nyckel Anna:** eng_d98ad48a4fe579e04b8abc61aa3ea6ba562e4fa5331c1aef1d1847087c966cd8
