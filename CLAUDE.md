@@ -15,6 +15,13 @@ Gustav ska aldrig behöva komma på systemförbättringar själv.
 
 ---
 
+## Gustavs beslut — COMMITTAS DIREKT
+
+Verbala instruktioner från Gustav i chat är temporära — de försvinner när sessionen stängs.
+**Regel:** När Gustav anger riktning, prioritering eller beslut → commit till global_todo.md och/eller decisions.md i samma svar. Bekräfta att det är gjort.
+
+---
+
 ## Personlig utveckling — OBLIGATORISK
 
 Läs `project_memory/personal_development.md` vid varje boot. Utmana direkt, uppdatera progress-loggen.
@@ -39,13 +46,13 @@ Om sessionen påverkar boot-sekvensen, agenter, protokoll eller strukturella fö
 ## Loggningsprotokoll
 
 Logga vid ny funktion/endpoint, arkitekturbeslut, långsiktigt beslut, brutet något, slutfört work item.
-**API:** https://app.savageroar.se/api/mcp | Bearer: se governance/secrets.md
 
 ---
 
 ## Vad är styr-ai
 
 Autonomt meta-system ovanför alla underprojekt. Syfte: ge Gustav maximal leverage.
+Gustav anger riktning. CA sköter strategi och prioritering. CC exekverar kod.
 
 ---
 
@@ -58,7 +65,6 @@ Autonomt meta-system ovanför alla underprojekt. Syfte: ge Gustav maximal levera
 | tradesys | TRADESYS | product | gustavkall/tradesys1337 |
 | tradesys-models | TRADESYS Models | subproject | gustavkall/tradesys-models |
 | savage-roar | Savage Roar Music | subproject | gustavkall/savage-roar-music |
-| adminassistent | Adminassistent | subproject | gustavkall/adminassistent |
 
 ---
 
@@ -79,67 +85,82 @@ Autonomt meta-system ovanför alla underprojekt. Syfte: ge Gustav maximal levera
 ## ═══════════════════════════════════════
 
 ### Steg 0: Grundlagar (ALLTID FÖRST)
-Hämta och läs via GitHub MCP:
-- `GOVERNANCE.md` — grundlagar, gäller alltid
-- `PROJECT.md` — detta projekts identitet
+- `GOVERNANCE.md`
+- `PROJECT.md`
 
-### Steg 1: Läs state-filer i ordning
-
-1. `state/global_todo.md` — **SSOT FÖR ALLA TASKS. LÄS ALLTID FÖRST. work_queue.md existerar inte längre.**
+### Steg 1: State-filer i ordning
+1. `state/global_todo.md` — SSOT för alla tasks. work_queue.md finns inte längre.
 2. `state/daily_briefing.md`
 3. `state/session_handoff.md`
-4. `state/cc_session_log.md` — vad CC gjort senast (absorbera innan du presenterar status)
-5. `COMMANDS.md`
-6. `project_memory/goals.md`
-7. `project_memory/personal_development.md`
-8. `project_memory/decisions.md`
-9. `project_memory/cross_project_learnings.md`
-10. `governance/system_rules.md`
-11. `project_memory/next_session_brief.md` — om den finns, följ den
+4. `state/cc_session_log.md` — absorbera CC:s senaste arbete innan presentation
+5. `project_memory/goals.md`
+6. `project_memory/cross_project_learnings.md`
+7. `governance/system_rules.md`
+8. `project_memory/next_session_brief.md` — om den finns, följ den
 
-### Steg 2: Underprojektens state
-För varje aktivt underprojekt: `PROJECT.md`, `state/session_handoff.md`
+### Steg 2: Presentera — FORMAT OBLIGATORISKT
 
-### Steg 3: Presentera
 ```
-SESSION BOOT — [PROJEKT] — YYYY-MM-DD
+SESSION BOOT — YYYY-MM-DD
 
-GLOBAL TODO (aktiva ⬜):
-[lista från global_todo.md per projekt]
+── ENGRAMS ──────────────────────────────
+  1. [E7] OPENAPI-001 — [kort beskrivning]
+  2. [E8] Anna onboarding — VÄNTAR på E7
+  ...
 
-NÄSTA: [första ⬜-task med högst prio]
-KRÄVER GUSTAVS UPPMÄRKSAMHET: [om något]
+── TRADESYS ─────────────────────────────
+  1. [T1] ADD-NEW-AGENT3-001 — ...
+  ...
+
+── WARNER ───────────────────────────────
+  NEDPRIORITERAT. Nästa deadline: 22 april.
+
+── META ──────────────────────────────────
+  1. [S4] PAT_TOKEN — ...
+
+── ÖPPNA BESLUT (Gustav) ────────────────
+  D1. Agent 3 — stäng eller redesigna?
+  D2. ...
+
+── NYTT FRÅN CC ──────────────────────────
+  [absorberat från cc_session_log.md]
 ```
+
+Inga listor med bullets — strukturerade sektioner per projekt.
+Projekt utan aktiva tasks visas kompakt.
+
+---
+
+## GUSTAVS BESLUT — COMMIT-REGEL
+
+När Gustav ger en instruktion i chat:
+1. Bekräfta att du förstår
+2. Commit beslutet till `global_todo.md` och/eller `project_memory/decisions.md` **i samma svar**
+3. Skriv: *"Beslutet är committat: [vad]"*
+
+Aldrig: lämna ett verbalt beslut utan commit.
 
 ---
 
 ## GLOBAL TODO — REGLER
 
-**`state/global_todo.md` är single source of truth för alla tasks.**
-**`state/work_queue.md` är borttagen — används inte längre.**
-
-- Läses av Claude.ai vid boot
-- Läses av CC vid `session boot`
-- Uppdateras av båda vid session close/sync
-- Statusflaggor: ⬜ ej klar | 🔄 pågår/blockerad | ✅ klar
-- Opt-out: `→ Todo-förslag: [ID] — [beskr]. Lägger till om du inte invänder.`
+**`state/global_todo.md` är SSOT för alla tasks. work_queue.md existerar inte.**
+- Gustav anger riktning verbalt → CA committar till global_todo.md direkt
+- Prioritering sköts av CA, inte Gustav
+- Statusflaggor: ⬜ ej klar | 🔄 pågår/blockerad/nedprio | ✅ klar
 
 ---
 
 ## ════════════════════════════════════
-## SYNC PROTOCOL — OBLIGATORISK
+## SYNC PROTOCOL
 ## ════════════════════════════════════
-
-**CA skriver, CC läser. CC skriver, CA läser. Du (Gustav) gör ingenting.**
 
 | Fil | Ägare | Syfte |
 |-----|-------|-------|
-| `state/global_todo.md` | Båda uppdaterar | SSOT för alla tasks |
-| `state/active_context.md` | CA skriver → CC läser | CA:s beslut och kontext till CC |
-| `state/cc_session_log.md` | CC skriver → CA läser vid boot | CC:s rapport till CA |
+| `state/global_todo.md` | CA primär, CC uppdaterar ✅ | SSOT tasks |
+| `state/active_context.md` | CA skriver → CC läser | Beslut + kontext till CC |
+| `state/cc_session_log.md` | CC skriver → CA läser vid boot | CC:s rapport |
 | `state/session_handoff.md` | CA skriver | Sessionsöverlämning |
-
-Uppdatera `state/active_context.md` och `state/global_todo.md` **direkt** vid beslut eller statusändring.
 
 ---
 
@@ -147,51 +168,31 @@ Uppdatera `state/active_context.md` och `state/global_todo.md` **direkt** vid be
 ## SESSION HANDOFF PROTOCOL — OBLIGATORISK
 ## ═══════════════════════════════════════════
 
-**Alla steg. Alltid. I denna ordning.**
-
-### Steg 1 — Uppdatera styr-ai state-filer
-- `state/global_todo.md` — ⬜→✅ för slutförda, lägg till nya **(ALLTID FÖRST)**
-- `state/session_handoff.md` — vad gjordes, teknisk state
-- `project_memory/decisions.md` — APPEND beslut med motivering
-- `project_memory/cross_project_learnings.md` — APPEND insikter
-
-### Steg 2 — Skriv active_context.md
-```
-## SENASTE BESLUT FRÅN CLAUDE.AI — YYYY-MM-DD
-- [beslut med kort motivering]
-
-## GLOBAL TODO (aktiva ⬜)
-[lista från global_todo.md]
-
-## TEKNISK STATE
-[per projekt]
-
-## ÖPPNA FRÅGOR FÖR CC
-- [frågor CC behöver svara på]
-```
-
-### Steg 3 — Commit och push
-### Steg 4 — Bekräfta till Gustav
+1. `state/global_todo.md` — uppdatera ⬜→✅, lägg till nya
+2. `state/session_handoff.md` — vad gjordes, teknisk state
+3. `project_memory/decisions.md` — APPEND beslut
+4. `state/active_context.md` — skriv för CC
+5. Commit och push
+6. Bekräfta till Gustav
 
 ---
 
 ## Autonomigränser
 
-Se GOVERNANCE.md för grundregler. Projektspecifika gränser i PROJECT.md.
+Se GOVERNANCE.md.
 
 ---
 
 ## Repo-struktur
 
 ```
-GOVERNANCE.md                    <- GRUNDLAGAR
-PROJECT.md                       <- Projektidentitet
-COMMANDS.md                      <- Alla kommandon
-state/global_todo.md             <- MASTER TODO ALLA PROJEKT (SSOT)
-state/active_context.md          <- CA skriver → CC läser
-state/cc_session_log.md          <- CC skriver → CA läser vid boot
-state/session_handoff.md         <- CA:s sessionsöverlämning
-state/daily_briefing.md          <- COO-agentens dagliga briefing
+GOVERNANCE.md
+PROJECT.md
+state/global_todo.md        <- SSOT alla tasks
+state/active_context.md     <- CA → CC
+state/cc_session_log.md     <- CC → CA
+state/session_handoff.md
+state/daily_briefing.md
 project_memory/
 governance/
 scripts/
