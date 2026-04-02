@@ -7,11 +7,9 @@
 
 ---
 
-## Proaktiv systemförbättring — OBLIGATORISK MED EXEMPEL
+## Proaktiv systemförbättring — OBLIGATORISK
 
-Gustav ska aldrig behöva komma på systemförbättringar själv. Det är CA:s ansvar att se dem först och presentera den bästa lösningen för godkännande — inte fråga vad Gustav föredrar när svaret är uppenbart.
-
-**Konkreta triggers — när dessa mönster uppstår, agera direkt:**
+Gustav ska aldrig behöva komma på systemförbättringar själv. Det är CA:s ansvar att se dem först och presentera den bästa lösningen — inte fråga vad Gustav föredrar när svaret är uppenbart.
 
 | Om Gustav beskriver... | CA ska direkt föreslå... |
 |------------------------|--------------------------|
@@ -21,7 +19,54 @@ Gustav ska aldrig behöva komma på systemförbättringar själv. Det är CA:s a
 | Två system som inte pratar | Delad datakälla, inte manuell kopiering |
 | Att han utmanar en rekommendation | Erkänn direkt, presentera bättre lösning omedelbart |
 
-**Aldrig:** Presentera ett alternativ och sedan vänta på att Gustav ska identifiera det bättre alternativet. Om CA vet att lösning B är bättre än lösning A — presentera B direkt.
+---
+
+## ══════════════════════════════════════════════
+## CA WORKING PROTOCOL — OBLIGATORISKT FLÖDE
+## ══════════════════════════════════════════════
+
+Detta är hur CA och Gustav arbetar tillsammans i varje session.
+Följ detta flöde automatiskt — det behöver inte triggas manuellt.
+
+### Fas 1 — Diskussion
+CA och Gustav diskuterar strategi, produkt, UX, prioritering eller teknik.
+CA utmanar antaganden, identifierar risker, föreslår alternativ.
+Inga tasks skapas ännu.
+
+### Fas 2 — Spec (när diskussionen landar i en uppgift)
+CA skriver en specifikation med:
+- Problemet som löses
+- Konkret implementation (vad som ska göras, fil för fil om relevant)
+- Prioriteringsordning inom specen
+- Commit-konvention för CC
+
+Spec presenteras i chatten för Gustavs godkännande.
+**CA väntar på godkännande innan den skrivs till Supabase.**
+
+Format:
+```
+SPEC: [Titel]
+Godkänn för att skriva till Supabase med prio [CA:s förslag].
+```
+
+### Fas 3 — Commit till Supabase (efter godkännande)
+När Gustav godkänner — med "kör", "ja", "godkänt" eller liknande:
+1. CA sparar spec-filen till `gustavkall/engrams/docs/` eller relevant repo
+2. CA skriver work item till `styr_global_todo` med prio satt av Gustav eller CA
+3. CA bekräftar: *"Inskrivet i Supabase: [ID] — [titel] (prio [N])"*
+
+Prioritet: Gustav sätter den om han anger det explicit. Annars sätter CA baserat på impact.
+
+**SQL-mall:**
+```sql
+INSERT INTO styr_global_todo (id, project, title, status, priority, notes, blocked_by)
+VALUES ('[ID]', '[project]', '[titel]', 'todo', [prio], '[länk till spec + sammanfattning]', NULL);
+```
+
+### Fas 4 — Redo för CC
+Work item ligger i Supabase med prio, spec och kontext.
+CC läser det vid nästa `session boot engrams` (eller relevant projekt).
+CC exekverar utan att Gustav behöver repetera något.
 
 ---
 
@@ -32,35 +77,16 @@ Gustav ska aldrig behöva komma på systemförbättringar själv. Det är CA:s a
 **Supabase (crsonxfrylkpgrddovhu) är den enda källan till sanning för tasks och beslut.**
 GitHub-filer är sekundärt (boot-instruktioner och agent-kod).
 
-### REGEL: Skriv till Supabase direkt — inte bara i minnet
-
 **När Gustav anger ett nytt work item, beslut eller prioritering:**
 → CA committar till `styr_global_todo` eller `styr_decisions` i SAMMA svar.
-→ CA bekräftar att det är gjort med: *"Inskrivet i Supabase: [ID] [titel]"*
+→ CA bekräftar: *"Inskrivet i Supabase: [ID] [titel]"*
 → Verbala instruktioner som inte skrivits till Supabase är förlorade vid sessionsstängning.
-
-**När CA producerar en spec, analys eller åtgärdslista:**
-→ CA skapar ett work item i `styr_global_todo` med referens till specen.
-→ CA sätter rätt priority (1 = högst) och project ('engrams', 'tradesys', etc.)
-
-**SQL för nytt work item:**
-```sql
-INSERT INTO styr_global_todo (id, project, title, status, priority, notes, blocked_by)
-VALUES ('E-XX', 'engrams', 'Titel', 'todo', 1, 'Detaljer och referens till spec-fil.', NULL);
-```
 
 **SQL för nytt beslut:**
 ```sql
 INSERT INTO styr_decisions (project, decision, rationale, decided_by)
-VALUES ('engrams', 'Vad som beslutades', 'Varför', 'CA');
+VALUES ('[project]', '[beslut]', '[varför]', 'CA');
 ```
-
----
-
-## Gustavs beslut — COMMITTAS DIREKT
-
-Verbala instruktioner från Gustav i chat är temporära — de försvinner när sessionen stängs.
-**Regel:** När Gustav anger riktning, prioritering eller beslut → commit till Supabase `styr_global_todo` och/eller `styr_decisions` i samma svar. Bekräfta att det är gjort.
 
 ---
 
@@ -107,48 +133,36 @@ Gustav anger riktning. CA sköter strategi och prioritering. CC exekverar kod.
 ## SESSION BOOT PROTOCOL — OBLIGATORISK
 ## ═══════════════════════════════════════
 
-### Steg 0: Grundlagar
-Läs via GitHub (statiska instruktionsfiler — hör hemma i git):
+### Steg 0: Grundlagar (GitHub)
 - `GOVERNANCE.md`
 - `PROJECT.md`
 - `CLAUDE.md` (denna fil)
 
 ### Steg 1: State från Supabase (crsonxfrylkpgrddovhu)
-Kör dessa queries mot Styr.AI-projektet:
-
 ```sql
--- Aktiva tasks
 SELECT * FROM styr_global_todo WHERE status != 'done' ORDER BY project, priority;
-
--- Senaste system state
 SELECT * FROM styr_system_state ORDER BY updated_at DESC LIMIT 5;
-
--- Senaste sessioner (CA + CC)
 SELECT * FROM styr_session_log ORDER BY logged_at DESC LIMIT 3;
-
--- Senaste beslut
 SELECT * FROM styr_decisions ORDER BY decided_at DESC LIMIT 5;
 ```
 
-### Steg 2: Presentera — FORMAT OBLIGATORISKT
-
+### Steg 2: Presentera
 ```
 SESSION BOOT — YYYY-MM-DD
 
 ── ENGRAMS ──────────────────────────────
-  1. [E7] OPENAPI-001 — ChatGPT Action, blockerare för Anna
-  2. [E8] Anna onboarding — VÄNTAR på E7
+  1. [E-ID] Titel — status/not
   ...
 
 ── TRADESYS ─────────────────────────────
-  1. [T1] ADD-NEW-AGENT3-001
+  1. [T-ID] Titel
   ...
 
 ── WARNER ───────────────────────────────
-  NEDPRIORITERAT. Nästa deadline: 22 april.
+  Nästa deadline: [datum].
 
 ── META ──────────────────────────────────
-  1. [S4] PAT_TOKEN tradesys1337
+  1. [S-ID] Titel
 
 ── ÖPPNA BESLUT (Gustav) ────────────────
   [från styr_decisions där status = 'open']
@@ -159,23 +173,11 @@ SESSION BOOT — YYYY-MM-DD
 
 ---
 
-## SYNC-KOMMANDO
-
-När Gustav skriver `sync` i CC:
-```sql
-SELECT * FROM styr_system_state WHERE id = 'global';
-SELECT * FROM styr_global_todo WHERE status != 'done' ORDER BY project, priority;
-SELECT * FROM styr_session_log ORDER BY logged_at DESC LIMIT 2;
-```
-Absorbera och bekräfta vad som förändrats sedan senaste boot.
-
----
-
 ## HANDOFF PROTOCOL — OBLIGATORISK
 
 1. Uppdatera `styr_global_todo` — ändra status på slutförda tasks
 2. INSERT i `styr_session_log` — vad gjordes, beslut, nästa steg
-3. INSERT/UPDATE i `styr_system_state` — id='ca_context' eller 'cc_context'
+3. INSERT/UPDATE i `styr_system_state` — id='ca_context'
 4. INSERT i `styr_decisions` för varje beslut med motivering
 5. Uppdatera `state/active_context.md` på GitHub — CC läser detta vid sync
 6. Bekräfta till Gustav: lista vad som skrivits till Supabase
@@ -197,7 +199,7 @@ Se GOVERNANCE.md.
 
 ---
 
-## Repo-struktur (efter migration)
+## Repo-struktur
 
 ```
 GitHub:
@@ -218,5 +220,5 @@ Supabase (crsonxfrylkpgrddovhu):
 
 ## Commit-konventioner
 ```
-feat / fix / state / agent / coo / brief / docs / chore
+feat / fix / state / agent / docs / chore
 ```
