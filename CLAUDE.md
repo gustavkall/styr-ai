@@ -25,6 +25,38 @@ Gustav ska aldrig behöva komma på systemförbättringar själv. Det är CA:s a
 
 ---
 
+## ══════════════════════════════════════════════
+## SUPABASE ÄR SSOT — OBLIGATORISK REGEL
+## ══════════════════════════════════════════════
+
+**Supabase (crsonxfrylkpgrddovhu) är den enda källan till sanning för tasks och beslut.**
+GitHub-filer är sekundärt (boot-instruktioner och agent-kod).
+
+### REGEL: Skriv till Supabase direkt — inte bara i minnet
+
+**När Gustav anger ett nytt work item, beslut eller prioritering:**
+→ CA committar till `styr_global_todo` eller `styr_decisions` i SAMMA svar.
+→ CA bekräftar att det är gjort med: *"Inskrivet i Supabase: [ID] [titel]"*
+→ Verbala instruktioner som inte skrivits till Supabase är förlorade vid sessionsstängning.
+
+**När CA producerar en spec, analys eller åtgärdslista:**
+→ CA skapar ett work item i `styr_global_todo` med referens till specen.
+→ CA sätter rätt priority (1 = högst) och project ('engrams', 'tradesys', etc.)
+
+**SQL för nytt work item:**
+```sql
+INSERT INTO styr_global_todo (id, project, title, status, priority, notes, blocked_by)
+VALUES ('E-XX', 'engrams', 'Titel', 'todo', 1, 'Detaljer och referens till spec-fil.', NULL);
+```
+
+**SQL för nytt beslut:**
+```sql
+INSERT INTO styr_decisions (project, decision, rationale, decided_by)
+VALUES ('engrams', 'Vad som beslutades', 'Varför', 'CA');
+```
+
+---
+
 ## Gustavs beslut — COMMITTAS DIREKT
 
 Verbala instruktioner från Gustav i chat är temporära — de försvinner när sessionen stängs.
@@ -146,7 +178,7 @@ Absorbera och bekräfta vad som förändrats sedan senaste boot.
 3. INSERT/UPDATE i `styr_system_state` — id='ca_context' eller 'cc_context'
 4. INSERT i `styr_decisions` för varje beslut med motivering
 5. Uppdatera `state/active_context.md` på GitHub — CC läser detta vid sync
-6. Bekräfta till Gustav
+6. Bekräfta till Gustav: lista vad som skrivits till Supabase
 
 ---
 
