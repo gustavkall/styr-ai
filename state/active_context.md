@@ -1,5 +1,5 @@
 # active_context.md
-*Uppdaterad: 2026-04-02 CA sync från CC-session*
+*Uppdaterad: 2026-04-02 CC session handoff (komplett)*
 *Boot-data hämtas från Supabase (crsonxfrylkpgrddovhu). Denna fil är sekundär referens.*
 
 ---
@@ -11,46 +11,64 @@ Boot-protokoll: se CLAUDE.md steg 1 (SQL-queries mot crsonxfrylkpgrddovhu).
 
 ---
 
-## DAGENS PROGRESS (2026-04-02)
+## VAD CC BYGGT IDAG (2026-04-02)
 
-### Klart (CC)
-- **E9 ✅ SUPABASE-SPLIT** — Engrams-tabeller migrerade från TradeSys (hxikaojzwjtztyuwlxra) till Styr.AI (crsonxfrylkpgrddovhu). Alla endpoints verifierade. TradeSys rensat.
-- **S5 ✅ Gamla repos städade** — styrAI-product arkiverat, styr.ai raderat av Gustav
-- **E7 ✅ ChatGPT Action** — klar sedan igår, live
+### E9 SUPABASE-SPLIT — KLAR
+- Engrams-tabeller migrerade från TradeSys till Styr.AI (crsonxfrylkpgrddovhu)
+- Functions återskapade, pgvector flyttad till public schema
+- Vercel env vars uppdaterade via CLI, TradeSys rensat
 
-### Arkitektur — bekräftad
-- `gustavkall/engrams` = Engrams produktrepo (live på engrams.app via Vercel)
-- `gustavkall/styr-ai` = meta-system, state-filer, agenter
-- `gustavkall/styrAI-product` = arkiverat, irrelevant
-- Engrams Supabase: `crsonxfrylkpgrddovhu` (Styr.AI projekt)
-- TradeSys Supabase: `hxikaojzwjtztyuwlxra` — nu rent, bara trading-tabeller
+### E12 DASHBOARD-001 — KLAR
+- login.html: magic link auth via Supabase Auth + Resend SMTP (hello@engrams.app)
+- dashboard.html: Projects | Setup | Commands tabbar
+- Memory viewer: lista, semantisk sökning, radera per minne
+- api/dashboard.js: authenticated API med ownership-verifiering + RLS
 
-### Öppna beslut (Gustav)
-- **E12/E13** — CC bygger dashboard + connect-flow. Stack: static HTML + Supabase Auth (magic link). Gustav bekräftad.
-- **E10 Stripe** — Gustav sätter upp Stripe-konto. CC väntar på nycklar.
-- **Anna-mail (E8)** — väntar på E12/E13 (dashboard klart → skicka)
-- **D1 Agent 3** — stäng RS_MOMENTUM (31.8% WR) eller redesigna?
+### E13 CONNECT-001 — KLAR
+- Setup-tab i dashboard: Claude MCP, Terminal, ChatGPT, Cursor
+- Instruktionsblock populeras med användarens API-nyckel
+
+### Infrastruktur
+- data/commands.json: SSOT för alla Engrams-commands
+- docs/index.html: refaktorerad att läsa från commands.json
+- S5 klar: gamla repos städade
+- Shell alias: go/go engrams/go tradesys
+
+### Nya filer i engrams-repot
+```
+login.html, dashboard.html, api/dashboard.js, api/load_project.js
+data/commands.json, docs/openapi.yaml
+```
+
+### Arkitekturbeslut
+- Session boot/handoff/sync = styr-ai workflows, INTE Engrams-produkt-features
+- commands.json = SSOT — uppdatera där → docs + dashboard uppdateras
+- Magic link auth (inte password)
+- Engrams DB i crsonxfrylkpgrddovhu, TradeSys i hxikaojzwjtztyuwlxra (separerade)
 
 ---
 
-## NÄSTA FÖR CC
-
-1. **E12** — Bygga dashboard.html (Supabase Auth magic link, projektsida, API-nyckel, minnesanvändning)
-2. **E13** — Utöka start.html med connect-flow per plattform
-
 ## NÄSTA FÖR CA
 
-1. Bevaka E12/E13-progress från CC
-2. Warner: audit §8.3 startar 22 april — 20 dagar kvar
-3. Session handoff vid dagens slut
+1. **Full content/UX-review** av engrams.app — startsida, /login, /dashboard (alla tabbar), /docs
+2. Granska: texter tydliga för första användare? Flöde logiskt? Saknas något?
+3. Uppdatera commands.json om innehållet behöver justeras
+4. E8 Anna onboarding — väntar tills produkt polerad
+
+## NÄSTA FÖR CC
+
+1. Väntar på CA:s UX-review → implementera feedback
+2. E10 STRIPE-001 — betalning (kräver Gustav: Stripe-konto)
+3. E8 Anna onboarding
 
 ---
 
 ## TEKNISK STATE
 
-**Engrams API:** live, 5/5 e2e — /api/remember /api/recall /api/profile /api/load_project /api/openapi
-**Engrams Supabase:** crsonxfrylkpgrddovhu — separerat från TradeSys, rent schema
-**ChatGPT GPT:** https://chatgpt.com/g/g-69cd232e3d488191af492dc12a9931f1-engrams — 5 actions live
-**TradeSys Supabase:** hxikaojzwjtztyuwlxra — oförändrat, bara trading
-**Annas API-nyckel:** eng_d98ad48a4fe579e04b8abc61aa3ea6ba562e4fa5331c1aef1d1847087c966cd8
-**Env vars saknas i Vercel:** STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY
+**Engrams API:** live, /api/remember /api/recall /api/profile /api/load_project /api/dashboard /api/mcp
+**ChatGPT GPT:** https://chatgpt.com/g/g-69cd232e3d488191af492dc12a9931f1-engrams
+**Dashboard:** https://www.engrams.app/dashboard (login krävs)
+**Docs:** https://www.engrams.app/docs
+**Styr.AI Supabase:** crsonxfrylkpgrddovhu — styr_* + engrams-tabeller
+**TradeSys Supabase:** hxikaojzwjtztyuwlxra — bara trading
+**Auth:** Supabase Auth, magic link, SMTP via Resend (hello@engrams.app)
