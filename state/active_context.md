@@ -1,5 +1,5 @@
 # active_context.md
-*Uppdaterad: 2026-04-01 CA+CC session handoff*
+*Uppdaterad: 2026-04-02 CA sync från CC-session*
 *Boot-data hämtas från Supabase (crsonxfrylkpgrddovhu). Denna fil är sekundär referens.*
 
 ---
@@ -11,34 +11,46 @@ Boot-protokoll: se CLAUDE.md steg 1 (SQL-queries mot crsonxfrylkpgrddovhu).
 
 ---
 
-## DAGENS BESLUT (2026-04-01)
+## DAGENS PROGRESS (2026-04-02)
 
-1. Arkitekturskifte: GitHub state-filer → Supabase realtid. Eliminerar CA/CC-drift.
-2. E7 KLAR: ChatGPT Custom GPT live — https://chatgpt.com/g/g-69cd232e3d488191af492dc12a9931f1-engrams
-3. Engrams.app uppdaterad: från waitlist till live produkt med integrations-sektion
-4. Anna-onboarding: GPT-länk + API-nyckel är enklaste vägen. Zero-friction app är V2.
-5. Chrome-tillägg fel platform för Anna (Android-användare, mobil-first).
+### Klart (CC)
+- **E9 ✅ SUPABASE-SPLIT** — Engrams-tabeller migrerade från TradeSys (hxikaojzwjtztyuwlxra) till Styr.AI (crsonxfrylkpgrddovhu). Alla endpoints verifierade. TradeSys rensat.
+- **S5 ✅ Gamla repos städade** — styrAI-product arkiverat, styr.ai raderat av Gustav
+- **E7 ✅ ChatGPT Action** — klar sedan igår, live
+
+### Arkitektur — bekräftad
+- `gustavkall/engrams` = Engrams produktrepo (live på engrams.app via Vercel)
+- `gustavkall/styr-ai` = meta-system, state-filer, agenter
+- `gustavkall/styrAI-product` = arkiverat, irrelevant
+- Engrams Supabase: `crsonxfrylkpgrddovhu` (Styr.AI projekt)
+- TradeSys Supabase: `hxikaojzwjtztyuwlxra` — nu rent, bara trading-tabeller
+
+### Öppna beslut (Gustav)
+- **E12/E13** — CC bygger dashboard + connect-flow. Stack: static HTML + Supabase Auth (magic link). Gustav bekräftad.
+- **E10 Stripe** — Gustav sätter upp Stripe-konto. CC väntar på nycklar.
+- **Anna-mail (E8)** — väntar på E12/E13 (dashboard klart → skicka)
+- **D1 Agent 3** — stäng RS_MOMENTUM (31.8% WR) eller redesigna?
 
 ---
 
 ## NÄSTA FÖR CC
 
-1. E8-förberedelse: granska Anna-mail i Gmail (draft finns)
-2. E9 SUPABASE-SPLIT: migrera Engrams-tabeller från TradeSys till Styr.AI-projekt
-3. T1 ADD-NEW-AGENT3-001: ny TRADESYS-strategi
+1. **E12** — Bygga dashboard.html (Supabase Auth magic link, projektsida, API-nyckel, minnesanvändning)
+2. **E13** — Utöka start.html med connect-flow per plattform
 
-## NÄSTA FÖR CA (nästa session)
+## NÄSTA FÖR CA
 
-1. Hämta Anna-mail från Gmail → Gustav granskar → skicka
-2. Beslut: hello@engrams.app — sätt upp eller byt till Gustavs adress i sajten
-3. GPT Beskrivning: lägg till i Engrams Custom GPT
+1. Bevaka E12/E13-progress från CC
+2. Warner: audit §8.3 startar 22 april — 20 dagar kvar
+3. Session handoff vid dagens slut
 
 ---
 
 ## TEKNISK STATE
 
-**Engrams API:** live, 5/5 e2e, /api/remember /api/recall /api/profile /api/load_project /api/openapi
+**Engrams API:** live, 5/5 e2e — /api/remember /api/recall /api/profile /api/load_project /api/openapi
+**Engrams Supabase:** crsonxfrylkpgrddovhu — separerat från TradeSys, rent schema
 **ChatGPT GPT:** https://chatgpt.com/g/g-69cd232e3d488191af492dc12a9931f1-engrams — 5 actions live
-**Styr.AI Supabase:** crsonxfrylkpgrddovhu — 4 tabeller, 20 tasks, SSOT
-**TradeSys Supabase:** hxikaojzwjtztyuwlxra — oförändrat
+**TradeSys Supabase:** hxikaojzwjtztyuwlxra — oförändrat, bara trading
 **Annas API-nyckel:** eng_d98ad48a4fe579e04b8abc61aa3ea6ba562e4fa5331c1aef1d1847087c966cd8
+**Env vars saknas i Vercel:** STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, RESEND_API_KEY
