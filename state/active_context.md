@@ -1,74 +1,54 @@
 # active_context.md
-*Uppdaterad: 2026-04-02 CC session handoff (komplett)*
+*Uppdaterad: 2026-04-02 CC final handoff*
 *Boot-data hämtas från Supabase (crsonxfrylkpgrddovhu). Denna fil är sekundär referens.*
 
 ---
 
 ## SUPABASE ÄR SSOT
 
-Alla tasks, beslut, sessioner och state läses från Supabase — inte från GitHub-filer.
 Boot-protokoll: se CLAUDE.md steg 1 (SQL-queries mot crsonxfrylkpgrddovhu).
 
 ---
 
-## VAD CC BYGGT IDAG (2026-04-02)
+## CC SESSION 2026-04-02 — SAMMANFATTNING
 
-### E9 SUPABASE-SPLIT — KLAR
-- Engrams-tabeller migrerade från TradeSys till Styr.AI (crsonxfrylkpgrddovhu)
-- Functions återskapade, pgvector flyttad till public schema
-- Vercel env vars uppdaterade via CLI, TradeSys rensat
-
-### E12 DASHBOARD-001 — KLAR
-- login.html: magic link auth via Supabase Auth + Resend SMTP (hello@engrams.app)
-- dashboard.html: Projects | Setup | Commands tabbar
-- Memory viewer: lista, semantisk sökning, radera per minne
-- api/dashboard.js: authenticated API med ownership-verifiering + RLS
-
-### E13 CONNECT-001 — KLAR
-- Setup-tab i dashboard: Claude MCP, Terminal, ChatGPT, Cursor
-- Instruktionsblock populeras med användarens API-nyckel
-
-### Infrastruktur
-- data/commands.json: SSOT för alla Engrams-commands
-- docs/index.html: refaktorerad att läsa från commands.json
-- S5 klar: gamla repos städade
-- Shell alias: go/go engrams/go tradesys
+### Klart idag
+- **E9** SUPABASE-SPLIT — Engrams separerat från TradeSys
+- **E12** DASHBOARD — login, projects, memory viewer, setup, commands tabbar
+- **E13** CONNECT-FLOW — per-plattform setup i dashboard
+- **S5** Gamla repos städade
+- **Infrastruktur:** commands.json SSOT, docs refaktorerad, Supabase Auth, Resend SMTP, Vercel CLI, go-alias
 
 ### Nya filer i engrams-repot
-```
-login.html, dashboard.html, api/dashboard.js, api/load_project.js
-data/commands.json, docs/openapi.yaml
-```
+login.html, dashboard.html, api/dashboard.js, api/load_project.js, data/commands.json, docs/openapi.yaml, docs/architecture-teams-v2.md
 
 ### Arkitekturbeslut
-- Session boot/handoff/sync = styr-ai workflows, INTE Engrams-produkt-features
-- commands.json = SSOT — uppdatera där → docs + dashboard uppdateras
-- Magic link auth (inte password)
-- Engrams DB i crsonxfrylkpgrddovhu, TradeSys i hxikaojzwjtztyuwlxra (separerade)
+- commands.json = SSOT för alla Engrams-commands
+- Session boot/handoff/sync = styr-ai, INTE Engrams-features
+- Magic link auth, Resend SMTP (hello@engrams.app)
+- Teams V2 plan skriven — E17/E18/E19 registrerade
 
 ---
 
-## NÄSTA FÖR CA
+## NÄSTA
 
-1. **Full content/UX-review** av engrams.app — startsida, /login, /dashboard (alla tabbar), /docs
-2. Granska: texter tydliga för första användare? Flöde logiskt? Saknas något?
-3. Uppdatera commands.json om innehållet behöver justeras
-4. E8 Anna onboarding — väntar tills produkt polerad
+### CA
+1. Full content/UX-review: engrams.app, /login, /dashboard, /docs
+2. Skriv detaljerad spec för E17 Teams V2
+3. E8 Anna onboarding — väntar på polerad produkt
 
-## NÄSTA FÖR CC
-
-1. Väntar på CA:s UX-review → implementera feedback
-2. E10 STRIPE-001 — betalning (kräver Gustav: Stripe-konto)
+### CC
+1. Implementera CA:s UX-feedback
+2. E10 STRIPE — väntar på Gustav (Stripe-konto)
 3. E8 Anna onboarding
 
 ---
 
 ## TEKNISK STATE
 
-**Engrams API:** live, /api/remember /api/recall /api/profile /api/load_project /api/dashboard /api/mcp
-**ChatGPT GPT:** https://chatgpt.com/g/g-69cd232e3d488191af492dc12a9931f1-engrams
-**Dashboard:** https://www.engrams.app/dashboard (login krävs)
+**Dashboard:** https://www.engrams.app/dashboard
 **Docs:** https://www.engrams.app/docs
-**Styr.AI Supabase:** crsonxfrylkpgrddovhu — styr_* + engrams-tabeller
-**TradeSys Supabase:** hxikaojzwjtztyuwlxra — bara trading
-**Auth:** Supabase Auth, magic link, SMTP via Resend (hello@engrams.app)
+**API:** /api/remember /api/recall /api/profile /api/load_project /api/dashboard /api/mcp
+**ChatGPT GPT:** https://chatgpt.com/g/g-69cd232e3d488191af492dc12a9931f1-engrams
+**Auth:** Supabase Auth + Resend (hello@engrams.app)
+**Engrams DB:** crsonxfrylkpgrddovhu | **TradeSys DB:** hxikaojzwjtztyuwlxra
