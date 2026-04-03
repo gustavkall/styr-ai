@@ -22,6 +22,38 @@ Gustav ska aldrig behöva komma på systemförbättringar själv. Det är CA:s a
 ---
 
 ## ══════════════════════════════════════════════
+## SKRIVRÄTTIGHETER — OBLIGATORISKA REGLER
+## ══════════════════════════════════════════════
+
+Tre sessioner skriver till samma system. Dessa regler eliminerar konflikter.
+Baserat på CA+CC analys 2026-04-03 — bekräftad av 3 faktiska merge-konflikter.
+
+### Ägarskapsmodell
+
+| Mål | CA äger | CC äger | Ingen rör |
+|-----|---------|---------|-----------|
+| `styr_global_todo` | prio, notes, nya items | status (done/todo) | — |
+| `styr_system_state` | ca_context-raden | cc_context-raden | global-raden (bara CA) |
+| `styr_session_log` | INSERT egna sessioner | INSERT egna sessioner | — |
+| `styr_decisions` | INSERT egna beslut | INSERT egna beslut | — |
+| `state/active_context.md` | Skriver vid handoff | **ALDRIG** | — |
+| `CLAUDE.md` (styr-ai) | Skriver | **ALDRIG** | — |
+| `CLAUDE.md` (engrams) | **ALDRIG** | CC-engrams skriver | — |
+| `CLAUDE.md` (tradesys) | **ALDRIG** | CC-tradesys skriver | — |
+
+### Regler
+
+**Regel 1 — active_context.md:** Bara CA skriver. CC läser via Boot API eller GitHub raw. CC committar aldrig till active_context.md.
+
+**Regel 2 — styr_global_todo ägarskap:** CA sätter prio och notes. CC sätter status='done' på tasks den jobbat på. Ingen session kör UPDATE på kolumner den inte äger.
+
+**Regel 3 — Boot API är read-only:** `/api/boot` exponerar global state via HTTP. All skrivning sker direkt mot Supabase. Boot API muterar aldrig state.
+
+**Framtida S7 (när vi faktiskt krockar på rader):** Optimistisk locking via updated_at-timestamp på styr_global_todo.
+
+---
+
+## ══════════════════════════════════════════════
 ## VAR SPARAS RUTINER OCH PROTOKOLL
 ## ══════════════════════════════════════════════
 
@@ -35,9 +67,8 @@ Gustav ska aldrig behöva komma på systemförbättringar själv. Det är CA:s a
 | Beslut | Supabase styr_decisions | Historik, spårbarhet |
 | Sessionsstate | Supabase styr_session_log | Realtid, CA↔CC sync |
 
-**Regel:** Om Gustav föreslår en ny rutin eller ett nytt arbetssätt som ska gälla
-permanent → CA uppdaterar CLAUDE.md i samma svar och meddelar:
-*"CLAUDE.md har uppdaterats med: [rutin]"*
+**Regel:** Om Gustav föreslår en ny rutin → CA uppdaterar CLAUDE.md i samma svar.
+Meddela: *"CLAUDE.md har uppdaterats med: [rutin]"*
 
 ---
 
@@ -53,28 +84,20 @@ CA och CC är komplementära — inte utbytbara.
 | **Ser** | Helheten, mönster, gap, konkurrensbild | Vad som faktiskt finns i kod och Supabase |
 | **Missar** | Lokala filer, exakt implementation | Affärslogik, produktstrategi, användarupplevelse |
 
-**Rutinen när arkitekturfrågor uppstår:**
-
+**Rutinen:**
 1. Gustav ställer frågan till CA
-2. CA analyserar top-down och formulerar en skärpt fråga till CC
-3. Gustav klistrar in CA:s fråga i CC-terminalen
-4. CC svarar bottom-up med implementation-perspektiv
-5. Gustav klistrar in CC:s svar i CA-chatten
-6. CA syntetiserar båda perspektiven → skriver slutgiltig spec
-7. Spec godkänns → committas till Supabase + repo
+2. CA formulerar skärpt fråga till CC
+3. Gustav pastar CC:s svar hit
+4. CA syntetiserar → skriver spec
+5. Spec godkänns → Supabase + repo
 
 **Format på CA:s fråga till CC:**
 ```
 Arkitekturfråga — svara innan du skriver kod:
-
-[Kontextbeskrivning av nuläget]
-
-Problem: [Vad som inte fungerar eller saknas]
-
+[Kontext] [Problem] [Frågor]
 Beskriv arkitekturen. Rita lagermodellen.
-Identifiera vad som saknas och vad som krockar.
-Föreslå konkret lösning.
-Skriv ingen kod ännu.
+Identifiera vad som saknas och krockar.
+Föreslå konkret lösning. Skriv ingen kod ännu.
 ```
 
 ---
@@ -84,47 +107,39 @@ Skriv ingen kod ännu.
 ## ══════════════════════════════════════════════
 
 ### Fas 1 — Diskussion
-CA och Gustav diskuterar strategi, produkt, UX, prioritering eller teknik.
-CA utmanar antaganden, identifierar risker, föreslår alternativ.
-Inga tasks skapas ännu.
+CA och Gustav diskuterar. Inga tasks skapas ännu.
 
-### Fas 2 — Spec (när diskussionen landar i en uppgift)
-CA skriver spec med: problem, implementation, prioriteringsordning, commit-konvention.
-Presenteras för Gustavs godkännande. CA väntar innan Supabase-write.
-
+### Fas 2 — Spec
+CA skriver spec. Presenteras för godkännande. CA väntar innan Supabase-write.
 ```
 SPEC: [Titel]
-Godkänn för att skriva till Supabase med prio [CA:s förslag].
+Godkänn för att skriva till Supabase med prio [N].
 ```
 
-### Fas 3 — Commit till Supabase (efter godkännande)
-1. CA sparar spec-fil till relevant repo
-2. CA skriver work item till `styr_global_todo`
-3. CA bekräftar: *"Inskrivet i Supabase: [ID] — [titel] (prio [N])"*
-
-**SQL-mall:**
-```sql
-INSERT INTO styr_global_todo (id, project, title, status, priority, notes, blocked_by)
-VALUES ('[ID]', '[project]', '[titel]', 'todo', [prio], '[spec-referens]', NULL);
-```
+### Fas 3 — Commit (efter godkännande)
+1. Spec-fil till repo
+2. Work item till styr_global_todo
+3. Bekräfta: *"Inskrivet i Supabase: [ID] — [titel] (prio [N])"*
 
 ### Fas 4 — Redo för CC
-Work item i Supabase med prio, spec och kontext. CC exekverar vid nästa boot.
+CC exekverar vid nästa boot utan att Gustav repetera något.
 
 ---
 
 ## ══════════════════════════════════════════════
-## SUPABASE ÄR SSOT — OBLIGATORISK REGEL
+## SUPABASE ÄR SSOT
 ## ══════════════════════════════════════════════
 
-**Supabase (crsonxfrylkpgrddovhu) är SSOT för tasks och beslut.**
+**crsonxfrylkpgrddovhu är SSOT för tasks och beslut.**
 
-**När Gustav anger work item, beslut eller prioritering:**
-→ CA committar till Supabase i SAMMA svar.
-→ CA bekräftar: *"Inskrivet i Supabase: [ID] [titel]"*
+När Gustav anger work item, beslut eller prioritering → commit i SAMMA svar.
 
-**SQL för beslut:**
 ```sql
+-- Nytt work item
+INSERT INTO styr_global_todo (id, project, title, status, priority, notes)
+VALUES ('[ID]', '[project]', '[titel]', 'todo', [prio], '[spec-ref]');
+
+-- Nytt beslut
 INSERT INTO styr_decisions (project, decision, rationale, decided_by)
 VALUES ('[project]', '[beslut]', '[varför]', 'CA');
 ```
@@ -134,7 +149,7 @@ VALUES ('[project]', '[beslut]', '[varför]', 'CA');
 ## Flaggningsregel — OBLIGATORISK
 
 Om sessionen påverkar boot-sekvensen, agenter, protokoll eller strukturella förändringar:
-1. Uppdatera denna fil (CLAUDE.md)
+1. Uppdatera denna fil
 2. Logga i `governance/architecture_changelog.md`
 3. Meddela Gustav: *"CLAUDE.md har uppdaterats med: [vad]"*
 
@@ -142,8 +157,8 @@ Om sessionen påverkar boot-sekvensen, agenter, protokoll eller strukturella fö
 
 ## Vad är styr-ai
 
-Autonomt meta-system ovanför alla underprojekt. Syfte: ge Gustav maximal leverage.
-Gustav anger riktning. CA sköter strategi och prioritering. CC exekverar kod.
+Autonomt meta-system ovanför alla underprojekt.
+Gustav anger riktning. CA sköter strategi. CC exekverar.
 
 ---
 
@@ -151,33 +166,30 @@ Gustav anger riktning. CA sköter strategi och prioritering. CC exekverar kod.
 
 | Projekt-ID | Display Name | Supabase | Repo |
 |------------|-------------|----------|------|
-| styr-ai | Styr.AI (moderproject) | crsonxfrylkpgrddovhu | gustavkall/styr-ai |
+| styr-ai | Styr.AI | crsonxfrylkpgrddovhu | gustavkall/styr-ai |
 | engrams | Engrams | crsonxfrylkpgrddovhu | gustavkall/engrams |
-| tradesys | TRADESYS | hxikaojzwjtztyuwlxra (eget) | gustavkall/tradesys1337 |
+| tradesys | TRADESYS | hxikaojzwjtztyuwlxra | gustavkall/tradesys1337 |
 | savage-roar | Savage Roar Music | — | gustavkall/savage-roar-music |
 
 ---
 
 ## Agent-schema
 
-| Tid CET | Agent | Output | Status |
-|---------|-------|--------|--------|
-| 03:00 | autonomous-agent | `styr_session_log` | PAUSAD |
-| 06:00 vardagar | coo-agent | `styr_session_log` | PAUSAD |
-| 08:00 vardagar | market-regime-agent | `tradesys1337/state/market_regime.md` | Aktiv |
-| 22:30 vardagar | top-gainers-agent | `tradesys1337/state/top_gainers_report.md` | Aktiv |
-| 04:00 söndagar | memory-integrity-agent | `styr_session_log` | Aktiv |
+| Tid CET | Agent | Status |
+|---------|-------|--------|
+| 08:00 vardagar | market-regime-agent | Aktiv |
+| 22:30 vardagar | top-gainers-agent | Aktiv |
+| 04:00 söndagar | memory-integrity-agent | Aktiv |
+| 03:00 / 06:00 | autonomous/coo-agent | PAUSAD |
 
 ---
 
-## ═══════════════════════════════════════
-## SESSION BOOT PROTOCOL — OBLIGATORISK
-## ═══════════════════════════════════════
+## SESSION BOOT — OBLIGATORISK
 
-### Steg 0: Grundlagar (GitHub)
+### Steg 0: GitHub
 - `GOVERNANCE.md` — `PROJECT.md` — `CLAUDE.md`
 
-### Steg 1: State från Supabase (crsonxfrylkpgrddovhu)
+### Steg 1: Supabase
 ```sql
 SELECT * FROM styr_global_todo WHERE status != 'done' ORDER BY project, priority;
 SELECT * FROM styr_system_state ORDER BY updated_at DESC LIMIT 5;
@@ -188,54 +200,33 @@ SELECT * FROM styr_decisions ORDER BY decided_at DESC LIMIT 5;
 ### Steg 2: Presentera
 ```
 SESSION BOOT — YYYY-MM-DD
-
-── ENGRAMS ──────────────────────────────
-  1. [E-ID] Titel — status/not
-
-── TRADESYS ─────────────────────────────
-  1. [T-ID] Titel
-
-── WARNER ───────────────────────────────
-  Nästa deadline: [datum].
-
-── META ──────────────────────────────────
-  1. [S-ID] Titel
-
-── ÖPPNA BESLUT (Gustav) ────────────────
-── NYTT FRÅN CC ──────────────────────────
+── ENGRAMS ── [tasks i prio-ordning]
+── TRADESYS ── [tasks]
+── WARNER ── [nästa deadline]
+── META ── [tasks]
+── ÖPPNA BESLUT ── [från styr_decisions status=open]
+── NYTT FRÅN CC ── [senaste CC session_log]
 ```
 
 ---
 
-## HANDOFF PROTOCOL — OBLIGATORISK
+## HANDOFF — OBLIGATORISK
 
-1. Uppdatera `styr_global_todo` — status på slutförda tasks
-2. INSERT `styr_session_log` — vad gjordes, beslut, nästa steg
-3. INSERT/UPDATE `styr_system_state` — id='ca_context'
-4. INSERT `styr_decisions` — varje beslut med motivering
-5. Uppdatera `state/active_context.md` på GitHub
-6. Bekräfta till Gustav: lista vad som skrivits till Supabase
+1. UPDATE `styr_global_todo` — bara CA:s egna kolumner (prio/notes)
+2. INSERT `styr_session_log`
+3. UPDATE `styr_system_state` id='ca_context' — bara CA:s rad
+4. INSERT `styr_decisions`
+5. UPDATE `state/active_context.md` på GitHub — bara CA
+6. Bekräfta till Gustav
 
 ---
 
-## PRIORITERINGSORDNING (projekt)
+## PRIORITERINGSORDNING
 
 1. ENGRAMS — aktiv produkt
 2. TRADESYS — operativt
-3. WARNER — nedprioriterat, bevakas passivt
+3. WARNER — bevakas passivt
 4. META — infrastruktur
-
----
-
-## Repo-struktur
-
-```
-GitHub (statiskt):
-  GOVERNANCE.md / PROJECT.md / CLAUDE.md / scripts/ / .github/workflows/
-
-Supabase crsonxfrylkpgrddovhu (operativt):
-  styr_global_todo / styr_system_state / styr_session_log / styr_decisions
-```
 
 ---
 
