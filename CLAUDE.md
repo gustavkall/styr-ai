@@ -7,6 +7,27 @@
 
 ---
 
+## ══════════════════════════════════════════════
+## KÄRNREGEL — BESLUT EXEKVERAS I SAMMA SVAR
+## ══════════════════════════════════════════════
+
+**När CA och Gustav kommer överens om något ska CA exekvera det omedelbart — i samma svar. Aldrig i nästa.**
+
+Detta gäller utan undantag för:
+- Protokollfiler → skriv till GitHub i samma svar
+- CLAUDE.md-uppdateringar → pusha i samma svar
+- Work items → skriv till Supabase i samma svar
+- Rutiner → uppdatera CLAUDE.md i samma svar
+- Beslut → logga till styr_decisions i samma svar
+
+**Frågan CA alltid ställer sig innan ett svar avslutas:**
+*"Har vi kommit överens om något som inte är exekverat än?"*
+Om ja → exekvera nu, inte senare.
+
+**Konsekvens av regeln:** Gustav ska aldrig behöva påminna CA om att göra något vi redan beslutat. Om Gustav påminner har CA brutit mot kärnregeln.
+
+---
+
 ## Proaktiv systemförbättring — OBLIGATORISK
 
 Gustav ska aldrig behöva komma på systemförbättringar själv. Det är CA:s ansvar att se dem först och presentera den bästa lösningen.
@@ -18,6 +39,7 @@ Gustav ska aldrig behöva komma på systemförbättringar själv. Det är CA:s a
 | Att något "tar lång tid" i boot | Minska antal filläsningar, flytta till DB |
 | Två system som inte pratar | Delad datakälla, inte manuell kopiering |
 | Att han utmanar en rekommendation | Erkänn direkt, presentera bättre lösning omedelbart |
+| Ett misstag CA gjort | Identifiera rotorsaken, uppdatera CLAUDE.md med regel som förhindrar det framöver — i samma svar |
 
 ---
 
@@ -37,90 +59,52 @@ Fil: `gustavkall/styr-ai/state/protocol_[ämne].md`
 *Scope: [engrams] [tradesys] [alla]*
 
 ## SEKTION 1 — CA:s plan [scope: alla]
-[CA:s strategiska analys och förslag per projekt]
 *Status: VÄNTAR PÅ GUSTAVS GODKÄNNANDE*
 
 ## SEKTION 2 — CC engrams [scope: engrams]
-[CC-engrams skriver teknisk analys här]
 *Status: EJ PÅBÖRJAD*
 
 ## SEKTION 2 — CC tradesys [scope: tradesys]
-[CC-tradesys skriver teknisk analys här]
 *Status: EJ PÅBÖRJAD*
 
 ## SEKTION 3 — Master plan [scope: alla]
-[CA syntetiserar sektion 1+2 till optimal plan]
 *Status: EJ PÅBÖRJAD*
 
 ## SEKTION 4 — Deployment engrams [scope: engrams]
-[Exakt execution-prompt för CC-engrams]
 *Status: EJ PÅBÖRJAD*
 
 ## SEKTION 4 — Deployment tradesys [scope: tradesys]
-[Exakt execution-prompt för CC-tradesys]
 *Status: EJ PÅBÖRJAD*
 ```
 
----
-
 ### STEG 1 — CA skriver sektion 1
+När CA och Gustav landat i konkreta next steps — CA skriver protokollet **i samma svar**. Trigger:
+- Konkreta next steps är överenskomna
+- Gustav godkänner ett förslag
+- Sessionen är på väg att avslutas med oexekverade beslut
 
-CA och Gustav diskuterar. När de kommit överens om next steps för ett eller flera projekt:
-
-**CA SKRIVER PROTOKOLLET OMEDELBART — utan att vänta på att Gustav frågar.**
-
-1. CA skriver `state/protocol_[ämne].md` med sektion 1 ifylld
-2. Status: `VÄNTAR PÅ GUSTAVS GODKÄNNANDE`
-3. CA meddelar: *"Protokoll skrivet: protocol_[ämne].md. Godkänn för att kalla in CC."*
-
-Gustav godkänner → status `GODKÄND` → klart för steg 2.
-
-**Trigger för när CA ska skriva protokoll:**
-- CA och Gustav har diskuterat och landat i konkreta next steps
-- Gustav godkänner ett förslag eller en lista med åtgärder
-- Sessionen är på väg att avslutas och det finns oexekverade beslut
-
----
-
-### STEG 2 — CC läser och svarar (terminal)
-
-Gustav skriver i CC-terminalen:
+### STEG 2 — CC analyserar (terminal)
 ```bash
 sync engrams     # CC-engrams skriver sektion 2 [scope: engrams]
 sync tradesys    # CC-tradesys skriver sektion 2 [scope: tradesys]
 ```
 
-CC hämtar protokollfilen från styr-ai, skriver bara i sin scope-sektion, pushar tillbaka, skriver "Klar."
-
-**Regel: CC engrams rör ALDRIG sektion 2 tradesys, och vice versa.**
-
----
-
 ### STEG 3 — CA syntetiserar
-
-Gustav skriver `sync` här i CA.
-CA läser sektion 1+2, skriver sektion 3 (master plan) + sektion 4 per projekt.
-CA presenterar och ber om godkännande.
-
----
+Gustav skriver `sync` här → CA skriver sektion 3+4 → presenterar för godkännande.
 
 ### STEG 4 — Deployment
-
-Gustav godkänner → CA ger deployment-prompt per projekt → Gustav klistrar in i CC.
-
----
+Gustav godkänner → CA ger deployment-prompt → Gustav klistrar in i CC.
 
 ### Nyckelprinciper
-- CA skriver protokollet proaktivt — aldrig reaktivt på Gustavs fråga
 - Filen lever i styr-ai
-- Varje CC skriver bara i sin scope-taggade sektion
+- CC skriver bara i sin scope-taggade sektion
 - CA skriver aldrig sektion 3+4 utan klara sektion 2
 - Deployment aldrig utan Gustavs godkännande
 
 ---
 
 ## ══════════════════════════════════════════════
-## SKRIVRÄTTIGHETER — OBLIGATORISKA REGLER
+## SKRIVRÄTTIGHETER
 ## ══════════════════════════════════════════════
 
 | Fil/tabell | CA | CC-engrams | CC-tradesys |
@@ -158,17 +142,14 @@ Gustav godkänner → CA ger deployment-prompt per projekt → Gustav klistrar i
 ### Fas 1 — Diskussion
 CA och Gustav diskuterar. Inga tasks skapas ännu.
 
-### Fas 2 — Överenskommelse → protokoll OMEDELBART
-När CA och Gustav landat i konkreta next steps:
-1. CA skriver `state/protocol_[ämne].md` sektion 1 — i SAMMA svar som överenskommelsen
-2. CA ber om godkännande
-3. CA väntar INTE på att Gustav ska påminna om detta
+### Fas 2 — Överenskommelse → exekvera omedelbart
+När next steps är överenskomna: CA skriver protokoll + work items + CLAUDE.md-uppdateringar i **samma svar**. Inte i nästa.
 
-### Fas 3 — Commit (efter godkännande)
-Work item till styr_global_todo. Bekräfta.
+### Fas 3 — Bekräfta
+Work item till styr_global_todo. Bekräfta vad som exekverats.
 
 ### Fas 4 — CC kallas in
-Gustav kör `sync [projekt]` i terminal. CC analyserar. Gustav kör `sync` i CA.
+Gustav kör `sync [projekt]` → CC analyserar → Gustav kör `sync` i CA.
 
 ---
 
@@ -231,10 +212,10 @@ gh api repos/gustavkall/styr-ai/contents/state \
   --jq '[.[] | select(.name | startswith("protocol_"))] | .[].name'
 ```
 
-Bedöm status per protokollfil:
-- Sektion 2 `KLAR` + sektion 3 `EJ PÅBÖRJAD` → syntetisera direkt, presentera för Gustav
-- Sektion 1 `GODKÄND` + sektion 2 `EJ PÅBÖRJAD` → påminn Gustav: *"sync engrams/tradesys väntar"*
-- Sektion 1 `VÄNTAR PÅ GUSTAVS GODKÄNNANDE` → presentera för godkännande
+Status per protokollfil:
+- Sek 2 `KLAR` + sek 3 `EJ PÅBÖRJAD` → syntetisera direkt
+- Sek 1 `GODKÄND` + sek 2 `EJ PÅBÖRJAD` → påminn: *"sync engrams/tradesys väntar"*
+- Sek 1 `VÄNTAR` → presentera för godkännande
 
 ### Steg 3: Presentera
 ```
