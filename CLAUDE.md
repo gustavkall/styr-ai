@@ -63,14 +63,22 @@ Fil: `gustavkall/styr-ai/state/protocol_[ämne].md`
 
 ---
 
-### STEG 1 — CA skriver sektion 1 (här i chatten)
+### STEG 1 — CA skriver sektion 1
 
-CA och Gustav diskuterar. När överens:
-1. CA skriver `state/protocol_[ämne].md` i **styr-ai repot** med sektion 1
-2. Status sätts till `VÄNTAR PÅ GUSTAVS GODKÄNNANDE`
-3. CA meddelar Gustav
+CA och Gustav diskuterar. När de kommit överens om next steps för ett eller flera projekt:
 
-Gustav godkänner → CA uppdaterar status till `GODKÄND` → klart för steg 2.
+**CA SKRIVER PROTOKOLLET OMEDELBART — utan att vänta på att Gustav frågar.**
+
+1. CA skriver `state/protocol_[ämne].md` med sektion 1 ifylld
+2. Status: `VÄNTAR PÅ GUSTAVS GODKÄNNANDE`
+3. CA meddelar: *"Protokoll skrivet: protocol_[ämne].md. Godkänn för att kalla in CC."*
+
+Gustav godkänner → status `GODKÄND` → klart för steg 2.
+
+**Trigger för när CA ska skriva protokoll:**
+- CA och Gustav har diskuterat och landat i konkreta next steps
+- Gustav godkänner ett förslag eller en lista med åtgärder
+- Sessionen är på väg att avslutas och det finns oexekverade beslut
 
 ---
 
@@ -78,47 +86,36 @@ Gustav godkänner → CA uppdaterar status till `GODKÄND` → klart för steg 2
 
 Gustav skriver i CC-terminalen:
 ```bash
-sync engrams     # CC-engrams läser och skriver sektion 2 [scope: engrams]
-sync tradesys    # CC-tradesys läser och skriver sektion 2 [scope: tradesys]
+sync engrams     # CC-engrams skriver sektion 2 [scope: engrams]
+sync tradesys    # CC-tradesys skriver sektion 2 [scope: tradesys]
 ```
 
-CC ska:
-1. Hämta protokollfilen från styr-ai:
-   ```bash
-   gh api repos/gustavkall/styr-ai/contents/state/$(gh api repos/gustavkall/styr-ai/contents/state --jq '[.[] | select(.name | startswith("protocol_"))] | last | .name') --jq '.content' | base64 -d
-   ```
-2. Läsa **hela** filen men skriva **bara i sin scope-sektion** (engrams eller tradesys)
-3. Uppdatera sin sektion 2 status till `KLAR`
-4. Pusha uppdaterad fil tillbaka till styr-ai via `gh api`
-5. Skriva i terminalen: **"Klar. Sektion 2 [scope] tillagd."**
+CC hämtar protokollfilen från styr-ai, skriver bara i sin scope-sektion, pushar tillbaka, skriver "Klar."
 
 **Regel: CC engrams rör ALDRIG sektion 2 tradesys, och vice versa.**
 
 ---
 
-### STEG 3 — CA syntetiserar (här i chatten)
+### STEG 3 — CA syntetiserar
 
 Gustav skriver `sync` här i CA.
-CA hämtar protokollfilen från styr-ai, läser sektion 1+2.
-CA skriver sektion 3 (master plan) + sektion 4 per projekt.
-CA presenterar master plan för Gustav.
+CA läser sektion 1+2, skriver sektion 3 (master plan) + sektion 4 per projekt.
+CA presenterar och ber om godkännande.
 
 ---
 
 ### STEG 4 — Deployment
 
-Gustav godkänner.
-CA kopierar deployment-prompten per projekt direkt i svaret.
-Gustav klistrar in i respektive CC-fönster.
+Gustav godkänner → CA ger deployment-prompt per projekt → Gustav klistrar in i CC.
 
 ---
 
 ### Nyckelprinciper
-- Filen lever i **styr-ai** — inte i projekt-repos
-- CC läser från styr-ai, skriver tillbaka till styr-ai
+- CA skriver protokollet proaktivt — aldrig reaktivt på Gustavs fråga
+- Filen lever i styr-ai
 - Varje CC skriver bara i sin scope-taggade sektion
-- CA skriver aldrig sektion 3+4 utan godkänd sektion 1 och klara sektion 2
-- Deployment aldrig utan Gustavs explicita godkännande av master plan
+- CA skriver aldrig sektion 3+4 utan klara sektion 2
+- Deployment aldrig utan Gustavs godkännande
 
 ---
 
@@ -148,7 +145,7 @@ Gustav klistrar in i respektive CC-fönster.
 | Tasks och work items | Supabase styr_global_todo |
 | Beslut | Supabase styr_decisions |
 | Sessionsstate | Supabase styr_session_log |
-| Aktiva protokolldokument | `state/protocol_*.md` i **styr-ai** |
+| Aktiva protokolldokument | `state/protocol_*.md` i styr-ai |
 
 **Regel:** Om Gustav föreslår en ny rutin → CA uppdaterar CLAUDE.md i samma svar.
 
@@ -161,14 +158,17 @@ Gustav klistrar in i respektive CC-fönster.
 ### Fas 1 — Diskussion
 CA och Gustav diskuterar. Inga tasks skapas ännu.
 
-### Fas 2 — Spec + protokoll
-CA skriver sektion 1 i `state/protocol_[ämne].md`. Ber om godkännande.
+### Fas 2 — Överenskommelse → protokoll OMEDELBART
+När CA och Gustav landat i konkreta next steps:
+1. CA skriver `state/protocol_[ämne].md` sektion 1 — i SAMMA svar som överenskommelsen
+2. CA ber om godkännande
+3. CA väntar INTE på att Gustav ska påminna om detta
 
 ### Fas 3 — Commit (efter godkännande)
 Work item till styr_global_todo. Bekräfta.
 
-### Fas 4 — Redo för CC
-CC kör deployment-prompt vid nästa session.
+### Fas 4 — CC kallas in
+Gustav kör `sync [projekt]` i terminal. CC analyserar. Gustav kör `sync` i CA.
 
 ---
 
@@ -225,11 +225,16 @@ SELECT * FROM styr_session_log ORDER BY logged_at DESC LIMIT 3;
 SELECT * FROM styr_decisions ORDER BY decided_at DESC LIMIT 5;
 ```
 
-### Steg 2: Kolla öppna protokoll i styr-ai
+### Steg 2: Kolla protokoll i styr-ai
 ```bash
-gh api repos/gustavkall/styr-ai/contents/state --jq '[.[] | select(.name | startswith("protocol_"))] | .[].name'
+gh api repos/gustavkall/styr-ai/contents/state \
+  --jq '[.[] | select(.name | startswith("protocol_"))] | .[].name'
 ```
-Om protokollfil finns med sektion 2 `KLAR` men sektion 3 `EJ PÅBÖRJAD` → syntetisera direkt.
+
+Bedöm status per protokollfil:
+- Sektion 2 `KLAR` + sektion 3 `EJ PÅBÖRJAD` → syntetisera direkt, presentera för Gustav
+- Sektion 1 `GODKÄND` + sektion 2 `EJ PÅBÖRJAD` → påminn Gustav: *"sync engrams/tradesys väntar"*
+- Sektion 1 `VÄNTAR PÅ GUSTAVS GODKÄNNANDE` → presentera för godkännande
 
 ### Steg 3: Presentera
 ```
@@ -237,7 +242,7 @@ SESSION BOOT — YYYY-MM-DD
 ── ENGRAMS ── [tasks]
 ── TRADESYS ── [tasks]
 ── WARNER ── [deadline]
-── ÖPPNA PROTOKOLL ── [namn + status]
+── PROTOKOLL ── [namn + vad som väntar]
 ── ÖPPNA BESLUT ──
 ```
 
