@@ -9,7 +9,7 @@
 
 ## Proaktiv systemförbättring — OBLIGATORISK
 
-Gustav ska aldrig behöva komma på systemförbättringar själv. Det är CA:s ansvar att se dem först och presentera den bästa lösningen — inte fråga vad Gustav föredrar när svaret är uppenbart.
+Gustav ska aldrig behöva komma på systemförbättringar själv. Det är CA:s ansvar att se dem först och presentera den bästa lösningen.
 
 | Om Gustav beskriver... | CA ska direkt föreslå... |
 |------------------------|--------------------------|
@@ -22,61 +22,86 @@ Gustav ska aldrig behöva komma på systemförbättringar själv. Det är CA:s a
 ---
 
 ## ══════════════════════════════════════════════
-## KONSULTATIONSPROTOKOLL — OBLIGATORISKT
+## PROTOKOLLFLÖDET — OBLIGATORISKT
 ## ══════════════════════════════════════════════
 
-**Syfte:** Gustav ställer en fråga → CA distribuerar till alla CC:er parallellt → CC:erna svarar asynkront → CA syntetiserar → master plan → deployment.
+Ett enda delat dokument per ämne. Tre parter skriver i tur och ordning.
+Fil: `state/protocol_[ämne].md` i respektive CC-repo.
 
-### CA:s ansvar
+### Struktur på protokollfilen
 
-**Steg 1 — Formulera**
-CA tar Gustavs fråga och skapar en konsultationsfil per CC-repo.
-
-**Steg 2 — Distribuera**
-CA skriver `state/consultation.md` till varje berörd repo via GitHub MCP.
-Format:
 ```markdown
-# Konsultation — [ämne]
-*Från CA. Datum: YYYY-MM-DD. Svara i state/consultation_response.md och committa.*
+# Protocol — [ämne]
+*Skapad av CA: YYYY-MM-DD*
 
-## Bakgrund
-[CA:s analys och kontext]
+## SEKTION 1 — CA:s plan
+[CA skriver strategisk analys och förslag]
+[Status: VÄNTAR PÅ GUSTAVS GODKÄNNANDE]
 
-## Förslag att utvärdera
-[Lista förslag med frågor per förslag]
+## SEKTION 2 — CC:s arkitekturanalys
+[CC skriver teknisk analys och tillägg]
+[Status: EJ PÅBÖRJAD]
 
-## Instruktion
-Analysera varje förslag. Skriv svar till state/consultation_response.md.
-Format per förslag:
-  Feasibility: [Enkel/Medium/Komplex] — [estimat i timmar]
-  Risker: [vad kan gå fel]
-  Förbättring: [bättre sätt om det finns]
-  Prioritet: [HÖG/MEDIUM/LÅG] — [motivering]
-  Tillägg: [vad CA missat]
-Committa när klar.
+## SEKTION 3 — Master plan
+[CA skriver optimal plan baserad på sektion 1+2]
+[Status: EJ PÅBÖRJAD]
+
+## SEKTION 4 — Deployment
+[CA skriver exakt execution-prompt för CC]
+[Status: EJ PÅBÖRJAD]
 ```
 
-**Steg 3 — Meddela Gustav**
-CA berättar vad som skickats och till vilka repos. Gustav kopierar ett kommando per CC:
+---
+
+### STEG 1 — CA skriver plan (här i chatten)
+
+CA och Gustav diskuterar. När överens:
+1. CA skriver `state/protocol_[ämne].md` med sektion 1 ifylld
+2. CA skriver status: `VÄNTAR PÅ GUSTAVS GODKÄNNANDE`
+3. CA berättar för Gustav: *"Protokoll skrivet till [repo]. Godkänn för att gå vidare."*
+
+Gustav svarar "godkänt" → CA uppdaterar status till `GODKÄND` → klart för steg 2.
+
+---
+
+### STEG 2 — CC läser och svarar (terminal)
+
+Gustav skriver i CC-terminalen:
 ```
-Läs state/consultation.md och svara enligt instruktionen där.
+sync engrams    # eller sync tradesys
 ```
 
-**Steg 4 — Samla in**
-När Gustav berättar att CC:erna är klara (eller vid nästa sync): CA läser alla `state/consultation_response.md` via GitHub MCP.
+CC ska då:
+1. Läsa `state/protocol_[senaste].md` (hitta via `ls state/protocol_*.md | tail -1`)
+2. Lägga till sektion 2 med teknisk analys direkt i SAMMA fil
+3. Uppdatera sektion 2 status till `KLAR`
+4. Committa och pusha
+5. Skriva i terminalen: **"Klar. Sektion 2 tillagd."**
 
-**Steg 5 — Syntetisera**
-CA väger CA:s strategiska analys mot CC:s tekniska analys. Skriver master plan.
+---
 
-**Steg 6 — Godkännande**
-CA presenterar master plan för Gustav. Gustav godkänner eller justerar.
+### STEG 3 — CA syntetiserar (här i chatten)
 
-**Steg 7 — Deployment**
-CA skriver `state/deployment_prompt.md` per repo med exakt kommando att köra i CC.
-Gustav kopierar ett kommando per CC-fönster. Klart.
+Gustav skriver "sync" här.
+CA läser protokollfilen från GitHub (sektion 1 + sektion 2).
+CA skriver sektion 3 (master plan) + sektion 4 (deployment-prompt) direkt i protokollfilen.
+CA presenterar master plan för Gustav och ber om godkännande.
+
+---
+
+### STEG 4 — Deployment (terminal)
+
+Gustav godkänner master plan.
+CA bekräftar att sektion 4 är skriven.
+Gustav kopierar deployment-prompten från CA:s svar och klistrar in i CC.
+
+---
 
 ### Nyckelprincip
-CA och CC ser olika delar av verkligheten. Konsultationen är obligatorisk för strategiska beslut — inte för operativa tasks där svaret är uppenbart.
+- Ett dokument, inte många. Alla parter skriver i samma fil i ordning.
+- CA skriver aldrig sektion 3+4 utan att sektion 2 är klar.
+- Deployment sker aldrig utan Gustavs explicita godkännande av master plan.
+- `sync` här i chatten = CA läser och syntetiserar. `sync [projekt]` i terminal = CC analyserar.
 
 ---
 
@@ -84,33 +109,16 @@ CA och CC ser olika delar av verkligheten. Konsultationen är obligatorisk för 
 ## SKRIVRÄTTIGHETER — OBLIGATORISKA REGLER
 ## ══════════════════════════════════════════════
 
-Tre sessioner skriver till samma system. Dessa regler eliminerar konflikter.
-
-### Ägarskapsmodell
-
-| Mål | CA äger | CC äger | Ingen rör |
-|-----|---------|---------|-----------|
-| `styr_global_todo` | prio, notes, nya items | status (done/todo) | — |
-| `styr_system_state` | ca_context-raden | cc_context-raden | global-raden (bara CA) |
-| `styr_session_log` | INSERT egna sessioner | INSERT egna sessioner | — |
-| `styr_decisions` | INSERT egna beslut | INSERT egna beslut | — |
-| `state/active_context.md` | Skriver vid handoff | **ALDRIG** | — |
-| `state/consultation.md` | Skriver | Läser | — |
-| `state/consultation_response.md` | Läser | **Skriver** | — |
-| `state/deployment_prompt.md` | Skriver | Läser + exekverar | — |
+| Fil | CA | CC | Gustav |
+|-----|----|----|--------|
+| `state/protocol_*.md` sektion 1 | Skriver | Läser | Godkänner |
+| `state/protocol_*.md` sektion 2 | Läser | Skriver | — |
+| `state/protocol_*.md` sektion 3+4 | Skriver | Läser+kör | Godkänner |
+| `styr_global_todo` prio/notes | Skriver | Läser | — |
+| `styr_global_todo` status | Läser | Skriver (done) | — |
+| `state/active_context.md` | Skriver | **ALDRIG** | — |
 | `CLAUDE.md` (styr-ai) | Skriver | **ALDRIG** | — |
-| `CLAUDE.md` (engrams) | **ALDRIG** | CC-engrams skriver | — |
-| `CLAUDE.md` (tradesys) | **ALDRIG** | CC-tradesys skriver | — |
-
-### Regler
-
-**Regel 1 — active_context.md:** Bara CA skriver. CC läser via Boot API eller GitHub raw.
-
-**Regel 2 — styr_global_todo ägarskap:** CA sätter prio och notes. CC sätter status='done'.
-
-**Regel 3 — Boot API är read-only:** Muterar aldrig state.
-
-**Regel 4 — consultation.md:** CA skriver, CC läser och svarar i consultation_response.md.
+| `CLAUDE.md` (engrams/tradesys) | **ALDRIG** | Skriver | — |
 
 ---
 
@@ -118,59 +126,40 @@ Tre sessioner skriver till samma system. Dessa regler eliminerar konflikter.
 ## VAR SPARAS RUTINER OCH PROTOKOLL
 ## ══════════════════════════════════════════════
 
-| Typ | Var | Varför |
-|-----|-----|--------|
-| Protokoll (hur CA arbetar) | CLAUDE.md | Statiskt, läses vid varje boot |
-| Rutiner (återkommande beteenden) | CLAUDE.md | Ska alltid gälla |
-| Tasks och work items | Supabase styr_global_todo | Operativt |
-| Beslut | Supabase styr_decisions | Historik |
-| Sessionsstate | Supabase styr_session_log | Realtid |
+| Typ | Var |
+|-----|-----|
+| Protokoll och rutiner | CLAUDE.md |
+| Tasks och work items | Supabase styr_global_todo |
+| Beslut | Supabase styr_decisions |
+| Sessionsstate | Supabase styr_session_log |
+| Aktiva protokolldokument | `state/protocol_*.md` per CC-repo |
 
 **Regel:** Om Gustav föreslår en ny rutin → CA uppdaterar CLAUDE.md i samma svar.
 
 ---
 
 ## ══════════════════════════════════════════════
-## CA + CC DUAL-PERSPECTIVE RUTIN
-## ══════════════════════════════════════════════
-
-| | CA (Claude.ai) | CC (Claude Code) |
-|---|---|---|
-| **Styrka** | Top-down, strategi, arkitektur, produkttänk | Bottom-up, filsystem, implementation, exekvering |
-| **Ser** | Helheten, mönster, gap, konkurrensbild | Vad som faktiskt finns i kod och Supabase |
-| **Missar** | Lokala filer, exakt implementation | Affärslogik, produktstrategi, användarupplevelse |
-
----
-
-## ══════════════════════════════════════════════
-## CA WORKING PROTOCOL — OBLIGATORISKT FLÖDE
+## CA WORKING PROTOCOL
 ## ══════════════════════════════════════════════
 
 ### Fas 1 — Diskussion
 CA och Gustav diskuterar. Inga tasks skapas ännu.
 
-### Fas 2 — Spec
-CA skriver spec. Presenteras för godkännande.
-```
-SPEC: [Titel]
-Godkänn för att skriva till Supabase med prio [N].
-```
+### Fas 2 — Spec + protokoll
+CA skriver spec och protocol-fil. Presenteras för godkännande.
 
 ### Fas 3 — Commit (efter godkännande)
-1. Spec-fil till repo
-2. Work item till styr_global_todo
-3. Bekräfta: *"Inskrivet i Supabase: [ID] — [titel] (prio [N])"*
+1. Work item till styr_global_todo
+2. Bekräfta: *"Inskrivet: [ID] — [titel] (prio [N])"*
 
 ### Fas 4 — Redo för CC
-CC exekverar vid nästa boot utan att Gustav repetera något.
+CC exekverar vid nästa boot.
 
 ---
 
 ## ══════════════════════════════════════════════
 ## SUPABASE ÄR SSOT
 ## ══════════════════════════════════════════════
-
-**crsonxfrylkpgrddovhu är SSOT för tasks och beslut.**
 
 ```sql
 INSERT INTO styr_global_todo (id, project, title, status, priority, notes)
@@ -191,21 +180,13 @@ Om sessionen påverkar boot-sekvensen, agenter, protokoll eller strukturella fö
 
 ---
 
-## Vad är styr-ai
-
-Autonomt meta-system ovanför alla underprojekt.
-Gustav anger riktning. CA sköter strategi. CC exekverar.
-
----
-
 ## Underprojekt
 
-| Projekt-ID | Display Name | Supabase | Repo |
-|------------|-------------|----------|------|
-| styr-ai | Styr.AI | crsonxfrylkpgrddovhu | gustavkall/styr-ai |
-| engrams | Engrams | crsonxfrylkpgrddovhu | gustavkall/engrams |
-| tradesys | TRADESYS | hxikaojzwjtztyuwlxra | gustavkall/tradesys1337 |
-| savage-roar | Savage Roar Music | — | gustavkall/savage-roar-music |
+| Projekt-ID | Repo |
+|------------|------|
+| engrams | gustavkall/engrams |
+| tradesys | gustavkall/tradesys1337 + gustavkall/tradesys-models |
+| savage-roar | gustavkall/savage-roar-music |
 
 ---
 
@@ -216,14 +197,10 @@ Gustav anger riktning. CA sköter strategi. CC exekverar.
 | 08:00 vardagar | market-regime-agent | Aktiv |
 | 22:30 vardagar | top-gainers-agent | Aktiv |
 | 04:00 söndagar | memory-integrity-agent | Aktiv |
-| 03:00 / 06:00 | autonomous/coo-agent | PAUSAD |
 
 ---
 
 ## SESSION BOOT — OBLIGATORISK
-
-### Steg 0: GitHub
-- `GOVERNANCE.md` — `PROJECT.md` — `CLAUDE.md`
 
 ### Steg 1: Supabase
 ```sql
@@ -233,22 +210,22 @@ SELECT * FROM styr_session_log ORDER BY logged_at DESC LIMIT 3;
 SELECT * FROM styr_decisions ORDER BY decided_at DESC LIMIT 5;
 ```
 
-### Steg 2: Kolla öppna konsultationer
+### Steg 2: Kolla öppna protokoll
 ```bash
-gh api repos/gustavkall/engrams/contents/state/consultation_response.md --jq '.content' | base64 -d 2>/dev/null
-gh api repos/gustavkall/tradesys-models/contents/state/consultation_response.md --jq '.content' | base64 -d 2>/dev/null
+# Finns det protocol-filer med sektion 2 klar men sektion 3 ej skriven?
+gh api repos/gustavkall/engrams/contents/state --jq '.[].name' 2>/dev/null | grep protocol
+gh api repos/gustavkall/tradesys-models/contents/state --jq '.[].name' 2>/dev/null | grep protocol
 ```
-Om svar finns och inte syntetiserats → syntetisera direkt vid boot.
+Om protokollfil med `KLAR` i sektion 2 hittas → syntetisera direkt.
 
 ### Steg 3: Presentera
 ```
 SESSION BOOT — YYYY-MM-DD
-── ENGRAMS ── [tasks i prio-ordning]
+── ENGRAMS ── [tasks]
 ── TRADESYS ── [tasks]
-── WARNER ── [nästa deadline]
-── META ── [tasks]
-── ÖPPNA KONSULTATIONER ── [om svar väntar]
-── ÖPPNA BESLUT ── [från styr_decisions status=open]
+── WARNER ── [deadline]
+── ÖPPNA PROTOKOLL ── [protocol-filer som väntar på sektion 3]
+── ÖPPNA BESLUT ──
 ```
 
 ---
@@ -261,15 +238,6 @@ SESSION BOOT — YYYY-MM-DD
 4. INSERT `styr_decisions`
 5. UPDATE `state/active_context.md`
 6. Bekräfta till Gustav
-
----
-
-## PRIORITERINGSORDNING
-
-1. ENGRAMS — aktiv produkt
-2. TRADESYS — operativt
-3. WARNER — bevakas passivt
-4. META — infrastruktur
 
 ---
 
