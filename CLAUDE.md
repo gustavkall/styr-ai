@@ -22,11 +22,69 @@ Gustav ska aldrig behöva komma på systemförbättringar själv. Det är CA:s a
 ---
 
 ## ══════════════════════════════════════════════
+## KONSULTATIONSPROTOKOLL — OBLIGATORISKT
+## ══════════════════════════════════════════════
+
+**Syfte:** Gustav ställer en fråga → CA distribuerar till alla CC:er parallellt → CC:erna svarar asynkront → CA syntetiserar → master plan → deployment.
+
+### CA:s ansvar
+
+**Steg 1 — Formulera**
+CA tar Gustavs fråga och skapar en konsultationsfil per CC-repo.
+
+**Steg 2 — Distribuera**
+CA skriver `state/consultation.md` till varje berörd repo via GitHub MCP.
+Format:
+```markdown
+# Konsultation — [ämne]
+*Från CA. Datum: YYYY-MM-DD. Svara i state/consultation_response.md och committa.*
+
+## Bakgrund
+[CA:s analys och kontext]
+
+## Förslag att utvärdera
+[Lista förslag med frågor per förslag]
+
+## Instruktion
+Analysera varje förslag. Skriv svar till state/consultation_response.md.
+Format per förslag:
+  Feasibility: [Enkel/Medium/Komplex] — [estimat i timmar]
+  Risker: [vad kan gå fel]
+  Förbättring: [bättre sätt om det finns]
+  Prioritet: [HÖG/MEDIUM/LÅG] — [motivering]
+  Tillägg: [vad CA missat]
+Committa när klar.
+```
+
+**Steg 3 — Meddela Gustav**
+CA berättar vad som skickats och till vilka repos. Gustav kopierar ett kommando per CC:
+```
+Läs state/consultation.md och svara enligt instruktionen där.
+```
+
+**Steg 4 — Samla in**
+När Gustav berättar att CC:erna är klara (eller vid nästa sync): CA läser alla `state/consultation_response.md` via GitHub MCP.
+
+**Steg 5 — Syntetisera**
+CA väger CA:s strategiska analys mot CC:s tekniska analys. Skriver master plan.
+
+**Steg 6 — Godkännande**
+CA presenterar master plan för Gustav. Gustav godkänner eller justerar.
+
+**Steg 7 — Deployment**
+CA skriver `state/deployment_prompt.md` per repo med exakt kommando att köra i CC.
+Gustav kopierar ett kommando per CC-fönster. Klart.
+
+### Nyckelprincip
+CA och CC ser olika delar av verkligheten. Konsultationen är obligatorisk för strategiska beslut — inte för operativa tasks där svaret är uppenbart.
+
+---
+
+## ══════════════════════════════════════════════
 ## SKRIVRÄTTIGHETER — OBLIGATORISKA REGLER
 ## ══════════════════════════════════════════════
 
 Tre sessioner skriver till samma system. Dessa regler eliminerar konflikter.
-Baserat på CA+CC analys 2026-04-03 — bekräftad av 3 faktiska merge-konflikter.
 
 ### Ägarskapsmodell
 
@@ -37,19 +95,22 @@ Baserat på CA+CC analys 2026-04-03 — bekräftad av 3 faktiska merge-konflikte
 | `styr_session_log` | INSERT egna sessioner | INSERT egna sessioner | — |
 | `styr_decisions` | INSERT egna beslut | INSERT egna beslut | — |
 | `state/active_context.md` | Skriver vid handoff | **ALDRIG** | — |
+| `state/consultation.md` | Skriver | Läser | — |
+| `state/consultation_response.md` | Läser | **Skriver** | — |
+| `state/deployment_prompt.md` | Skriver | Läser + exekverar | — |
 | `CLAUDE.md` (styr-ai) | Skriver | **ALDRIG** | — |
 | `CLAUDE.md` (engrams) | **ALDRIG** | CC-engrams skriver | — |
 | `CLAUDE.md` (tradesys) | **ALDRIG** | CC-tradesys skriver | — |
 
 ### Regler
 
-**Regel 1 — active_context.md:** Bara CA skriver. CC läser via Boot API eller GitHub raw. CC committar aldrig till active_context.md.
+**Regel 1 — active_context.md:** Bara CA skriver. CC läser via Boot API eller GitHub raw.
 
-**Regel 2 — styr_global_todo ägarskap:** CA sätter prio och notes. CC sätter status='done' på tasks den jobbat på. Ingen session kör UPDATE på kolumner den inte äger.
+**Regel 2 — styr_global_todo ägarskap:** CA sätter prio och notes. CC sätter status='done'.
 
-**Regel 3 — Boot API är read-only:** `/api/boot` exponerar global state via HTTP. All skrivning sker direkt mot Supabase. Boot API muterar aldrig state.
+**Regel 3 — Boot API är read-only:** Muterar aldrig state.
 
-**Framtida S7 (när vi faktiskt krockar på rader):** Optimistisk locking via updated_at-timestamp på styr_global_todo.
+**Regel 4 — consultation.md:** CA skriver, CC läser och svarar i consultation_response.md.
 
 ---
 
@@ -57,18 +118,15 @@ Baserat på CA+CC analys 2026-04-03 — bekräftad av 3 faktiska merge-konflikte
 ## VAR SPARAS RUTINER OCH PROTOKOLL
 ## ══════════════════════════════════════════════
 
-**Rutiner och protokoll sparas i CLAUDE.md — inte i Supabase.**
-
 | Typ | Var | Varför |
 |-----|-----|--------|
 | Protokoll (hur CA arbetar) | CLAUDE.md | Statiskt, läses vid varje boot |
-| Rutiner (återkommande beteenden) | CLAUDE.md | Ska alltid gälla, inte vara operativt state |
-| Tasks och work items | Supabase styr_global_todo | Operativt, förändras löpande |
-| Beslut | Supabase styr_decisions | Historik, spårbarhet |
-| Sessionsstate | Supabase styr_session_log | Realtid, CA↔CC sync |
+| Rutiner (återkommande beteenden) | CLAUDE.md | Ska alltid gälla |
+| Tasks och work items | Supabase styr_global_todo | Operativt |
+| Beslut | Supabase styr_decisions | Historik |
+| Sessionsstate | Supabase styr_session_log | Realtid |
 
 **Regel:** Om Gustav föreslår en ny rutin → CA uppdaterar CLAUDE.md i samma svar.
-Meddela: *"CLAUDE.md har uppdaterats med: [rutin]"*
 
 ---
 
@@ -76,29 +134,11 @@ Meddela: *"CLAUDE.md har uppdaterats med: [rutin]"*
 ## CA + CC DUAL-PERSPECTIVE RUTIN
 ## ══════════════════════════════════════════════
 
-CA och CC är komplementära — inte utbytbara.
-
 | | CA (Claude.ai) | CC (Claude Code) |
 |---|---|---|
 | **Styrka** | Top-down, strategi, arkitektur, produkttänk | Bottom-up, filsystem, implementation, exekvering |
 | **Ser** | Helheten, mönster, gap, konkurrensbild | Vad som faktiskt finns i kod och Supabase |
 | **Missar** | Lokala filer, exakt implementation | Affärslogik, produktstrategi, användarupplevelse |
-
-**Rutinen:**
-1. Gustav ställer frågan till CA
-2. CA formulerar skärpt fråga till CC
-3. Gustav pastar CC:s svar hit
-4. CA syntetiserar → skriver spec
-5. Spec godkänns → Supabase + repo
-
-**Format på CA:s fråga till CC:**
-```
-Arkitekturfråga — svara innan du skriver kod:
-[Kontext] [Problem] [Frågor]
-Beskriv arkitekturen. Rita lagermodellen.
-Identifiera vad som saknas och krockar.
-Föreslå konkret lösning. Skriv ingen kod ännu.
-```
 
 ---
 
@@ -110,7 +150,7 @@ Föreslå konkret lösning. Skriv ingen kod ännu.
 CA och Gustav diskuterar. Inga tasks skapas ännu.
 
 ### Fas 2 — Spec
-CA skriver spec. Presenteras för godkännande. CA väntar innan Supabase-write.
+CA skriver spec. Presenteras för godkännande.
 ```
 SPEC: [Titel]
 Godkänn för att skriva till Supabase med prio [N].
@@ -132,14 +172,10 @@ CC exekverar vid nästa boot utan att Gustav repetera något.
 
 **crsonxfrylkpgrddovhu är SSOT för tasks och beslut.**
 
-När Gustav anger work item, beslut eller prioritering → commit i SAMMA svar.
-
 ```sql
--- Nytt work item
 INSERT INTO styr_global_todo (id, project, title, status, priority, notes)
 VALUES ('[ID]', '[project]', '[titel]', 'todo', [prio], '[spec-ref]');
 
--- Nytt beslut
 INSERT INTO styr_decisions (project, decision, rationale, decided_by)
 VALUES ('[project]', '[beslut]', '[varför]', 'CA');
 ```
@@ -197,26 +233,33 @@ SELECT * FROM styr_session_log ORDER BY logged_at DESC LIMIT 3;
 SELECT * FROM styr_decisions ORDER BY decided_at DESC LIMIT 5;
 ```
 
-### Steg 2: Presentera
+### Steg 2: Kolla öppna konsultationer
+```bash
+gh api repos/gustavkall/engrams/contents/state/consultation_response.md --jq '.content' | base64 -d 2>/dev/null
+gh api repos/gustavkall/tradesys-models/contents/state/consultation_response.md --jq '.content' | base64 -d 2>/dev/null
+```
+Om svar finns och inte syntetiserats → syntetisera direkt vid boot.
+
+### Steg 3: Presentera
 ```
 SESSION BOOT — YYYY-MM-DD
 ── ENGRAMS ── [tasks i prio-ordning]
 ── TRADESYS ── [tasks]
 ── WARNER ── [nästa deadline]
 ── META ── [tasks]
+── ÖPPNA KONSULTATIONER ── [om svar väntar]
 ── ÖPPNA BESLUT ── [från styr_decisions status=open]
-── NYTT FRÅN CC ── [senaste CC session_log]
 ```
 
 ---
 
 ## HANDOFF — OBLIGATORISK
 
-1. UPDATE `styr_global_todo` — bara CA:s egna kolumner (prio/notes)
+1. UPDATE `styr_global_todo`
 2. INSERT `styr_session_log`
-3. UPDATE `styr_system_state` id='ca_context' — bara CA:s rad
+3. UPDATE `styr_system_state` id='ca_context'
 4. INSERT `styr_decisions`
-5. UPDATE `state/active_context.md` på GitHub — bara CA
+5. UPDATE `state/active_context.md`
 6. Bekräfta till Gustav
 
 ---
