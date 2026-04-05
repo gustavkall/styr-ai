@@ -111,24 +111,18 @@ Styr är alltid med. Projektargumentet är ett filter, inte ett val.
 ---
 
 ## SEKTION 2 — CC:s arkitektoniska feedback [scope: engrams]
-*Status: VÄNTAR*
-
-**CC: läs denna sektion och svara direkt i filen under respektive fråga. Sätt status till KLAR och committa.**
+*CC-engrams. Datum: 2026-04-05*
 
 **F1: Projektscoping i CC**
-När Gustav kör `engrams boot tradesys` i din terminal — hur filtrerar du output i praktiken? Kör du `loadProject("tradesys")` separat, eller filtrerar du resultatet från `loadProject("styr-ai")`? Vilket är enklast att implementera och ger bäst resultat?
-
-Svar:
+Svar: Två separata anrop, inte filtrering. `engrams boot tradesys` kör: (1) `curl Boot API ?project=styr-ai` för global tasks/decisions, (2) `curl loadProject("tradesys")` för projektspecifikt minne (context, episodes, learnings). Boot API returnerar redan tasks filtrerat per projekt. loadProject returnerar minne filtrerat per projekt. Att ladda styr-ai:s loadProject och försöka filtrera funkar inte — minnesdata lever per projekt i Engrams, inte blandat. Enklast + bäst resultat = två anrop, merge i presentationen.
 
 **F2: `engrams handoff` vs automatiskt vid block-avslut**
-Ska `engrams handoff` som explicit kommando göra något annat än den automatiska block-avslut-logiken? Eller är de identiska?
-
-Svar:
+Svar: Identiska. Ingen anledning att ha två olika beteenden. `engrams handoff` bör vara ett alias för samma curl-anrop som block-avslut gör automatiskt. Enda skillnaden: Gustav kan explicit trigga det om han vill avsluta mitt i ett block utan att vänta. Men koden som körs är exakt samma — episode remember med agent, date, done, next, notes.
 
 **F3: `engrams sync` i CC**
-`engrams sync` ska läsa CA:s senaste decisions från Engrams. Hur — ett `curl loadProject` utöver `git pull`, eller är `git pull` + Boot API tillräckligt?
+Svar: `git pull` + `curl loadProject("styr-ai")`. Boot API räcker inte — den returnerar tasks/decisions från styr_global_todo/styr_decisions, men CA skriver nu episodes och decisions direkt till Engrams (V2 Fas 1). loadProject fångar CA:s Engrams-skrivningar. git pull fångar CLAUDE.md-ändringar och protokollfiler. Båda behövs.
 
-Svar:
+*Status: KLAR*
 
 ---
 
