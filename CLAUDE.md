@@ -18,13 +18,38 @@ Detta gäller utan undantag för:
 - CLAUDE.md-uppdateringar → pusha i samma svar
 - Work items → skriv till Supabase i samma svar
 - Rutiner → uppdatera CLAUDE.md i samma svar
-- Beslut → logga till styr_decisions i samma svar
+- Beslut → logga till Engrams (INTE styr_decisions) i samma svar
 
 **Frågan CA alltid ställer sig innan ett svar avslutas:**
 *"Har vi kommit överens om något som inte är exekverat än?"*
 Om ja → exekvera nu, inte senare.
 
-**Konsekvens av regeln:** Gustav ska aldrig behöva påminna CA om att göra något vi redan beslutat. Om Gustav påminner har CA brutit mot kärnregeln.
+---
+
+## ══════════════════════════════════════════════
+## ENGRAMS V2 — LOGGNINGSPROTOKOLL (FAS 1)
+## ══════════════════════════════════════════════
+*Beslutad: 2026-04-06. Spec: gustavkall/engrams/docs/engrams-v2-spec.md*
+
+**CA slutar dubbellogga. Engrams är den enda datakällan för minne.**
+
+| Funktion | Tidigare | Nu |
+|----------|----------|----|
+| Beslut | styr_decisions + Engrams | **Bara Engrams** (`decision`-typ) |
+| Sessioner | styr_session_log + Engrams | **Bara Engrams** (`episode`-typ) |
+| Projektkontext | styr_system_state + Engrams | **Bara Engrams** (`context`-typ) |
+| Tasks | styr_global_todo | Oförändrat (kvar i Supabase tills Fas 2) |
+| Boot-instruktioner | CLAUDE.md | Oförändrat (kvar i git) |
+| Agenter | GitHub Actions | Oförändrat |
+
+**Konkret för CA:**
+- Logga beslut → `remember` till Engrams med `type: decision`, `project: [projekt]`
+- Logga sessioner → `remember` till Engrams med `type: episode`, `project: styr-ai`
+- Skriv INTE till `styr_decisions` eller `styr_session_log` längre
+- Tasks skrivs fortfarande till `styr_global_todo` i Supabase
+
+**Engrams API-nyckel för styr-ai:** `eng_9d3d7f0107d8a551d7f4cac9875c760585f3f677736dddb9a6d32237f1195bce`
+**MCP-endpoint:** `https://www.engrams.app/api/mcp?key=eng_...`
 
 ---
 
@@ -78,10 +103,7 @@ Fil: `gustavkall/styr-ai/state/protocol_[ämne].md`
 ```
 
 ### STEG 1 — CA skriver sektion 1
-När CA och Gustav landat i konkreta next steps — CA skriver protokollet **i samma svar**. Trigger:
-- Konkreta next steps är överenskomna
-- Gustav godkänner ett förslag
-- Sessionen är på väg att avslutas med oexekverade beslut
+När CA och Gustav landat i konkreta next steps — CA skriver protokollet **i samma svar**.
 
 ### STEG 2 — CC analyserar (terminal)
 ```bash
@@ -94,12 +116,6 @@ Gustav skriver `sync` här → CA skriver sektion 3+4 → presenterar för godk�
 
 ### STEG 4 — Deployment
 Gustav godkänner → CA ger deployment-prompt → Gustav klistrar in i CC.
-
-### Nyckelprinciper
-- Filen lever i styr-ai
-- CC skriver bara i sin scope-taggade sektion
-- CA skriver aldrig sektion 3+4 utan klara sektion 2
-- Deployment aldrig utan Gustavs godkännande
 
 ---
 
@@ -120,59 +136,63 @@ Gustav godkänner → CA ger deployment-prompt → Gustav klistrar in i CC.
 ---
 
 ## ══════════════════════════════════════════════
-## VAR SPARAS RUTINER OCH PROTOKOLL
+## VAR SPARAS VAD
 ## ══════════════════════════════════════════════
 
 | Typ | Var |
 |-----|-----|
 | Protokoll och rutiner | CLAUDE.md (styr-ai) |
 | Tasks och work items | Supabase styr_global_todo |
-| Beslut | Supabase styr_decisions |
-| Sessionsstate | Supabase styr_session_log |
+| **Beslut** | **Engrams** (`decision`-typ) — INTE styr_decisions |
+| **Sessionslogg** | **Engrams** (`episode`-typ) — INTE styr_session_log |
+| **Projektkontext** | **Engrams** (`context`-typ) — INTE styr_system_state |
 | Aktiva protokolldokument | `state/protocol_*.md` i styr-ai |
 
-**Regel:** Om Gustav föreslår en ny rutin → CA uppdaterar CLAUDE.md i samma svar.
-
 ---
 
 ## ══════════════════════════════════════════════
-## CA WORKING PROTOCOL
+## SESSION BOOT — OBLIGATORISK
 ## ══════════════════════════════════════════════
 
-### Fas 1 — Diskussion
-CA och Gustav diskuterar. Inga tasks skapas ännu.
-
-### Fas 2 — Överenskommelse → exekvera omedelbart
-När next steps är överenskomna: CA skriver protokoll + work items + CLAUDE.md-uppdateringar i **samma svar**. Inte i nästa.
-
-### Fas 3 — Bekräfta
-Work item till styr_global_todo. Bekräfta vad som exekverats.
-
-### Fas 4 — CC kallas in
-Gustav kör `sync [projekt]` → CC analyserar → Gustav kör `sync` i CA.
-
----
-
-## ══════════════════════════════════════════════
-## SUPABASE ÄR SSOT
-## ══════════════════════════════════════════════
-
+### Steg 1: Tasks från Supabase
 ```sql
-INSERT INTO styr_global_todo (id, project, title, status, priority, notes)
-VALUES ('[ID]', '[project]', '[titel]', 'todo', [prio], '[spec-ref]');
+SELECT * FROM styr_global_todo WHERE status != 'done' ORDER BY project, priority;
+```
 
-INSERT INTO styr_decisions (project, decision, rationale, decided_by)
-VALUES ('[project]', '[beslut]', '[varför]', 'CA');
+### Steg 2: Minne från Engrams
+Anrop via Engrams MCP:
+- `loadProject("styr-ai")` — kontext, beslut, senaste episodes
+- `recall("senaste session")` — om loadProject ej finns
+
+### Steg 3: Kolla aktiva protokoll i styr-ai
+```bash
+gh api repos/gustavkall/styr-ai/contents/state \
+  --jq '[.[] | select(.name | startswith("protocol_"))] | .[].name'
+```
+
+### Steg 4: Presentera
+```
+SESSION BOOT — YYYY-MM-DD
+── ENGRAMS ── [tasks]
+── TRADESYS ── [tasks]
+── WARNER ── [deadline]
+── PROTOKOLL ── [namn + vad som väntar]
+── ÖPPNA BESLUT ──
 ```
 
 ---
 
-## Flaggningsregel — OBLIGATORISK
+## ══════════════════════════════════════════════
+## HANDOFF — OBLIGATORISK
+## ══════════════════════════════════════════════
 
-Om sessionen påverkar boot-sekvensen, agenter, protokoll eller strukturella förändringar:
-1. Uppdatera denna fil
-2. Logga i `governance/architecture_changelog.md`
-3. Meddela Gustav: *"CLAUDE.md har uppdaterats med: [vad]"*
+1. UPDATE `styr_global_todo` (tasks)
+2. `remember` till Engrams: episode-minne med sessionssummering
+3. `remember` till Engrams: beslut som fattats (`decision`-typ)
+4. UPDATE `state/active_context.md`
+5. Bekräfta till Gustav
+
+**Skriv INTE till styr_decisions eller styr_session_log.**
 
 ---
 
@@ -196,47 +216,12 @@ Om sessionen påverkar boot-sekvensen, agenter, protokoll eller strukturella fö
 
 ---
 
-## SESSION BOOT — OBLIGATORISK
+## Flaggningsregel — OBLIGATORISK
 
-### Steg 1: Supabase
-```sql
-SELECT * FROM styr_global_todo WHERE status != 'done' ORDER BY project, priority;
-SELECT * FROM styr_system_state ORDER BY updated_at DESC LIMIT 5;
-SELECT * FROM styr_session_log ORDER BY logged_at DESC LIMIT 3;
-SELECT * FROM styr_decisions ORDER BY decided_at DESC LIMIT 5;
-```
-
-### Steg 2: Kolla protokoll i styr-ai
-```bash
-gh api repos/gustavkall/styr-ai/contents/state \
-  --jq '[.[] | select(.name | startswith("protocol_"))] | .[].name'
-```
-
-Status per protokollfil:
-- Sek 2 `KLAR` + sek 3 `EJ PÅBÖRJAD` → syntetisera direkt
-- Sek 1 `GODKÄND` + sek 2 `EJ PÅBÖRJAD` → påminn: *"sync engrams/tradesys väntar"*
-- Sek 1 `VÄNTAR` → presentera för godkännande
-
-### Steg 3: Presentera
-```
-SESSION BOOT — YYYY-MM-DD
-── ENGRAMS ── [tasks]
-── TRADESYS ── [tasks]
-── WARNER ── [deadline]
-── PROTOKOLL ── [namn + vad som väntar]
-── ÖPPNA BESLUT ──
-```
-
----
-
-## HANDOFF — OBLIGATORISK
-
-1. UPDATE `styr_global_todo`
-2. INSERT `styr_session_log`
-3. UPDATE `styr_system_state` id='ca_context'
-4. INSERT `styr_decisions`
-5. UPDATE `state/active_context.md`
-6. Bekräfta till Gustav
+Om sessionen påverkar boot-sekvensen, agenter, protokoll eller strukturella förändringar:
+1. Uppdatera denna fil
+2. Logga i `governance/architecture_changelog.md`
+3. Meddela Gustav: *"CLAUDE.md har uppdaterats med: [vad]"*
 
 ---
 
