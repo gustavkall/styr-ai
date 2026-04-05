@@ -79,18 +79,35 @@ CC: Bekräfta att block-avslut curl-anropet körs automatiskt och att CA kan lä
 ---
 
 ## SEKTION 2 — CC engrams feedback [scope: engrams]
-*Status: VÄNTAR*
+*CC-engrams. Datum: 2026-04-05*
 
-**CC: svara på varje spec nedan. Format:**
-
-```
-### [SPEC-ID]
-Feasibility: [Enkel/Medium/Komplex]
-Risker: [vad kan gå fel]
-Ordning: [om flera steg, rätt ordning]
-CC-notering: [vad CA missat eller fel]
+### E-DEMO-CLEANUP-001
+Feasibility: Enkel
+Risker: CASCADE delete kan ta bort memory_items som hör till orphaned projects om FK inte har ON DELETE CASCADE. Nuvarande schema har FK utan CASCADE — behöver explicit DELETE-ordning: memory_items först, projects sen, accounts sist.
+Ordning: (1) DELETE memory_items WHERE project_id IN (SELECT id FROM projects WHERE account_id IN (SELECT id FROM accounts WHERE plan=demo AND created_at < 24h)), (2) DELETE projects, (3) DELETE accounts. Tre steg, inte CA:s tvåstegs-approach.
+CC-notering: Kräver SUPABASE_URL + SUPABASE_SERVICE_KEY som GitHub secrets — samma som uptime.yml. Borde sättas samtidigt (E-GITHUB-SECRET-001).
 Status: KLAR
-```
+
+### E-DEMO-LIMIT-001
+Feasibility: Enkel
+Risker: Minimala. Race condition om två parallella remember-anrop — men demo är single-user, osannolikt.
+Ordning: Korrekt som spec. En check i remember.js före INSERT.
+CC-notering: CA:s approach kollar account.plan men remember.js har inte account-objektet — den har bara projectId. Behöver en extra query: projects → accounts → check plan. Alternativt: lagra plan på projects-tabellen (denormalisering) för att undvika join. Rekommendation: extra query är OK för demo (inte hot path), denormalisering onödig.
+Status: KLAR
+
+### E17 — TEAMS-V2
+Feasibility: Komplex (2-3 veckor)
+Risker: Schema-migration under live trafik. scope-kolumnen på memory_items kräver default-värde och bakåtkompatibel NULL-hantering. RLS-policies blir komplexa med team-scope.
+Ordning: Spec-ordningen steg 1-11 är korrekt. Kritiskt: kör steg 1-3 (schema) och verifiera innan API-kod rörs.
+CC-notering: Spec refererar till docs/teams-v2-implementation-spec.md — den filen finns och är komplett. Inget saknas.
+Status: KLAR
+
+### CC-HANDOFF-001
+Feasibility: Redan implementerat
+Risker: Inga — körs redan i produktion.
+Ordning: N/A
+CC-notering: Block-avslut curl-anrop körs. Bekräftat: senaste episoder syns i loadProject("styr-ai") under episodes-nyckeln. CA kan läsa dem. Fungerar.
+Status: KLAR
 
 ---
 
