@@ -1,7 +1,7 @@
 # Protocol — tradesys specs batch
 *Skapad av CA: 2026-04-06*
 *Scope: [tradesys]*
-*Status: VÄNTAR PÅ CC:s FEEDBACK*
+*Status: FEEDBACK KLAR*
 
 ---
 
@@ -83,18 +83,35 @@ Detta är ett CA+styr-ai-jobb, inte CC. Parkeras tills specs ovan är körda.
 ---
 
 ## SEKTION 2 — CC tradesys feedback [scope: tradesys]
-*Status: VÄNTAR*
+*Status: KLAR*
 
-**CC: svara på varje spec. Format:**
-
-```
-### [SPEC-ID]
-Feasibility: [Enkel/Medium/Komplex]
-Risker: [vad kan gå fel]
-Ordning: [rätt körordning om flera steg]
-CC-notering: [vad CA missat]
+### TRADESYS-REGIME-001
+Feasibility: Medium
+Risker: Att vi optimerar filter per period och overfittar till specifika historiska regimperioder istället för att hitta generell edge. Måste använda walk-forward eller leave-one-period-out validering.
+Ordning: 1) PANIC_ONLY per-period feature analysis (varför 8/23 perioder misslyckas) → 2) SECTOR_HOT filter-lättnad med regime-matched validering → 3) VIX_MEAN_REVERSION sub-regime-analys → 4) SECTOR_CONTAGION HYG-spread-layer
+CC-notering: CA:s prioriteringsordning är korrekt. Ett tillägg: vi bör implementera leave-one-period-out korsvalidering — optimera på N-1 perioder, validera på den utelämnade. Annars riskerar vi att fittas till specifika PANIC-perioder (t.ex. COVID mars 2020) som inte generaliserar. Redan byggda ticker-betas (`data/ticker_betas.json`) bör integreras som första steg — det är gratis +2.8pp för SECTOR_HOT.
 Status: KLAR
-```
+
+### T1 — ADD-NEW-AGENT3-001
+Feasibility: Enkel
+Risker: Inga — det är en prioriteringsfråga, inte teknisk risk.
+Ordning: Stäng agent 3 nu. Återöppna efter PANIC_ONLY och SECTOR_HOT når >65% WR i regime-matched test.
+CC-notering: Håller med om alternativ B. Men data visar att RISK_OFF_BOUNCE i RISK-OFF-regim har 45% WR (under slump). Den är inte bara svag — den förlorar pengar i sin designregim. Att redesigna den med creditStress som primärsignal kräver ny hypotes och ny data. Parkera helt.
+Status: KLAR
+
+### T-DATA-THIN-001
+Feasibility: Enkel (redan löst)
+Risker: Inga.
+Ordning: Redan genomfört. Yahoo Finance backfill gav 88 tickers till 2010 + Polygon 56 tickers. Snapshots gick från 77K → 321K. SECTOR_HOT har nu 2,066 trades (regime-matched) och SC_TREND 1,658 trades. Trade-antal är inte längre problemet — problemet är att WR faller med mer data (SC_TREND 78% → 51.4%). CA:s siffror (21/27 trades) är från förra sessionen.
+CC-notering: CA arbetar med gammal data. Uppdaterade siffror efter Yahoo-backfill: SECTOR_HOT 2,066 trades (59.6% WR), SC_TREND 1,658 trades (51.4% WR). Data-bredden är löst. Filteroptimering mot regime-matched baseline är nästa steg, inte mer data.
+Status: KLAR
+
+### PROTO-REVIEW-001
+Feasibility: Enkel (CA-jobb)
+Risker: Inga.
+Ordning: Parkera som CA föreslår. CC har inga synpunkter — detta är governance, inte modellarbete.
+CC-notering: sync.sh har en återkommande syntaxbugg (extra `}"` i curl JSON, rad 53). Fixad av CC två gånger men remote överskriver. CA bör fixa i styr-ai-repot.
+Status: KLAR
 
 ---
 
