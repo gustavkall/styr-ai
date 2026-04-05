@@ -161,8 +161,15 @@ SELECT * FROM styr_global_todo WHERE status != 'done' ORDER BY project, priority
 
 ### Steg 2: Minne från Engrams
 Anrop via Engrams MCP:
-- `loadProject("styr-ai")` — kontext, beslut, senaste episodes
-- `recall("senaste session")` — om loadProject ej finns
+- `loadProject("styr-ai")` — returnerar context, tasks, decisions, episodes, learnings
+- Strukturerad JSON — konsumera direkt utan tolkning
+
+<!-- FALLBACK om Engrams är nere:
+curl -s https://raw.githubusercontent.com/gustavkall/styr-ai/main/project_memory/goals.md
+curl -s https://raw.githubusercontent.com/gustavkall/styr-ai/main/project_memory/cross_project_learnings.md
+curl -s https://raw.githubusercontent.com/gustavkall/styr-ai/main/state/session_handoff.md
+Dessa filer är ghost-state — data migrerat till Engrams 2026-04-05.
+Använd bara som fallback vid Engrams-downtime. -->
 
 ### Steg 3: Kolla aktiva protokoll i styr-ai
 ```bash
