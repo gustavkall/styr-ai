@@ -126,22 +126,22 @@ Status:
 ---
 
 ## SEKTION 2 — CC tradesys feedback [scope: tradesys]
-*Status: VÄNTAR*
+*Status: KLAR*
 
 **CC: svara på MASTER-CONFIG-001 och S7.**
 
 ### MASTER-CONFIG-001
-Feasibility:
-Risker: [curl | bash från privat repo — acceptabelt?]
-Ordning:
-CC-notering:
-Status:
+Feasibility: Enkel
+Risker: curl från privat repo kräver gh auth token i environment — acceptabelt så länge det är privat repo. Fallback om curl misslyckas: hårdkodade defaults (nuvarande beteende). Ingen breaking change.
+Ordning: 1) CA skapar master.yml i styr-ai, 2) CC uppdaterar sync.sh/deploy.sh att ladda den med fallback.
+CC-notering: Bra idé. sync.sh har redan haft tre syntaxbuggar i hårdkodad JSON — centralisering minskar den risken. Förslag: använd `gh api` istället för raw curl — det hanterar auth automatiskt: `gh api repos/gustavkall/styr-ai/contents/config/master.yml --jq '.content' | base64 -d`
+Status: KLAR
 
 ### S7 — OPTIMISTIC-LOCKING
-Feasibility:
-Risker:
-CC-notering:
-Status:
+Feasibility: Enkel (en migration + en trigger)
+Risker: Inga — additivt. Befintlig kod påverkas inte förrän vi aktivt kollar updated_at i scripts.
+CC-notering: Håller med om låg prio. Vi har aldrig sett en konflikt. SQL:en i specen är korrekt och kan köras direkt via Supabase MCP när det behövs. Parkera.
+Status: KLAR
 
 ---
 
