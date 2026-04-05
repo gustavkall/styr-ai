@@ -70,7 +70,7 @@ ACTION: remember(type:episode, project:styr-ai, content:{summering})
         remember(type:decision, ...) för varje beslut denna session
 ```
 
-**CC (CLAUDE.md — engrams eller styr-ai):**
+**CC (CLAUDE.md — engrams):**
 
 ```
 TRIGGER: Gustav skriver "engrams boot [projekt?]"
@@ -97,8 +97,6 @@ Styr är alltid med. Projektargumentet är ett filter, inte ett val.
 
 `engrams boot engrams` = ladda styr-ai + filtrera till Engrams-produkten.
 
-Detta måste vara explicit i CLAUDE.md för att inte en framtida CA-instans ska tolka det som "boota Engrams istället för styr".
-
 ---
 
 ### Risker
@@ -106,29 +104,31 @@ Detta måste vara explicit i CLAUDE.md för att inte en framtida CA-instans ska 
 | Risk | Sannolikhet | Hantering |
 |------|-------------|-----------|
 | `engrams` utan subkommando | Hög i början | Behandla som `engrams boot` |
-| CC saknar Engrams MCP | Bekräftat — CC kör curl | Curl mot /api/remember är primary, inte fallback |
+| CC saknar Engrams MCP | Bekräftat — CC kör curl | Curl mot /api/remember är primary |
 | CA:s CLAUDE.md-ändringar syns inte mitt i CC-session | Acceptabelt | Gäller från nästa CC-boot |
 | Projektargument tolkas som exklusivt scope | Medel | Explicit regel: styr alltid med som bas |
 
 ---
 
-## SEKTION 2 — CC:s arkitektoniska feedback [scope: CC]
+## SEKTION 2 — CC:s arkitektoniska feedback [scope: engrams]
 *Status: VÄNTAR*
 
-**CC: läs denna sektion och svara direkt i filen.**
-
-Tre specifika frågor CA behöver svar på innan implementation:
+**CC: läs denna sektion och svara direkt i filen under respektive fråga. Sätt status till KLAR och committa.**
 
 **F1: Projektscoping i CC**
 När Gustav kör `engrams boot tradesys` i din terminal — hur filtrerar du output i praktiken? Kör du `loadProject("tradesys")` separat, eller filtrerar du resultatet från `loadProject("styr-ai")`? Vilket är enklast att implementera och ger bäst resultat?
 
+Svar:
+
 **F2: `engrams handoff` vs automatiskt vid block-avslut**
-Du bekräftade att regel i CLAUDE.md är rätt för automatisk handoff. Men ska `engrams handoff` som explicit kommando göra något *annat* än den automatiska block-avslut-logiken? Eller är de identiska?
+Ska `engrams handoff` som explicit kommando göra något annat än den automatiska block-avslut-logiken? Eller är de identiska?
+
+Svar:
 
 **F3: `engrams sync` i CC**
-Du sa att `git pull` räcker för CA→CC. Men `engrams sync` ska också läsa CA:s senaste decisions från Engrams. Hur ser du på det — ett `curl loadProject` utöver `git pull`, eller är `git pull` + Boot API tillräckligt?
+`engrams sync` ska läsa CA:s senaste decisions från Engrams. Hur — ett `curl loadProject` utöver `git pull`, eller är `git pull` + Boot API tillräckligt?
 
-**Skriv dina svar under respektive fråga. Committa filen när du är klar.**
+Svar:
 
 ---
 
@@ -139,9 +139,3 @@ Du sa att `git pull` räcker för CA→CC. Men `engrams sync` ska också läsa C
 
 ## SEKTION 4 — Implementation [scope: alla]
 *Status: EJ PÅBÖRJAD*
-
-Att implementera när plan är godkänd:
-- Uppdatera styr-ai CLAUDE.md med engrams-triggers för CA
-- Uppdatera engrams CLAUDE.md med engrams-triggers för CC
-- Uppdatera CC-HANDOFF-001 spec med det kompletta protokollet
-- Testa: Gustav kör `engrams boot tradesys` i båda miljöer
