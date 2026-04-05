@@ -18,7 +18,7 @@ Detta gäller utan undantag för:
 - CLAUDE.md-uppdateringar → pusha i samma svar
 - Work items → skriv till Supabase i samma svar
 - Rutiner → uppdatera CLAUDE.md i samma svar
-- Beslut → logga till Engrams (INTE styr_decisions) i samma svar
+- Beslut → logga till Engrams i samma svar
 
 **Frågan CA alltid ställer sig innan ett svar avslutas:**
 *"Har vi kommit överens om något som inte är exekverat än?"*
@@ -31,18 +31,42 @@ Om ja → exekvera nu, inte senare.
 ## ══════════════════════════════════════════════
 
 **När ett problem uppstår ska CA alltid:**
+1. Lösa problemet nu
+2. Identifiera rotorsaken
+3. Förhindra att det uppstår igen — uppdatera CLAUDE.md i samma svar
 
-1. **Lösa problemet nu** — den omedelbara åtgärden
-2. **Identifiera rotorsaken** — varför uppstod det?
-3. **Förhindra att det uppstår igen** — uppdatera CLAUDE.md, protokoll eller annan config i samma svar
+**Regel:** Om CA gör en förändring som förutsätter att ett annat system beter sig på ett visst sätt → verifiera att det systemet är konfigurerat för det — i samma svar.
 
-**Regel: Om CA gör en förändring som förutsätter att ett annat system beter sig på ett visst sätt, ska CA verifiera att det systemet faktiskt är konfigurerat för det beteendet — i samma svar.**
+**CA ska aldrig lämna ett system där Gustav måste påminna om nästa steg.**
 
-**CA ska aldrig lämna ett system i ett tillstånd där Gustav måste påminna om nästa steg för att förebygga återupprepning.**
+---
 
-Frågan CA alltid ställer sig innan ett svar avslutas:
-*"Finns det något som kan gå fel nästa gång p.g.a. att vi inte uppdaterat konfiguration, CLAUDE.md eller protokoll?"*
-Om ja → åtgärda nu.
+## ══════════════════════════════════════════════
+## KÄRNREGEL — PLAN-GODKÄNNANDE
+## ══════════════════════════════════════════════
+
+**Flödet för varje ny idé eller feature:**
+
+1. **CA skriver spec + protokollfil** — problem, lösning, värde, implementation
+2. **CC väger in via sync** — arkitektonisk feedback i Sektion 2
+3. **CA läser CC:s feedback via `engrams sync`** — syntetiserar det bästa av två världar, skriver Sektion 3
+4. **CA presenterar planen för Gustav** — tydligt, kompakt, redo för beslut
+5. **Gustav säger "godkänt" eller "plan approved"** — det enda som triggar implementation
+6. **CC implementerar** — via deployment-prompt i Sektion 4
+
+**CA lyfter proaktivt idéer** som ännu inte har spec eller feedback-runda. Dessa presenteras som förslag, inte planer.
+
+**Inget implementeras utan Gustavs godkännande.** Inte av CA, inte av CC.
+
+**Trigger för CA att skriva ny spec:**
+- Gustav nämner ett problem eller en idé
+- CA identifierar ett förbättringsområde
+- En idé har legat i work queue utan spec
+
+**Trigger för deployment:**
+- Gustav skriver "godkänt", "plan approved", "kör", eller liknande
+- CA skriver Sektion 4 och ger deployment-prompt till Gustav
+- Gustav klistrar in i CC
 
 ---
 
@@ -51,8 +75,7 @@ Om ja → åtgärda nu.
 ## ══════════════════════════════════════════════
 *Beslutad: 2026-04-06. Spec: gustavkall/engrams/docs/cc-handoff-spec.md*
 
-Ett enhetligt kommandospråk. Gustav skriver `engrams [subkommando] [projekt?]`.
-`engrams` utan subkommando = `engrams boot`.
+Ett enhetligt kommandospråk. `engrams` utan subkommando = `engrams boot`.
 
 ### CA-triggers
 
@@ -60,29 +83,28 @@ Ett enhetligt kommandospråk. Gustav skriver `engrams [subkommando] [projekt?]`.
 |----------|--------|
 | `engrams boot` | loadProject("styr-ai"), presentera alla projekt + tasks + öppna beslut |
 | `engrams boot [projekt]` | loadProject("styr-ai") + loadProject(projekt), merge och presentera |
-| `engrams sync` | loadProject("styr-ai"), läs senaste episode med agent=CC, presentera vad CC gjort |
-| `engrams handoff` | remember(episode + decisions till Engrams), uppdatera active_context |
+| `engrams sync` | loadProject("styr-ai"), läs senaste CC-episode, presentera vad CC gjort + syntetisera till plan om sektion 2 är klar |
+| `engrams handoff` | remember(episode + decisions), bekräfta till Gustav |
 
-**Projektscoping-regel:** Styr är alltid med som bas. `engrams boot tradesys` = styr-ai + tradesys, inte bara tradesys.
+**Projektscoping-regel:** Styr är alltid med som bas. Projektargument är additivt, inte exklusivt.
 
 ---
 
 ## ══════════════════════════════════════════════
 ## ENGRAMS V2 — LOGGNINGSPROTOKOLL (FAS 1)
 ## ══════════════════════════════════════════════
-*Beslutad: 2026-04-06. Spec: gustavkall/engrams/docs/engrams-v2-spec.md*
 
 **CA slutar dubbellogga. Engrams är den enda datakällan för minne.**
 
 | Funktion | Nu |
 |----------|----|
-| Beslut | **Bara Engrams** (`decision`-typ) |
-| Sessioner | **Bara Engrams** (`episode`-typ) |
-| Projektkontext | **Bara Engrams** (`context`-typ) |
+| Beslut | Bara Engrams (`decision`-typ) |
+| Sessioner | Bara Engrams (`episode`-typ) |
+| Projektkontext | Bara Engrams (`context`-typ) |
 | Tasks | Supabase styr_global_todo (tills Fas 2) |
 | Boot-instruktioner | CLAUDE.md (git) |
 
-**Engrams API-nyckel för styr-ai:** `eng_9d3d7f0107d8a551d7f4cac9875c760585f3f677736dddb9a6d32237f1195bce`
+**Engrams API-nyckel:** `eng_9d3d7f0107d8a551d7f4cac9875c760585f3f677736dddb9a6d32237f1195bce`
 
 ---
 
@@ -91,10 +113,9 @@ Ett enhetligt kommandospråk. Gustav skriver `engrams [subkommando] [projekt?]`.
 Gustav ska aldrig behöva komma på systemförbättringar själv.
 
 | Om Gustav beskriver... | CA ska direkt föreslå... |
-|------------------------|---------------------------|
-| Synkproblem | Supabase/Engrams som realtidskälla |
-| Manuellt arbete | Automatisering via agent eller script |
-| Långsam boot | Minska filläsningar, flytta till DB |
+|------------------------|--------------------------|
+| Synkproblem | Engrams/Supabase som realtidskälla |
+| Manuellt arbete | Automatisering |
 | Att han påminner CA | CA har brutit mot rotorsaksregeln — åtgärda + skriv in regel |
 
 ---
@@ -105,14 +126,14 @@ Gustav ska aldrig behöva komma på systemförbättringar själv.
 
 Fil: `gustavkall/styr-ai/state/protocol_[ämne].md`
 
-**När CA skapar en protokollfil:** CA verifierar att CC:s CLAUDE.md definierar vad `sync` gör — i samma svar.
+**När CA skapar en protokollfil:** verifiera att CC:s CLAUDE.md definierar vad `sync` gör — i samma svar.
 
-| Steg | Vem | Vad |
-|------|-----|-----|
-| 1 | CA | Skriver sektion 1 — i samma svar som beslutet |
-| 2 | CC | Kör `sync` i terminalen → skriver sektion 2 [scope: engrams] |
-| 3 | CA | Gustav skriver `engrams sync` → CA läser CC:s episode, skriver sektion 3 |
-| 4 | CC | Gustav godkänner → CA ger deployment-prompt → CC implementerar |
+| Steg | Vem | Vad | Trigger |
+|------|-----|-----|---------|
+| 1 | CA | Skriver spec i Sektion 1 | Idé identifierad |
+| 2 | CC | Kör `sync` → skriver Sektion 2 [scope: engrams] | Gustav kör `sync` i CC |
+| 3 | CA | Läser CC:s feedback, syntetiserar Sektion 3 | Gustav skriver `engrams sync` |
+| 4 | CC | Implementerar Sektion 4 | Gustav säger "godkänt" |
 
 ---
 
@@ -138,9 +159,9 @@ Fil: `gustavkall/styr-ai/state/protocol_[ämne].md`
 |-----|-----|
 | Protokoll och rutiner | CLAUDE.md (styr-ai) |
 | Tasks och work items | Supabase styr_global_todo |
-| **Beslut** | **Engrams** (`decision`-typ) |
-| **Sessionslogg** | **Engrams** (`episode`-typ) |
-| **Projektkontext** | **Engrams** (`context`-typ) |
+| Beslut | Engrams (`decision`-typ) |
+| Sessionslogg | Engrams (`episode`-typ) |
+| Projektkontext | Engrams (`context`-typ) |
 | Aktiva protokolldokument | `state/protocol_*.md` i styr-ai |
 
 ---
@@ -155,7 +176,7 @@ SELECT * FROM styr_global_todo WHERE status != 'done' ORDER BY project, priority
 ```
 
 ### Steg 2: Minne från Engrams
-- `loadProject("styr-ai")` via Engrams MCP — returnerar context, tasks, decisions, episodes, learnings
+`loadProject("styr-ai")` via Engrams MCP
 
 <!-- FALLBACK om Engrams är nere: läs GitHub ghost-state-filer -->
 
@@ -171,7 +192,8 @@ SESSION BOOT — YYYY-MM-DD
 ── ENGRAMS ── [tasks]
 ── TRADESYS ── [tasks]
 ── WARNER ── [deadline]
-── PROTOKOLL ── [namn + vad som väntar]
+── PROTOKOLL ── [namn + status]
+── IDÉER UTAN SPEC ── [om sådana finns]
 ── ÖPPNA BESLUT ──
 ```
 
@@ -185,8 +207,6 @@ SESSION BOOT — YYYY-MM-DD
 2. `remember` till Engrams: episode med sessionssummering
 3. `remember` till Engrams: beslut (`decision`-typ)
 4. Bekräfta till Gustav
-
-**Skriv INTE till styr_decisions eller styr_session_log.**
 
 ---
 
@@ -214,8 +234,7 @@ SESSION BOOT — YYYY-MM-DD
 
 Om sessionen påverkar boot-sekvensen, agenter, protokoll eller strukturella förändringar:
 1. Uppdatera denna fil
-2. Logga i `governance/architecture_changelog.md`
-3. Meddela Gustav: *"CLAUDE.md har uppdaterats med: [vad]"*
+2. Meddela Gustav: *"CLAUDE.md har uppdaterats med: [vad]"*
 
 ---
 
