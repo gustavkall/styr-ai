@@ -1,6 +1,6 @@
 # Protocol — engrams-kommando
 *Skapad av CA: 2026-04-06*
-*Status: VÄNTAR PÅ CC:s ARKITEKTONISKA FEEDBACK*
+*Status: VÄNTAR PÅ GUSTAVS GODKÄNNANDE*
 
 ---
 
@@ -23,90 +23,15 @@ engrams handoff
 ```
 
 **`engrams boot [projekt?]`**
-
-Laddar alltid styr-ai som bas. Om projekt anges filtreras tasks, episodes och context till det projektet.
-
-| Kommando | Vad laddas |
-|----------|------------|
-| `engrams boot` | styr-ai meta-kontext, alla projekt, dagens prioriteter |
-| `engrams boot tradesys` | styr-ai bas + tradesys tasks, state, öppna beslut |
-| `engrams boot engrams` | styr-ai bas + Engrams-produkt tasks, V2-status, Anna |
-| `engrams boot savage-roar` | styr-ai bas + Warner-förhandling, deadlines |
-
-Styr bootas aldrig explicit — det är alltid med som bas. `engrams boot` utan argument = dagens prioritetsöversikt över alla projekt.
+Laddar alltid styr-ai som bas. Om projekt anges: två separata anrop (CC:s F1-svar) — Boot API för global tasks + loadProject(projekt) för projektspecifikt minne. Merge i presentationen.
 
 **`engrams sync`**
-
 Läs vad den andra agenten skrivit sedan sist.
-
-- I CA: anropa `loadProject("styr-ai")`, läs senaste CC-episode, presentera vad CC gjort och vad som väntar
-- I CC: `git pull` + läs `loadProject("styr-ai")` via curl, presentera CA:s senaste beslut och tasks
+- I CA: loadProject("styr-ai"), läs senaste CC-episode, presentera vad CC gjort
+- I CC: git pull + curl loadProject("styr-ai"). Båda behövs — git fångar CLAUDE.md/protokoll, loadProject fångar CA:s Engrams-skrivningar (CC:s F3-svar)
 
 **`engrams handoff`**
-
-Skriv state och avsluta.
-
-- I CA: skriv episode + decisions till Engrams via MCP, uppdatera active_context
-- I CC: curl mot `/api/remember` med block-summering (type: episode, project: styr-ai)
-
----
-
-### Implementation per agent
-
-**CA (CLAUDE.md — styr-ai):**
-
-```
-TRIGGER: Gustav skriver "engrams boot [projekt?]"
-ACTION: loadProject("styr-ai") via Engrams MCP
-        Om projekt anges: filtrera output till det projektet
-        Presentera: tasks, senaste decisions, öppna beslut
-
-TRIGGER: Gustav skriver "engrams sync"  
-ACTION: loadProject("styr-ai"), läs senaste episode med agent=CC
-        Presentera: vad CC gjorde, vad som är klart, vad som väntar
-
-TRIGGER: Gustav skriver "engrams handoff"
-ACTION: remember(type:episode, project:styr-ai, content:{summering})
-        remember(type:decision, ...) för varje beslut denna session
-```
-
-**CC (CLAUDE.md — engrams):**
-
-```
-TRIGGER: Gustav skriver "engrams boot [projekt?]"
-ACTION: git pull, curl loadProject("styr-ai")
-        Om projekt anges: filtrera till det projektet
-        Presentera: tasks, senaste CA-decisions, vad som väntar
-
-TRIGGER: Gustav skriver "engrams sync"
-ACTION: git pull, curl loadProject("styr-ai")
-        Presentera: CA:s senaste skrivningar sedan CC:s senaste boot
-
-TRIGGER: Gustav skriver "engrams handoff" ELLER block är klart
-ACTION: curl POST /api/remember med:
-        type: episode, project: styr-ai
-        content: { agent: CC, date: YYYY-MM-DD, block: X, 
-                   done: [...], next: [...], notes: ... }
-```
-
----
-
-### Projektscoping — viktig regel
-
-Styr är alltid med. Projektargumentet är ett filter, inte ett val.
-
-`engrams boot engrams` = ladda styr-ai + filtrera till Engrams-produkten.
-
----
-
-### Risker
-
-| Risk | Sannolikhet | Hantering |
-|------|-------------|-----------|
-| `engrams` utan subkommando | Hög i början | Behandla som `engrams boot` |
-| CC saknar Engrams MCP | Bekräftat — CC kör curl | Curl mot /api/remember är primary |
-| CA:s CLAUDE.md-ändringar syns inte mitt i CC-session | Acceptabelt | Gäller från nästa CC-boot |
-| Projektargument tolkas som exklusivt scope | Medel | Explicit regel: styr alltid med som bas |
+Identiskt med automatiskt block-avslut (CC:s F2-svar). Alias för samma curl-anrop. Gustav kan trigga explicit om han vill avsluta mitt i ett block.
 
 ---
 
@@ -114,22 +39,58 @@ Styr är alltid med. Projektargumentet är ett filter, inte ett val.
 *CC-engrams. Datum: 2026-04-05*
 
 **F1: Projektscoping i CC**
-Svar: Två separata anrop, inte filtrering. `engrams boot tradesys` kör: (1) `curl Boot API ?project=styr-ai` för global tasks/decisions, (2) `curl loadProject("tradesys")` för projektspecifikt minne (context, episodes, learnings). Boot API returnerar redan tasks filtrerat per projekt. loadProject returnerar minne filtrerat per projekt. Att ladda styr-ai:s loadProject och försöka filtrera funkar inte — minnesdata lever per projekt i Engrams, inte blandat. Enklast + bäst resultat = två anrop, merge i presentationen.
+Svar: Två separata anrop, inte filtrering. `engrams boot tradesys` kör: (1) Boot API ?project=styr-ai för global tasks/decisions, (2) loadProject("tradesys") för projektspecifikt minne. Minnesdata lever per projekt i Engrams, inte blandat.
 
 **F2: `engrams handoff` vs automatiskt vid block-avslut**
-Svar: Identiska. Ingen anledning att ha två olika beteenden. `engrams handoff` bör vara ett alias för samma curl-anrop som block-avslut gör automatiskt. Enda skillnaden: Gustav kan explicit trigga det om han vill avsluta mitt i ett block utan att vänta. Men koden som körs är exakt samma — episode remember med agent, date, done, next, notes.
+Svar: Identiska. `engrams handoff` är ett alias för samma curl-anrop som block-avslut gör automatiskt.
 
 **F3: `engrams sync` i CC**
-Svar: `git pull` + `curl loadProject("styr-ai")`. Boot API räcker inte — den returnerar tasks/decisions från styr_global_todo/styr_decisions, men CA skriver nu episodes och decisions direkt till Engrams (V2 Fas 1). loadProject fångar CA:s Engrams-skrivningar. git pull fångar CLAUDE.md-ändringar och protokollfiler. Båda behövs.
+Svar: git pull + curl loadProject("styr-ai"). Boot API räcker inte — CA skriver nu direkt till Engrams (V2 Fas 1), inte till Supabase-tabellerna.
 
 *Status: KLAR*
 
 ---
 
 ## SEKTION 3 — Syntes och plan [scope: alla]
-*Status: EJ PÅBÖRJAD — väntar på CC:s svar*
+*Status: KLAR*
+
+### Arkitekturbeslut (baserat på CA spec + CC feedback)
+
+| Kommando | CA-beteende | CC-beteende |
+|----------|-------------|-------------|
+| `engrams boot` | loadProject("styr-ai"), presentera alla projekt | git pull + curl loadProject("styr-ai") |
+| `engrams boot [projekt]` | loadProject("styr-ai") + loadProject(projekt), merge | git pull + Boot API + loadProject(projekt), merge |
+| `engrams sync` | loadProject("styr-ai"), läs senaste CC-episode | git pull + curl loadProject("styr-ai") |
+| `engrams handoff` | remember(episode + decisions) | curl remember(episode) — identiskt med block-avslut |
+| `engrams` (utan subkommando) | Behandla som `engrams boot` | Behandla som `engrams boot` |
+
+### Viktiga regler
+- Styr är alltid med som bas — projektargument är ett filter, inte ett val
+- CC kör curl mot REST API (ingen Engrams MCP i CC)
+- `engrams handoff` = alias för block-avslut, inte ett separat beteende
+- CA:s CLAUDE.md-ändringar gäller från nästa CC-boot — acceptabelt gap
 
 ---
 
 ## SEKTION 4 — Implementation [scope: alla]
-*Status: EJ PÅBÖRJAD*
+*Status: EJ PÅBÖRJAD — väntar på Gustavs godkännande*
+
+### Att implementera
+
+**styr-ai CLAUDE.md — lägg till triggers för CA:**
+```
+TRIGGER: "engrams boot [projekt?]"
+TRIGGER: "engrams sync"
+TRIGGER: "engrams handoff"
+```
+
+**engrams CLAUDE.md — uppdatera CC-triggers:**
+```
+TRIGGER: "engrams boot [projekt?]" → git pull + Boot API + loadProject(projekt)
+TRIGGER: "engrams sync" → git pull + curl loadProject("styr-ai")
+TRIGGER: "engrams handoff" → curl remember(episode) [alias för block-avslut]
+```
+
+**CC-HANDOFF-001** — uppdatera spec med det kompletta protokollet
+
+**Test:** Gustav kör `engrams boot tradesys` i CA och CC — verifiera att båda presenterar rätt state
