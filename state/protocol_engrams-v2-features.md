@@ -87,35 +87,33 @@ CC: Har vi tillräcklig data för att testa detta nu? Vad är lämplig similarit
 ---
 
 ## SEKTION 2 — CC engrams feedback [scope: engrams]
-*Status: VÄNTAR*
-
-**CC: svara på E17, E8-monitor, E14, E15, E16.**
+*CC-engrams. Datum: 2026-04-05*
 
 ### E17 — TEAMS-V2
-Feasibility:
-Implementationsordning korrekt?:
-Redo att starta steg 1?:
-Status:
+Feasibility: Komplex (2-3 veckor)
+Implementationsordning korrekt?: Ja. Steg 1-3 (schema: teams, team_members, scope-kolumn) måste köras och verifieras innan API-kod rörs. Spec i docs/teams-v2-implementation-spec.md är komplett.
+Redo att starta steg 1?: Ja, när Gustav godkänner. Inga blockerare.
+Status: KLAR
 
 ### E8 — Anna monitor
-Feasibility:
-CC-notering:
-Status:
+Feasibility: Enkel. GitHub Actions cron dagligen som kollar om Annas account (anna.garmen@gmail.com) har memory_items med created_at senaste 24h. Om ja: logga till Engrams. Om 48h utan aktivitet: logga alert.
+CC-notering: Kräver SUPABASE_URL + SUPABASE_SERVICE_KEY som GitHub secrets — samma som demo-cleanup och uptime. E-GITHUB-SECRET-001 är blockerare för alla tre workflows.
+Status: KLAR
 
 ### E14 — GEMINI
-Alternativ till sandbox?:
-CC-notering:
-Status:
+Alternativ till sandbox?: Google AI Studio stöder "Grounding with Google Search" men inte custom API-anrop som Engrams kräver. Gemini API har function calling — det är vägen. Man bygger en Gemini "tool" som anropar Engrams REST API (remember/recall). Ingen sandbox-godkännande behövs — det är vanlig function calling. Kräver: en docs-sida med Gemini function-definition JSON + instruktioner.
+CC-notering: Enklare än vi trodde. Gemini function calling + Engrams REST API = funkar idag utan ny kod. Bara dokumentation.
+Status: KLAR
 
 ### E15 — FORGETTING
-Decay-modell rimlig?:
-Risk för informationsförlust?:
-Status:
+Decay-modell rimlig?: Ja, 0.95 per dag för ej-recall:ade >30 dagar är rimligt. Ett minne som inte recall:as på 30 dagar tappar ~78% efter 30 dagar till (0.95^30 = 0.21). Efter 60 dagar utan recall: under 0.1-tröskeln.
+Risk för informationsförlust?: Medel. En viktig learning som är relevant men inte sökts på 60 dagar försvinner. Lösning: soft-delete (superseded_by-modellen) istället för hård DELETE. Minnet kan återställas via audit-endpoint. Profiler och episodes ska aldrig decay:a — det är korrekt i specen.
+Status: KLAR
 
 ### E16 — CONSOLIDATION
-Tillräcklig data nu?:
-Lämplig threshold?:
-Status:
+Tillräcklig data nu?: Nej. Vi har ~30 memory_items, mest E2E-testdata. Konsolidering ger värde vid 100+ minnen per projekt. Bygga nu = overengineering.
+Lämplig threshold?: 0.92 cosine similarity är rimligt för near-duplicates. 0.85 fångar parafraseringar men riskerar att slå ihop relaterade-men-olika minnen. Rekommendation: börja med 0.92, sänk till 0.88 efter manuell granskning av första batchens resultat.
+Status: KLAR
 
 ---
 
