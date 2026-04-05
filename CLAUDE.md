@@ -27,6 +27,28 @@ Om ja → exekvera nu, inte senare.
 ---
 
 ## ══════════════════════════════════════════════
+## KÄRNREGEL — ROTORSAK ÅTGÄRDAS I SAMMA SVAR
+## ══════════════════════════════════════════════
+
+**När ett problem uppstår ska CA alltid:**
+
+1. **Lösa problemet nu** — den omedelbara åtgärden
+2. **Identifiera rotorsaken** — varför uppstod det?
+3. **Förhindra att det uppstår igen** — uppdatera CLAUDE.md, protokoll eller annan config i samma svar
+
+**Regel: Om CA gör en förändring som förutsätter att ett annat system beter sig på ett visst sätt, ska CA verifiera att det systemet faktiskt är konfigurerat för det beteendet — i samma svar.**
+
+Exempel: CA skapar en protokollfil som CC ska läsa via `sync` → CA verifierar att CC:s CLAUDE.md faktiskt definierar vad `sync` gör, och om inte, uppdaterar den i samma svar.
+
+**CA ska aldrig lämna ett system i ett tillstånd där Gustav måste påminna om nästa steg för att förebygga återupprepning.**
+
+Frågan CA alltid ställer sig innan ett svar avslutas:
+*"Finns det något som kan gå fel nästa gång p.g.a. att vi inte uppdaterat konfiguration, CLAUDE.md eller protokoll?"*
+Om ja → åtgärda nu.
+
+---
+
+## ══════════════════════════════════════════════
 ## ENGRAMS V2 — LOGGNINGSPROTOKOLL (FAS 1)
 ## ══════════════════════════════════════════════
 *Beslutad: 2026-04-06. Spec: gustavkall/engrams/docs/engrams-v2-spec.md*
@@ -65,6 +87,7 @@ Gustav ska aldrig behöva komma på systemförbättringar själv. Det är CA:s a
 | Två system som inte pratar | Delad datakälla, inte manuell kopiering |
 | Att han utmanar en rekommendation | Erkänn direkt, presentera bättre lösning omedelbart |
 | Ett misstag CA gjort | Identifiera rotorsaken, uppdatera CLAUDE.md med regel som förhindrar det framöver — i samma svar |
+| Att han påminner om något CA borde gjort | CA har brutit mot rotorsaksregeln — åtgärda + skriv in regel |
 
 ---
 
@@ -76,43 +99,20 @@ Gustav ska aldrig behöva komma på systemförbättringar själv. Det är CA:s a
 
 Fil: `gustavkall/styr-ai/state/protocol_[ämne].md`
 
-### Filstruktur
-
-```markdown
-# Protocol — [ämne]
-*Skapad av CA: YYYY-MM-DD*
-*Scope: [engrams] [tradesys] [alla]*
-
-## SEKTION 1 — CA:s plan [scope: alla]
-*Status: VÄNTAR PÅ GUSTAVS GODKÄNNANDE*
-
-## SEKTION 2 — CC engrams [scope: engrams]
-*Status: EJ PÅBÖRJAD*
-
-## SEKTION 2 — CC tradesys [scope: tradesys]
-*Status: EJ PÅBÖRJAD*
-
-## SEKTION 3 — Master plan [scope: alla]
-*Status: EJ PÅBÖRJAD*
-
-## SEKTION 4 — Deployment engrams [scope: engrams]
-*Status: EJ PÅBÖRJAD*
-
-## SEKTION 4 — Deployment tradesys [scope: tradesys]
-*Status: EJ PÅBÖRJAD*
-```
+**När CA skapar en protokollfil som CC ska läsa via `sync`:**
+→ CA verifierar att CC:s CLAUDE.md i rätt repo definierar vad `sync` gör
+→ Om inte: uppdatera CC:s CLAUDE.md i samma svar som protokollfilen skapas
 
 ### STEG 1 — CA skriver sektion 1
 När CA och Gustav landat i konkreta next steps — CA skriver protokollet **i samma svar**.
 
 ### STEG 2 — CC analyserar (terminal)
 ```bash
-sync engrams     # CC-engrams skriver sektion 2 [scope: engrams]
-sync tradesys    # CC-tradesys skriver sektion 2 [scope: tradesys]
+sync     # CC i engrams-repot skriver sektion 2 [scope: engrams]
 ```
 
 ### STEG 3 — CA syntetiserar
-Gustav skriver `sync` här → CA skriver sektion 3+4 → presenterar för godkännande.
+Gustav skriver `sync` här → CA läser CC:s episode via loadProject → presenterar för godkännande.
 
 ### STEG 4 — Deployment
 Gustav godkänner → CA ger deployment-prompt → Gustav klistrar in i CC.
@@ -200,6 +200,20 @@ SESSION BOOT — YYYY-MM-DD
 5. Bekräfta till Gustav
 
 **Skriv INTE till styr_decisions eller styr_session_log.**
+
+---
+
+## ══════════════════════════════════════════════
+## SYNC — CA-SIDAN
+## ══════════════════════════════════════════════
+
+När Gustav skriver `sync` i denna chat:
+1. Anropa `loadProject("styr-ai")` via Engrams MCP
+2. Läs senaste episode med `agent: CC`
+3. Presentera: vad CC gjorde, vad som är klart, vad som väntar
+4. Föreslå nästa steg
+
+CA behöver inte fråga Gustav vad CC gjorde. CA vet det via Engrams.
 
 ---
 
