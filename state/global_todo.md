@@ -1,7 +1,7 @@
 # Global Todo — Alla Projekt
 *Single source of truth. Läses vid varje session boot oavsett projekt.*
 *Uppdateras av Claude.ai (CA) och CC vid session close. Gustav anger riktning — CA sköter prioritering.*
-*Senast uppdaterad: 2026-04-01 — Gustavs beslut absorberade*
+*Senast uppdaterad: 2026-04-07 — sync mot session_handoff 2026-04-03*
 
 ---
 
@@ -15,62 +15,72 @@
 ---
 
 ## ENGRAMS
-*Mål: seamless multi-platform minnessystem. Prio: ChatGPT-integration före Anna-onboarding.*
+*Mål: seamless multi-platform minnessystem.*
 
 | # | Task | Status | Prio | Not |
 |---|------|--------|------|-----|
-| E7 | OPENAPI-001 — ChatGPT Custom GPT Action | ⬜ | **1** | Blockerare för Anna. Auto-remember kräver Actions. CC bygger. |
-| E8 | Anna onboarding — skicka mail | 🔄 VÄNTAR | **2** | Väntar på E7. Mail klart. Gustav godkänner när ChatGPT-integration live. |
-| E9 | ENGRAMS-SUPABASE-SPLIT | ⬜ | **3** | Engrams delar DB med TradeSys. Separera när tillfälle ges. |
-| E10 | STRIPE-001 — Betalning | ⬜ | 4 | Saknar env vars i Vercel |
-| E11 | PRICING-001 — Prissektion | ⬜ | 5 | |
-| E12 | DASHBOARD-001 — Inloggning + projektsida | ⬜ | 6 | |
-| E13 | CONNECT-001 — Connect-flow per plattform | ⬜ | 7 | Väntar på E12 |
-| E14 | GEMINI-NATIVE-001 | ⬜ | V2 | Sandbox blockerar. Lägre prio än ChatGPT. |
-| E15 | MEMORY-FORGETTING-001 | ⬜ | V2 | |
-| E16 | MEMORY-CONSOLIDATION-001 | ⬜ | V2 | |
+| E8 | Anna onboarding — skicka mail | 🔄 VÄNTAR | **1** | Mail klart, Gustav godkänner tisdag 7 april |
+| E9 | ENGRAMS-SUPABASE-SPLIT | ⬜ | **2** | Engrams delar DB med TradeSys. Separera när tillfälle ges. |
+| E-BRAIN-ARCH-001 | Fas 2: Amygdala decay-agent | ⬜ GODKÄNNANDE | **3** | Sektion 3 klar. Väntar på Gustavs godkännande för CC deploy. |
+| E-BRAIN-ARCH-002 | Fas 3: Striatum konsolidering | ⬜ | V2 | Bygg nu, aktivera vid 100+ minnen via feature flag |
+| E-GITHUB-SECRET-001 | Sätt E2E_API_KEY i engrams repo secrets | ⬜ | **4** | Manuellt — Gustav gör |
 
-### Klart
+### Klart (synkad 2026-04-07)
 | E1 | SQL-schema + API endpoints | ✅ | | remember/recall/profile/load_project live |
 | E2 | MCP-CONNECTOR-001 | ✅ | | Verifierad Claude.ai + CC |
 | E3 | CC-VERIFY-001 | ✅ | | 5/5 e2e pass |
 | E4 | ENGRAMS-RECALL-FIX | ✅ | | Threshold 0.3, 5/5 e2e pass |
 | E5 | Multi-project support | ✅ | | project-parameter, get_or_create_project() |
 | E6 | TERMINAL-ONBOARDING-001 | ✅ | | /api/claudemd live |
+| E7 | OPENAPI-001 — ChatGPT Custom GPT Action | ✅ | | 5 actions verifierade: remember, recall, getProfile, setProfile, loadProject |
+| E10 | STRIPE-001 — Betalning end-to-end | ✅ | | checkout, webhook, välkomstmail |
+| E11 | PRICING-001 — Prissektion | ✅ | | live |
+| E-USAGE-001 | usage_log-tabell + dashboard stats | ✅ | | live |
+| E-MONITORING-001 | uptime.yml GitHub Actions | ✅ | | live |
+| E-ONBOARDING-002 | 3-stegs wizard med verify | ✅ | | live |
+| E-PUBLIC-DEMO-001 | Anonymt demo-läge på startsidan | ✅ | | live |
 
 ---
 
 ## TRADESYS
-*Mål: konsekvent positiv EV per trade. Agenter kör autonomt. CA/CC hanterar modell och infrastruktur.*
+*Mål: konsekvent positiv EV per trade. Agenter kör autonomt.*
 
 | # | Task | Status | Prio | Not |
 |---|------|--------|------|-----|
-| T1 | ADD-NEW-AGENT3-001 — Ny strategi agent 3 | ⬜ | **1** | Kandidat: RISK-OFF bounce (creditStress corr=0.480). Gustav beslutar: redesigna eller stäng. |
-| T2 | DATA-EXTEND-001 — TW CSV-export 2019-2026 | ⬜ | **2** | ~85 tickers. Kräver Gustav. |
-| T3 | MODEL-SCOREBOARD-001 — Precision v5-v10 | ⬜ | **3** | CC kör autonomt. |
-| T4 | FMP-LIVE-001 — Short float live | ⬜ | 4 | Väntar på Gustav: FMP Starter $29/mån |
-| T5 | INFRA-003 — Stateful backend | ⬜ | 5 | Stort jobb, planeras |
-| T6 | WQ-008 / WQ-001 — Scanners + watchlist live | ⬜ | 6 | Kräver öppen marknad |
+| T-LIVE-VERIFY-001 | Kör live-performance-tracker.js | ⬜ | **1** | 42 PENDING trades i trade_outcomes. Måndag kväll. |
+| MODEL-OPTIMIZER-001 | Implementera topp 5 agent-optimeringar | ⬜ GODKÄNNANDE | **2** | 77-84% WR möjligt. Väntar på CC-session + godkännande. |
+| REGIME-DEPTH-001 | Multi-timeframe regime + dynamisk throttling | ⬜ | 3 | |
+| EARNINGS-CAL-001 | Earnings-kalender via FMP | ⬜ | 4 | |
+| MACRO-NEWS-001 | MT Newswires event classifier | ⬜ | 5 | |
+| FUNDAMENTALS-001 | Alpha Vantage OVERVIEW helautomatiskt | ⬜ | 6 | |
+| DATA-REGEN-001 | Regenerera training data med pearsonR_5d/10d | ⬜ | 7 | |
+| T-GITHUB-SECRETS-001 | Sätt POLYGON_KEY + SUPABASE_URL + SUPABASE_ANON_KEY | ⬜ | **8** | Manuellt — Gustav gör |
+| T2 | DATA-EXTEND-001 — TW CSV-export 2019-2026 | ⬜ | 9 | ~85 tickers. Kräver Gustav. |
+| T4 | FMP-LIVE-001 — Short float live | ⬜ | 10 | Väntar på Gustav: FMP Starter $29/mån |
 
-### Klart
-| TX1 | AGENT-HAIKU-001 | ✅ | | Alla agenter kör Haiku sedan 31/3 |
-| TX2 | Agent 4+6 omstart | ✅ | | Nya filter live 31/3 |
-| TX3 | vixElevated filter | ✅ | | Live DEC-015 + DEC-017 |
+### Klart (synkad 2026-04-07)
+| TX1 | AGENT-HAIKU-001 | ✅ | | Alla agenter kör Haiku |
+| TX2 | Agent 4+6 omstart | ✅ | | Nya filter live |
+| TX3 | vixElevated filter | ✅ | | Live |
+| T-WATCHLIST-SCORE-REFORM | Fas 1-3 watchlist score + layout redesign | ✅ | | Live 2026-04-03 |
+| T-LIVE-PERF-001 | Live performance tracker | ✅ | | 42 trades PENDING |
+| T-LIVE-CRITERIA-001 | docs/go_live_criteria.md | ✅ | | |
+| T-REGIME-ALERT-001 | Intradag VIX-alert var 30 min | ✅ | | |
 
 ---
 
 ## SAVAGE ROAR / WARNER
-*Nedprioriterat av Gustav 2026-04-01. Gustav hanterar personligen. CA/CC eskalerar inte.*
+*Nedprioriterat av Gustav. Gustav hanterar personligen. CA bevakar deadlines passivt.*
 
 | # | Task | Status | Not |
 |---|------|--------|-----|
-| W1 | Warner audit §8.3 — 22 april | 🔄 NEDPRIO | Gustav hanterar. CA bevakar deadline passivt. |
-| W2 | Settlement-strategi | 🔄 NEDPRIO | Min 200k SEK. Nils involverad. |
+| W1 | Warner audit §8.3 — 22 april | 🔄 NEDPRIO | 15 dagar kvar. Gustav hanterar. |
+| W2 | Settlement-strategi — min 200k SEK | 🔄 NEDPRIO | Cure period t.o.m. 22 maj. |
+| W3 | Believe-förhandling | 🔄 NEDPRIO | Pausad pga Warner-processen. |
 
 ---
 
 ## META / STYR-AI
-*Infrastruktur. Löses löpande.*
 
 | # | Task | Status | Prio | Not |
 |---|------|--------|------|-----|
@@ -81,18 +91,21 @@
 | S1 | GOVERNANCE.md | ✅ | | |
 | S2 | Bidirektionell sync CC ↔ Claude.ai | ✅ | | |
 | S3 | GLOBAL-TODO-001 | ✅ | | |
-| S6 | work_queue.md borttagen | ✅ | | global_todo.md är SSOT |
+| S6 | work_queue.md borttagen | ✅ | | |
 
 ---
 
 ## ÖPPNA BESLUT (Gustav)
-*CA presenterar dessa vid boot. Gustav anger riktning — CA uppdaterar prioritering.*
 
 | # | Fråga | Kontext |
 |---|-------|--------|
-| D1 | Agent 3 — stäng permanent eller redesigna? | RS_MOMENTUM 31.8% WR |
-| D2 | DATA-EXTEND-001 — exportera TW CSV | ~85 tickers |
-| D3 | ENGRAMS-SUPABASE-SPLIT — nu eller vänta? | Styr.AI-projekt redo |
+| D1 | Anna-mail — godkänn och skicka? | Tisdag 7 april = idag |
+| D2 | E-BRAIN-ARCH-001 — godkänn Fas 2 deploy? | Sektion 3 klar, CC redo |
+| D3 | MODEL-OPTIMIZER-001 — godkänn CC-session? | 77-84% WR på bord |
+| D4 | GitHub Secrets — sätt manuellt? | Engrams + Tradesys-models |
+| D5 | ACT 3.0 / Rickard Ekberg — skicka draft? | Kommunalstyrelsen onsdag |
+| D6 | DATA-EXTEND-001 — exportera TW CSV? | ~85 tickers |
+| D7 | FMP Starter $29/mån — go/no-go? | Låser upp short float live |
 
 ---
 
