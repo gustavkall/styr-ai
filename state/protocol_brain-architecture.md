@@ -74,25 +74,33 @@ CREATE TABLE memory_audit (
 ---
 
 ## SEKTION 2 — CC engrams feedback [scope: engrams]
-*Status: VÄNTAR*
-
-**CC: Läs brain-architecture-spec.md först. Svara på:**
+*CC-engrams. Datum: 2026-04-06*
 
 ### FAS 2: Amygdala
-Feasibility:
-Risker med decay (kan viktig info försvinna?):
-Saknas något i last_recalled_at-spårningen idag?:
-Ordning (vad måste byggas först?):
-CC-notering:
-Status:
+Feasibility: Enkel. Decay-agenten är en GitHub Actions cron med två SQL-queries. priority_weight är en ALTER TABLE + minor API-ändring.
+
+Risker med decay: Medel. En viktig learning som inte recall:as på 60 dagar når 0.1 och soft-deletes. Mitigering: superseded_by-modellen gör det reversibelt — decay sätter superseded_by='decay-agent', inte hård DELETE. Kan återställas. Rekommendation: lägg till en "pinned" boolean — manuellt pinnade minnen decay:ar aldrig.
+
+Saknas något i last_recalled_at?: Ja — last_accessed_at uppdateras av boost_relevance() vid recall, men bara för minnen som faktiskt returneras (similarity > threshold). Minnen som aldrig matchar en query får aldrig last_accessed_at satt. Det betyder att decay-agentens WHERE last_recalled_at < 30d bör använda COALESCE(last_accessed_at, created_at) för att hantera minnen som aldrig recall:ats.
+
+Ordning: (1) ALTER TABLE: priority_weight + eventuellt pinned. (2) Uppdatera remember.js att sätta priority_weight vid priority:high. (3) Decay-agent cron (.github/workflows/memory-decay.yml). (4) Verifiera.
+
+CC-notering: superseded_by-kolumnen är uuid FK till memory_items(id). Att sätta den till strängen 'decay-agent' kraschar — det är inte en giltig UUID. Lösning: använd en sentinel UUID (00000000-0000-0000-0000-000000000001) eller NULL + en separat decay_reason-kolumn. Enklast: skapa en dummy memory_item-rad med känt ID som decay-agent-markör.
+
+Status: KLAR
 
 ### FAS 3: Striatum
-Feasibility:
-Hur kör vi cosine similarity-jämförelse i Supabase? (pgvector?):
-Episod→Learning — hur extraherar CC insikten? (LLM-anrop?):
-Mönsterigenkänning — räcker vår embedding-modell?:
-CC-notering:
-Status:
+Feasibility: Komplex. Kräver LLM-anrop (inte bara SQL). Bör vänta tills 100+ minnen.
+
+Cosine similarity i Supabase: Ja, pgvector stöder det direkt. Query: SELECT a.id, b.id, 1-(a.embedding <=> b.embedding) as sim FROM memory_items a CROSS JOIN memory_items b WHERE a.id < b.id AND a.project_id = b.project_id AND 1-(a.embedding <=> b.embedding) > 0.92. Fungerar men O(n²) — vid 1000+ minnen behövs batching eller en IVF-index med probes.
+
+Episod→Learning: Kräver LLM-anrop. SQL hittar kluster av liknande episoder, men att extrahera insikten som en concise learning kräver att man skickar episoderna till Claude/GPT API och ber om en syntes. Cost: ~/bin/zsh.01 per konsolidering vid Haiku. GitHub Action → Claude API → remember(type:learning).
+
+Mönsterigenkänning: text-embedding-3-small (1536 dim) räcker för semantic clustering. K-means eller DBSCAN på embedding-vektorer identifierar kluster. Kan köras i Python i GitHub Action. Begränsning: embedding-modellen fångar semantik men inte temporala mönster ("detta diskuteras varje måndag"). Temporal analys kräver separat logik.
+
+CC-notering: Fas 3 är rätt att vänta med. 30 minnen ger inte meningsfulla kluster. Rekommendation: bygg decay-agenten (Fas 2) nu, aktivera Fas 3 med en feature flag (env var ENABLE_CONSOLIDATION=true) när datavolymen motiverar det.
+
+Status: KLAR
 
 ---
 
