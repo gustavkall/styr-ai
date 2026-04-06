@@ -5,14 +5,14 @@
 # Global todo
 alias todo='cd ~/styr-ai && git pull --rebase origin main -q && bash ~/styr-ai/scripts/todo.sh'
 
-# Sync (kör från valfritt repo)
+# Boot — hämtar tasks från Supabase + kollar protokoll
+alias boot='git pull --rebase origin main && bash scripts/boot.sh'
+
+# Sync — feedback-runda på protokoll
 alias sync='git pull --rebase origin main && bash scripts/sync.sh'
 
-# Deploy (kör från valfritt repo när plan är godkänd)
+# Deploy — kör godkänd plan
 alias deploy='git pull --rebase origin main && bash scripts/deploy.sh'
-
-# Boot = sync vid sessionstart
-alias boot='git pull --rebase origin main && bash scripts/sync.sh'
 
 # Uppdatera styr-ai lokalt
 alias styr='cd ~/styr-ai && git pull --rebase origin main -q'
