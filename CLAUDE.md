@@ -7,6 +7,33 @@
 ---
 
 ## ══════════════════════════════════════════════
+## KÄRNREGEL — TASK-STATUS LÄSES ALLTID FRÅN SUPABASE
+## ══════════════════════════════════════════════
+
+**Supabase styr_global_todo är den enda källan till sanning för task-status.**
+
+CA och CC läser ALDRIG task-status från:
+- state/session_handoff.md (legacy, alltid inaktuell)
+- state/work_queue.md (avvecklad)
+- state/todo.md i något repo (sekundär, kan drifta)
+- någon annan GitHub-fil
+
+**CA hämtar tasks via Supabase MCP:**
+```sql
+SELECT id, project, title, status, priority
+FROM styr_global_todo
+WHERE status != 'done'
+ORDER BY priority NULLS LAST, project;
+```
+
+**CA hämtar minne via Engrams MCP:**
+```
+loadProject("styr-ai")
+```
+
+---
+
+## ══════════════════════════════════════════════
 ## KÄRNREGEL — TVÅ KOMMANDON, TVÅ SYFTEN
 ## ══════════════════════════════════════════════
 
@@ -20,8 +47,8 @@
 Flödet:
 1. CA skriver spec (Sektion 1)
 2. CC kör `sync` → skriver feedback (Sektion 2)
-3. CA skriver plan (Sektion 3) → Gustav godkänner
-4. CC kör `deploy` → implementerar (Sektion 4) → markerar done i Supabase
+3. CA kör `engrams sync` → skriver Sektion 3 → presenterar för Gustav
+4. Gustav godkänner → CC kör `deploy` → implementerar → markerar done i Supabase
 
 ---
 
@@ -38,8 +65,7 @@ Frågan CA alltid ställer sig: *"Har vi kommit överens om något som inte är 
 ## KÄRNREGEL — ROTORSAK ÅTGÄRDAS I SAMMA SVAR
 ## ══════════════════════════════════════════════
 
-När problem uppstår: (1) lös nu, (2) identifiera rotorsak, (3) förhindra återupprepning.
-Om CA gör en förändring som förutsätter att ett annat system beter sig på visst sätt → verifiera att systemet är konfigurerat — i samma svar.
+När problem uppstår: (1) lös nu, (2) identifiera rotorsak, (3) förhindra återupprepning i samma svar.
 
 ---
 
@@ -52,63 +78,66 @@ CA lyfter proaktivt idéer som saknar spec. CA presenterar alltid plan före imp
 
 ---
 
+## SESSION BOOT — OBLIGATORISK ORDNING
+
+**Steg 1: Tasks från Supabase (SSOT — aldrig GitHub-filer)**
+```sql
+SELECT id, project, title, status, priority
+FROM styr_global_todo
+WHERE status != 'done'
+ORDER BY priority NULLS LAST, project;
+```
+
+**Steg 2: Minne från Engrams**
+```
+loadProject("styr-ai")
+```
+
+**Steg 3: Kolla öppna protokollfiler**
+```
+gh api repos/gustavkall/styr-ai/contents/state
+→ lista protocol_*.md filer med VÄNTAR eller GODKÄND
+```
+
+**Steg 4: Presentera**
+```
+SESSION BOOT — YYYY-MM-DD
+── ENGRAMS ── [tasks från Supabase, prio 1-2]
+── TRADESYS ── [tasks från Supabase, prio 1-2]
+── WARNER ── [deadline: audit 22 april]
+── PROTOKOLL ── [protokollnamn + status, eller "inget"]
+── NÄSTA ── [högst prioriterat öppet item]
+```
+
+---
+
 ## ENGRAMS-KOMMANDOT
 
 | Kommando | CA gör |
 |----------|--------|
-| `engrams boot` | loadProject("styr-ai"), presentera alla projekt |
-| `engrams boot [projekt]` | loadProject("styr-ai") + loadProject(projekt), merge |
-| `engrams sync` | loadProject("styr-ai"), läs senaste CC-episode |
-| `engrams handoff` | remember(episode + decisions) |
+| `engrams boot` | Supabase tasks + loadProject("styr-ai") + protokoll |
+| `engrams sync` | loadProject("styr-ai"), läs senaste CC-episode, syntetisera Sektion 3 |
+| `engrams handoff` | remember(episode + decisions) till Engrams |
 
 ---
 
-## ENGRAMS V2 — LOGGNINGSPROTOKOLL
+## LOGGNINGSPROTOKOLL
 
-| Funktion | Var |
-|----------|-----|
-| Beslut | Engrams (`decision`-typ) |
-| Sessioner | Engrams (`episode`-typ) |
-| Tasks | Supabase styr_global_todo |
-| Boot-instruktioner | CLAUDE.md (git) |
+| Funktion | Var | Aldrig |
+|----------|-----|--------|
+| Task-status | Supabase styr_global_todo | GitHub-filer |
+| Sessionsminne | Engrams (episode-typ) | styr_session_log |
+| Beslut | Engrams (learning-typ) | styr_decisions |
+| Boot-instruktioner | CLAUDE.md (git) | — |
 
 **Engrams API-nyckel:** `eng_9d3d7f0107d8a551d7f4cac9875c760585f3f677736dddb9a6d32237f1195bce`
 
 ---
 
-## PROTOKOLLFLÖDET
-
-| Steg | Vem | Kommando | Output |
-|------|-----|----------|--------|
-| 1 | CA | — | Skriver Sektion 1 (spec) |
-| 2 | CC | `sync` | Skriver Sektion 2 (feedback) |
-| 3 | CA | `engrams sync` | Skriver Sektion 3 (syntes), presenterar för Gustav |
-| 4 | CC | `deploy` | Implementerar Sektion 4, markerar done i Supabase |
-
----
-
-## SESSION BOOT
-
-1. Tasks: `SELECT * FROM styr_global_todo WHERE status != 'done' ORDER BY priority, project;`
-2. Minne: `loadProject("styr-ai")` via Engrams MCP
-3. Protokoll: kolla aktiva filer i `state/protocol_*.md`
-
-Presentera:
-```
-SESSION BOOT — YYYY-MM-DD
-── ENGRAMS ── [tasks]
-── TRADESYS ── [tasks]
-── WARNER ── [deadline]
-── PROTOKOLL ── [sync väntar / deploy väntar / inget]
-```
-
----
-
 ## HANDOFF
 
-1. UPDATE `styr_global_todo` (tasks)
-2. `remember` till Engrams: episode + decisions
-3. Bekräfta till Gustav
+1. `remember` till Engrams: episode med aktiva tasks + nästa steg
+2. Bekräfta till Gustav
 
 ---
 
@@ -119,14 +148,6 @@ SESSION BOOT — YYYY-MM-DD
 | engrams | gustavkall/engrams |
 | tradesys | gustavkall/tradesys1337 + gustavkall/tradesys-models |
 | savage-roar | gustavkall/savage-roar-music |
-
-## Agent-schema
-
-| Tid CET | Agent |
-|---------|-------|
-| 08:00 vardagar | market-regime-agent |
-| 22:30 vardagar | top-gainers-agent |
-| 04:00 söndagar | memory-integrity-agent |
 
 ## Commit-konventioner
 ```
