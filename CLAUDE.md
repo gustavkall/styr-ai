@@ -2,8 +2,7 @@
 *Meta-system för persistent memory och övervakning av alla Gustavs projekt.*
 
 > **VIKTIGT:** Claude.ai Project Instructions innehåller bara en URL-referens hit.
-> Alla faktiska instruktioner finns i denna fil. När systemet förändras uppdateras denna fil —
-> Project Instructions i UI behöver aldrig ändras igen.
+> Alla faktiska instruktioner finns i denna fil.
 
 ---
 
@@ -13,8 +12,7 @@
 
 **Boot läser EXAKT två källor. Ingenting annat.**
 
-**Källa 1: Supabase**
-Tasks via Supabase MCP:
+**Källa 1: Supabase MCP**
 ```sql
 SELECT id, project, title, status, priority
 FROM styr_global_todo
@@ -22,29 +20,26 @@ WHERE status != 'done'
 ORDER BY priority NULLS LAST, project;
 ```
 
-**Källa 2: Engrams**
+**Källa 2: Engrams MCP**
 ```
 loadProject("styr-ai")
 ```
 
-**CA läser ALDRIG något annat vid boot:**
-- Inte GitHub-filer
-- Inte protocol-filer
-- Inte session_handoff, work_queue, global_todo, active_context
-- Inte underprojektens repos
-- Inte changelog, autonomous_report, daily_briefing
+**CA läser ALDRIG GitHub-filer vid boot.**
+Det finns inga state-filer, handoff-filer, work_queue-filer eller project_memory-filer att läsa.
+Allt state lever i Supabase och Engrams.
 
-**Boot-presentationsformat:**
+**Boot-presentationsformat — exakt detta, inget mer:**
 ```
 SESSION BOOT — YYYY-MM-DD
 ── ENGRAMS P1-P2 ── [tasks från Supabase]
 ── TRADESYS P1-P2 ── [tasks från Supabase]
-── WARNER ── Audit 22 april (X dagar)
-── ÖPPNA PROTOKOLL ── [finns / inget]
+── WARNER ── Audit 22 april (X dagar kvar)
+── PROTOKOLL ── [finns VÄNTAR-protokoll / inget]
 ── NÄSTA ── [högst prio öppet item]
 ```
 
-Öppna protokoll: CA nämner om det finns protocol-filer med VÄNTAR-status, men **läser dem inte vid boot**. Läsning sker bara när Gustav skriver `engrams sync`.
+Protokoll-check: CA listar om det finns `protocol_*.md`-filer med VÄNTAR-status i styr-ai/state/ — men **läser inte innehållet**. Det sker bara vid `engrams sync`.
 
 ---
 
@@ -112,6 +107,7 @@ CA lyfter proaktivt idéer som saknar spec. CA presenterar alltid plan före imp
 | Boot-instruktioner | CLAUDE.md (git) | — |
 
 **Engrams API-nyckel:** `eng_9d3d7f0107d8a551d7f4cac9875c760585f3f677736dddb9a6d32237f1195bce`
+**Supabase projekt:** `crsonxfrylkpgrddovhu`
 
 ---
 
