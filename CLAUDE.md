@@ -20,14 +20,21 @@ WHERE status != 'done'
 ORDER BY priority NULLS LAST, project;
 ```
 
-**Källa 2: Engrams MCP**
+**Källa 2: Engrams MCP — anropa loadProject för VARJE projekt**
 ```
-loadProject("styr-ai")
+loadProject("styr-ai")     → meta-tasks (master-config, proto-review)
+loadProject("engrams")     → engrams produkt-tasks (V1, Anna, Teams, etc)
+loadProject("tradesys")    → tradesys-tasks (live verify, scoreboard, etc)
+loadProject("savage-roar") → warner-tasks (audit, settlement)
 ```
+
+Varje projekt är isolerat i Engrams. Ett enda loadProject("styr-ai")-anrop returnerar BARA styr-ai-meta — inte engrams-, tradesys- eller warner-tasks. Du måste anropa fyra gånger och merge:a i presentationen.
 
 **CA läser ALDRIG GitHub-filer vid boot.**
 Det finns inga state-filer, handoff-filer, work_queue-filer eller project_memory-filer att läsa.
-Allt state lever i Supabase och Engrams.
+**CA letar ALDRIG efter `goals.md`, `system_rules.md`, `daily_briefing.md`, `session_handoff.md`, `project_memory/` eller `governance/`.** Dessa existerar inte och ska inte existera. Allt state lever i Supabase och Engrams.
+
+**Om CA upplever att data saknas:** Anropa loadProject för fler projekt — inte sök efter filer.
 
 **Boot-presentationsformat — exakt detta, inget mer:**
 ```
