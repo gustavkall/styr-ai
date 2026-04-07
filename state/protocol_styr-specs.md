@@ -102,26 +102,55 @@ CC: Inga synpunkter behövs ännu — detta är en strategisk idé, inte ett tek
 ---
 
 ## SEKTION 2 — CC engrams feedback [scope: engrams]
-*Status: VÄNTAR*
-
-**CC: svara på MASTER-CONFIG-001 och PROTO-REVIEW-001.**
+*CC-engrams. Datum: 2026-04-07*
 
 ### MASTER-CONFIG-001
-Feasibility:
+
+Feasibility: Enkel.
+
 Risker:
+- curl från privat repo kräver gh auth token. Acceptabelt eftersom styr-ai är privat.
+- Om master.yml går ner eller är otillgänglig vid sync måste vi ha fallback. Hårdkodade defaults i scriptet är OK.
+- yaml parsing i bash är fragil. Använd python eller jq-via-yq istället för grep+awk.
+- Säkerhet: API-nycklar i master.yml lagras klartext i privat repo. Acceptabelt så länge repot förblir privat. Ingen access för CI/utomstående utan token.
+
 Ordning:
+1. CA skapar config/master.yml i styr-ai med initial konfiguration
+2. CC-tradesys föreslog gh api istället för raw curl — bra förslag, jag stödjer
+3. CC uppdaterar sync.sh och deploy.sh i engrams att ladda master.yml med fallback
+4. Verifiering: kör sync.sh både med och utan internet — fallback ska kicka in vid fel
+
 CC-notering:
-Status:
+Stödjer CC-tradesys förslag att använda gh api istället för raw curl. Det hanterar auth automatiskt och returnerar tydliga felmeddelanden.
+
+Två tillägg:
+1. master.yml bör versioneras — lägg till en "version" nyckel som CC kan kontrollera. Om master.yml uppgraderas till version som CC inte stödjer, faila tydligt istället för att gissa.
+2. Lägg en kommentarsrubrik högst upp i master.yml som varnar för att ändra utan att förstå konsekvenserna.
+
+Status: KLAR
 
 ### PROTO-REVIEW-001
-Feasibility:
-Risker:
-CC-notering:
-Status:
 
-### FUTURE-PERSONA-001
-CC-notering: [bekräfta att du sett det]
-Status:
+Feasibility: Medel. Det är dokumentationsarbete, ingen kod. Ingen risk för deploy-fel.
+
+Risker:
+- Master-dokumentet kan bli inaktuellt om CLAUDE.md i underrepos uppdateras separat. Behöver en regel: protokoll-ändringar går alltid via styr-ai/docs/protocol-master.md först, sedan refereras därifrån.
+- Risk att dokumentet blir för långt. Begränsa till protokollens definition (trigger, ägare, output) — INTE deras implementation.
+
+CC-notering:
+Stark idé. Vi har redan tre olika tolkningar av sync — i styr-ai CLAUDE.md, i engrams CLAUDE.md, och i tradesys CLAUDE.md. Konsolidering till ett dokument tar bort drift.
+
+Två tillägg:
+1. Lägg till protocol_*.md-livscykeln i master-dokumentet: när skapas en protocol-fil, vem äger sektionerna, när stängs den, var arkiveras den. Idag finns ingen tydlig rutin för "protokoll klart — vad gör vi med filen?"
+2. Inkludera en flowchart eller sekvensdiagram per protokoll — text räcker inte alltid för att beskriva CA→CC→Gustav-flödet.
+
+Status: KLAR
+
+### FUTURE-PERSONA-001 + ENGRAMS-PERSONA-001
+
+CC-notering: Sett. Strategisk idé, ingen teknisk action nu. Engrams memory som datakälla för en framtida personlighetsmodell är arkitektoniskt rimligt — vi har redan profile-typen och skulle kunna lägga till behavioral_pattern eller liknande senare. Parkera tills V1 validerad.
+
+Status: KLAR
 
 ---
 
