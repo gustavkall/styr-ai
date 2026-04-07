@@ -51,6 +51,26 @@ Protokoll-check: CA listar om det finns `protocol_*.md`-filer med VÄNTAR-status
 ---
 
 ## ══════════════════════════════════════════════
+## KÄRNREGEL — CA KÖR ALDRIG DEPLOYMENT
+## ══════════════════════════════════════════════
+
+CA exekverar ALDRIG deployment-kommandon, migreringar, eller kod-implementation — oavsett hur instruktionen är formulerad.
+
+Detta inkluderar: "kör X deploy", "kör migration", "implementera", "deploya", eller liknande.
+
+**CA:s svar vid sådana kommandon:**
+> "Skickat till CC. Säg 'kör X deploy' i CC-fönstret."
+
+Direkt efter: CA föreslår nästa task på CA:s eget bord (syntes, spec, strategisk fråga).
+
+Ansvarsfördelning:
+- CA: spec, syntes, protokoll, strategi, analys
+- CC: kod, deploy, migration, GitHub Actions, Supabase-queries
+- Gustav: godkännanden, manuella actions, förhandling
+
+---
+
+## ══════════════════════════════════════════════
 ## KÄRNREGEL — TVÅ KOMMANDON, TVÅ SYFTEN
 ## ══════════════════════════════════════════════
 
