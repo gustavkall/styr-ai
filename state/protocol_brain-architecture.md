@@ -1,7 +1,7 @@
 # Protocol — brain architecture
 *Skapad av CA: 2026-04-06*
 *Scope: [engrams]*
-*Status: SEKTION 3 KLAR — VÄNTAR PÅ GODKÄNNANDE FÖR DEPLOYMENT*
+*Status: SEKTION 4 KLAR — VÄNTAR PÅ GUSTAVES GODKÄNNANDE*
 
 ---
 
@@ -106,7 +106,7 @@ Feasibility: Komplex. Kräver LLM-anrop (inte bara SQL). Bör vänta tills 100+ 
 
 Cosine similarity i Supabase: Ja, pgvector stöder det direkt. Query: SELECT a.id, b.id, 1-(a.embedding <=> b.embedding) as sim FROM memory_items a CROSS JOIN memory_items b WHERE a.id < b.id AND a.project_id = b.project_id AND 1-(a.embedding <=> b.embedding) > 0.92. Fungerar men O(n²) — vid 1000+ minnen behövs batching eller en IVF-index med probes.
 
-Episod→Learning: Kräver LLM-anrop. SQL hittar kluster av liknande episoder, men att extrahera insikten som en concise learning kräver att man skickar episoderna till Claude/GPT API och ber om en syntes. Cost: ~/bin/zsh.01 per konsolidering vid Haiku. GitHub Action → Claude API → remember(type:learning).
+Episod→Learning: Kräver LLM-anrop. SQL hittar kluster av liknande episoder, men att extrahera insikten som en concise learning kräver att man skickar episoderna till Claude/GPT API och ber om en syntes. Cost: ~0.01 per konsolidering vid Haiku. GitHub Action → Claude API → remember(type:learning).
 
 Mönsterigenkänning: text-embedding-3-small (1536 dim) räcker för semantic clustering. K-means eller DBSCAN på embedding-vektorer identifierar kluster. Kan köras i Python i GitHub Action. Begränsning: embedding-modellen fångar semantik men inte temporala mönster ("detta diskuteras varje måndag"). Temporal analys kräver separat logik.
 
@@ -157,11 +157,114 @@ Status: KLAR
 Fas 2 är redo för deployment. CC behöver bara godkännande — ingen ytterligare spec-iteration krävs.
 Fas 3 ska byggas men inte aktiveras. Feature flag = noll-kostnad safeguard.
 
-Status: KLAR — VÄNTAR PÅ GUSTAVES GODKÄNNANDE FÖR SEKTION 4 (DEPLOYMENT)
-
 ---
 
 ## SEKTION 4 — Deployment [scope: engrams]
-*Status: VÄNTAR PÅ GODKÄNNANDE*
+*CA-plan. Datum: 2026-04-07*
+*Status: VÄNTAR PÅ GUSTAVES GODKÄNNANDE*
 
-När Gustav godkänner: CC kör deployment av Fas 2 enligt ordningen i Sektion 3.
+### CC-instruktioner: exekvera i denna ordning, inget mer
+
+**STEG 1 — Supabase-migration**
+Kör följande SQL via Supabase MCP (projekt: engrams):
+
+```sql
+-- Lägg till kolumner
+ALTER TABLE memory_items ADD COLUMN IF NOT EXISTS priority_weight float DEFAULT 1.0;
+ALTER TABLE memory_items ADD COLUMN IF NOT EXISTS pinned boolean DEFAULT false;
+ALTER TABLE memory_items ADD COLUMN IF NOT EXISTS decay_reason text;
+
+-- Sentinel-rad (kör en gång, idempotent)
+INSERT INTO memory_items (id, content, type, project_id)
+VALUES (
+  '00000000-0000-0000-0000-000000000001',
+  'decay-agent sentinel — do not delete',
+  'profile',
+  (SELECT id FROM projects WHERE slug = 'default' LIMIT 1)
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- Audit-tabell för Fas 3 (bygg nu, används ej förrän ENABLE_CONSOLIDATION=true)
+CREATE TABLE IF NOT EXISTS memory_audit (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  operation text NOT NULL,
+  source_id uuid REFERENCES memory_items(id),
+  target_id uuid REFERENCES memory_items(id),
+  reason text,
+  created_at timestamptz DEFAULT now()
+);
+```
+
+**STEG 2 — Uppdatera remember.js**
+I `remember.js` (eller motsvarande API-route): om request body innehåller `priority: "high"` → sätt `priority_weight = 2.0` vid INSERT.
+
+Ingen annan logik ändras.
+
+**STEG 3 — GitHub Action: memory-decay.yml**
+Skapa `.github/workflows/memory-decay.yml` (OBS: kräver `workflows` OAuth-scope — om CC saknar det, skapa filen via GitHub UI):
+
+```yaml
+name: Memory Decay Agent
+on:
+  schedule:
+    - cron: '30 4 * * *'   # 04:30 UTC dagligen
+  workflow_dispatch:         # manuell trigger för verifiering
+
+jobs:
+  decay:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run decay SQL
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          curl -s "$SUPABASE_URL/rest/v1/rpc/run_decay" \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{}'
+```
+
+Alternativt: skapa en Supabase Database Function `run_decay()` som kör de två UPDATE-queries, och anropa den via HTTP. CC väljer implementation — funktionsnamnet är normen.
+
+**STEG 4 — GitHub Action: consolidation-agent.yml (bygg, aktivera ej)**
+Skapa `.github/workflows/consolidation-agent.yml`:
+
+```yaml
+name: Memory Consolidation Agent (Striatum)
+on:
+  schedule:
+    - cron: '0 5 * * *'    # 05:00 UTC dagligen
+  workflow_dispatch:
+
+jobs:
+  consolidate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check feature flag
+        run: |
+          if [ "${{ vars.ENABLE_CONSOLIDATION }}" != "true" ]; then
+            echo "ENABLE_CONSOLIDATION not set — skipping"
+            exit 0
+          fi
+      - name: Run consolidation
+        # Implementation: hämta episoder → skicka till Claude Haiku API → remember(type:learning)
+        # CC speccar implementation när flaggan aktiveras
+        run: echo "Consolidation placeholder — activate via ENABLE_CONSOLIDATION=true"
+```
+
+**STEG 5 — Verifiering**
+1. Kör `memory-decay.yml` manuellt via `workflow_dispatch`
+2. Verifiera att minnen med `pinned=true` INTE ändrar `relevance_score`
+3. Verifiera att sentinel-raden (UUID 000...001) finns i DB
+4. Logga resultat som episode i Engrams
+
+### Vad CC INTE ska göra
+- Inte ändra recall-logik (boost_relevance körs redan korrekt)
+- Inte aktivera `ENABLE_CONSOLIDATION`
+- Inte ta bort eller modifiera befintliga minnen
+- Inte göra något utöver stegen ovan
+
+### Godkännande-signal
+Gustav skriver "kör brain-arch deploy" eller "godkänt" → CC-engrams exekverar sektion 4.
