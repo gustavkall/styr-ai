@@ -1,7 +1,7 @@
 # Protocol — engrams v2 features
 *Skapad av CA: 2026-04-06*
 *Scope: [engrams]*
-*Status: VÄNTAR PÅ CC:s FEEDBACK*
+*Status: SEKTION 4 KLAR — VÄNTAR PÅ GUSTAVES GODKÄNNANDE*
 
 ---
 
@@ -118,9 +118,100 @@ Status: KLAR
 ---
 
 ## SEKTION 3 — Syntes [scope: alla]
-*Status: EJ PÅBÖRJAD*
+*CA-syntes. Datum: 2026-04-07*
+
+### Vad CC:s feedback förändrar i specen
+
+**E14 (Gemini) — status ändras från parkerad till klar utan kod:**
+CC:s insikt: Gemini function calling fungerar med Engrams REST API redan idag. Inget sandbox-godkännande krävs. Enda leverabeln är en dokumentationssida med Gemini function-definition JSON. Det är ett [CA]-jobb — ingen CC-implementation behövs.
+
+**E15 (Forgetting) — absorberas i brain-architecture:**
+Decay-logiken i E15 är identisk med Amygdala-fas 2 (protocol_brain-architecture). CC bekräftar modellen som rimlig med soft-delete som säkerhetsnät. E15 är redundant — den löses av brain-arch deploy. Ingen separat implementation.
+
+**E16 (Consolidation) — absorberas i brain-architecture:**
+Identisk med Striatum-fas 3. CC bekräftar: bygg nu, aktivera vid 100+ minnen. Feature-flaggad. E16 är redundant — löses av brain-arch deploy. Ingen separat implementation.
+
+**E8 (Anna monitor) — blockat av GitHub secrets:**
+CC:s Anna-monitor är redo att bygga, men E-GITHUB-SECRET-001 (sätt SUPABASE_URL + SUPABASE_SERVICE_KEY i GitHub) är blockerare. Ingen deploy av Anna-monitor förrän secrets är satta. Det är ett [Gustav]-jobb.
+
+**E17 (Teams) — redo att starta steg 1 när Gustav godkänner:**
+CC bekräftar att implementationsordningen är korrekt och att inga blockerare finns.
+
+### Prioriteringsordning för deployment
+
+| Prio | Spec | Vad | Ägare | Blockerare |
+|------|------|-----|-------|-----------|
+| 1 | E-GITHUB-SECRET-001 | Sätt GitHub secrets | [Gustav] | — |
+| 2 | E8 Anna monitor | GitHub Action cron | [CC-eng] | GitHub secrets |
+| 3 | E14 Gemini-docs | Docs-sida med function JSON | [CA] | — |
+| 4 | E17 Teams steg 1-3 | Supabase schema | [CC-eng] | Gustavs godkännande |
+| 5 | E15/E16 | Ingenting separat — löses av brain-arch | — | brain-arch deploy |
+
+### Slutsats
+
+Tre av fem specs konvergerar: E15 och E16 är täckta av brain-architecture-protokollet. E14 kräver bara dokumentation av CA. Blockeraren för E8 är Gustav (GitHub secrets) — inte CC.
 
 ---
 
 ## SEKTION 4 — Deployment [scope: engrams]
-*Status: EJ PÅBÖRJAD*
+*CA-plan. Datum: 2026-04-07*
+*Status: VÄNTAR PÅ GUSTAVES GODKÄNNANDE*
+
+### CC-instruktioner
+
+**TASK 1: E8 — Anna monitor (kör efter E-GITHUB-SECRET-001)**
+
+Bygg `.github/workflows/anna-monitor.yml`:
+
+```yaml
+name: Anna Onboarding Monitor
+on:
+  schedule:
+    - cron: '0 9 * * *'    # 09:00 UTC dagligen
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Anna activity
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ENGRAMS_KEY: ${{ secrets.ENGRAMS_KEY }}
+        run: |
+          # Hämta Annas account (anna.garmen@gmail.com) memory_items senaste 24h
+          RESULT=$(curl -s "$SUPABASE_URL/rest/v1/memory_items?select=id,created_at&user_email=eq.anna.garmen@gmail.com&created_at=gte.$(date -d '24 hours ago' --iso-8601=seconds)" \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY")
+          COUNT=$(echo $RESULT | python3 -c "import json,sys; print(len(json.load(sys.stdin)))")
+          if [ "$COUNT" -gt "0" ]; then
+            echo "Anna active — $COUNT memories in last 24h"
+            # Logga till Engrams
+            curl -s -X POST "https://engrams.app/api/remember" \
+              -H "Authorization: Bearer $ENGRAMS_KEY" \
+              -H "Content-Type: application/json" \
+              -d "{\"content\":\"Anna Garmen aktiv i Engrams — $COUNT minnen senaste 24h\",\"type\":\"episode\",\"project\":\"engrams\"}"
+          else
+            echo "Anna not yet active"
+          fi
+```
+
+OBS: CC anpassar Supabase-queryn till faktisk schema (user_id via email lookup, inte user_email direkt).
+
+**TASK 2: E17 — Teams steg 1 (kör separat, efter Gustavs godkännande)**
+
+Kör migration från `docs/teams-v2-implementation-spec.md` steg 1-3. Verifiera varje steg innan nästa. Logga som episode i Engrams.
+
+**TASK 3: E14 — Gemini docs (CA-jobb, ej CC)**
+
+CA skriver Gemini integration-sida till `engrams/docs/gemini-integration.md`. Innehåller: function definition JSON för remember + recall, exempel på Gemini system prompt, teststeg. Ingen CC-implementation krävs.
+
+### Vad CC INTE ska göra
+- Inte implementera E15 eller E16 separat — täcks av brain-architecture
+- Inte starta E17 förrän Gustavs godkännande
+- Inte starta E8 förrän GitHub secrets är satta
+
+### Godkännande-signal
+Gustav skriver "kör engrams-v2 deploy" → CC kör Task 1 (Anna monitor) om secrets är satta.
+Gustav skriver "kör teams deploy" → CC kör Task 2 (Teams steg 1-3).
