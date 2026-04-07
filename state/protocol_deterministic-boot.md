@@ -1,7 +1,7 @@
 # Protocol — deterministic boot
 *Skapad av CA: 2026-04-07*
 *Scope: [engrams]*
-*Status: VÄNTAR PÅ CC:s FEEDBACK*
+*Status: SEKTION 3 KLAR — VÄNTAR PÅ GUSTAVES GODKÄNNANDE FÖR SEKTION 4*
 
 ---
 
@@ -35,15 +35,7 @@ Flytta styr_global_todo till Engrams task-typ. `loadProject()` returnerar tasks 
 - Nackdel: migration, Supabase som SSOT för tasks är bevisad och fungerar
 
 **Option B: Boot API endpoint**
-Ny endpoint `GET /api/boot?project=styr-ai` som hämtar Engrams + Supabase och returnerar ett strukturerat JSON-svar:
-```json
-{
-  "tasks": [{"id": "E-BRAIN-ARCH-001", "title": "...", "priority": 1}],
-  "memories": {"context": [], "episodes": [], "learnings": []},
-  "protocols": [{"name": "protocol_brain-architecture.md", "status": "VÄNTAR"}],
-  "deadlines": [{"name": "Warner audit", "date": "2026-04-22", "days_left": 15}]
-}
-```
+Ny endpoint `GET /api/boot?project=styr-ai` som hämtar Engrams + Supabase och returnerar ett strukturerat JSON-svar.
 CA gör ett anrop till Boot API — får allt, läser inget annat.
 - Fördel: deterministiskt, Supabase behålls som SSOT för tasks
 - Nackdel: ny endpoint att underhålla
@@ -51,14 +43,11 @@ CA gör ett anrop till Boot API — får allt, läser inget annat.
 **Option C: Supabase Edge Function**
 Samma som B men i Supabase istället för Vercel.
 
-**CA rekommenderar Option B** — lägst risk, bevarar befintlig arkitektur.
+**CA rekommenderade Option B** — lägst risk, bevarar befintlig arkitektur.
 
 ### Warner-deadline
 
-En kontextminne i Engrams med Warner-deadline så att den alltid återkommer i loadProject:
-```
-remember(type:context, project:styr-ai, content:"Warner audit §8.3 startar 22 april 2026. Cure period löper till 22 maj 2026.")
-```
+En kontextminne i Engrams med Warner-deadline så att den alltid återkommer i loadProject.
 
 ---
 
@@ -109,10 +98,38 @@ Status: KLAR
 
 ---
 
-## SEKTION 3 — Syntes
-*Status: EJ PÅBÖRJAD*
+## SEKTION 3 — Syntes [scope: alla]
+*CA-syntes. Datum: 2026-04-07*
+
+### Vad CC:s feedback förändrar i arkitekturen
+
+**Option A är redan genomförd — Boot API är obsolet.**
+CA:s ursprungliga spec rekommenderade Option B (Boot API). CC:s feedback visar att Option A redan är körde: tasks migrerade till Engrams task-typ, styr_global_todo är legacy. Det betyder att CA:s spec byggde på en felaktig bild av nuläget. Ingen ny implementation behövs för det deterministiska boot-problemet — det är löst.
+
+**Det som återstår är två mindre risker:**
+
+1. **tradesys1337/README.md ej verifierad.** CC flaggar den som potentiellt innehållande gamla boot-instruktioner. Risk: CA läser den vid boot och följer inaktuella instruktioner. Åtgärd: Gustav eller CC verifierar innehållet. Om gamla instruktioner finns — rensa eller lägg till tydlig header: "DO NOT USE — se CLAUDE.md".
+
+2. **Boot API (/api/boot) är obsolet men lever kvar.** Det läser fortfarande styr_global_todo (ej längre SSOT). Risk: låg idag, men kan förvirra framtida agenter. Åtgärd: ta bort eller refaktorera till Engrams-läsning. Låg prio, inget blockar.
+
+### Slutsats
+
+Detta protokoll är i praktiken redan implementerat. Det enda öppna är README-verifieringen (Gustav/CC) och Boot API-cleanup (CC, låg prio). Ingen CA-implementation krävs.
+
+### Riskregister
+
+| Risk | Ägare | Åtgärd | Prio |
+|------|-------|--------|------|
+| tradesys1337/README.md gamla instruktioner | [Gustav] | Verifiera innehåll, rensa vid behov | Medium |
+| Boot API obsolet men lever | [CC-eng] | Ta bort eller refaktorera | Låg |
 
 ---
 
 ## SEKTION 4 — Deployment [scope: engrams]
-*Status: EJ PÅBÖRJAD*
+*Status: MINIMAL — inga nya deploys krävs*
+
+CC-engrams:
+1. Verifiera tradesys1337/README.md — om gamla boot-instruktioner finns: lägg till header `> **DEPRECATED** — se CLAUDE.md` överst i filen.
+2. Låg prio: ta bort eller refaktorera `/api/boot` till Engrams-läsning.
+
+**Godkännande-signal:** Gustav skriver "kör deterministic-boot cleanup" → CC kör steg 1+2.

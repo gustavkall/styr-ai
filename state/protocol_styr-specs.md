@@ -1,7 +1,7 @@
 # Protocol — styr-ai specs batch
 *Skapad av CA: 2026-04-06*
 *Scope: [engrams] [tradesys]*
-*Status: VÄNTAR PÅ CC:s FEEDBACK*
+*Status: SEKTION 3 KLAR — VÄNTAR PÅ GUSTAVES GODKÄNNANDE FÖR SEKTION 4*
 
 ---
 
@@ -36,68 +36,52 @@ global:
   engrams_url: https://www.engrams.app/api
 ```
 
-sync.sh laddar master.yml:
+sync.sh laddar master.yml med gh api:
 ```bash
-MASTER=$(curl -s https://raw.githubusercontent.com/gustavkall/styr-ai/main/config/master.yml)
-ENGRAMS_KEY=$(echo "$MASTER" | grep "engrams_key" | head -1 | awk '{print $2}')
+MASTER=$(gh api repos/gustavkall/styr-ai/contents/config/master.yml --jq '.content' | base64 -d)
+ENGRAMS_KEY=$(echo "$MASTER" | python3 -c "import sys,yaml; d=yaml.safe_load(sys.stdin); print(d['global']['engrams_key'])")
 ```
 
 Säkerhet: styr-ai är ett privat repo. Rollback: git revert på master.yml.
 
-Värde: Ändra en fil → gäller alla repos. Ny nyckel, ny konfiguration — ett änderställe.
+Värde: Ändra en fil → gäller alla repos.
 
 ---
 
 ### SPEC: PROTO-REVIEW-001
 **Konsolidera alla protokoll till ett master-dokument**
 
-Problem: boot, handoff, sync, deploy, engrams-kommando, block-avslut — distribuerade över CLAUDE.md i tre repos, delvis överlappande.
+Problem: boot, handoff, sync, deploy, engrams-kommando — distribuerade över CLAUDE.md i tre repos, delvis överlappande och driftande.
 
 Lösning:
-1. Skapa `styr-ai/docs/protocol-master.md` — ett dokument som definierar alla protokoll med syfte, ägare, trigger, output
+1. Skapa `styr-ai/docs/protocol-master.md` — ett dokument som definierar alla protokoll med syfte, ägare, trigger, output, och livscykel
 2. CLAUDE.md i styr-ai refererar master-dokumentet istället för att duplicera innehållet
-3. CC-repos CLAUDE.md krämps till: "Läs styr-ai/docs/protocol-master.md för fullständigt protokoll"
+3. CC-repos CLAUDE.md krymps till: "Läs styr-ai/docs/protocol-master.md för fullständigt protokoll"
 
 Protokoll att dokumentera:
 | Protokoll | Trigger | Ägare | Output |
 |-----------|---------|-------|--------|
 | boot | Session start | CA + CC | State-översikt |
 | sync | Gustav skriver `sync` | CC | Sektion 2 i protokollfil |
-| deploy | Gustav skriver `deploy` | CC | Sektion 4 implementerad, Supabase done |
-| handoff | Session slut | CA + CC | Engrams episode + Supabase update |
-| engrams sync | Gustav skriver `engrams sync` | CA | Läser CC:s episodes, presenterar |
+| deploy | Gustav skriver `deploy` | CC | Sektion 4 implementerad |
+| handoff | Session slut | CA + CC | Engrams episode |
+| engrams sync | Gustav skriver `engrams sync` | CA | Sektion 3 i protokollfil |
 
-Detta är ett CA+styr-ai-jobb. CC behöver inte implementera kod.
+Detta är ett [CA]-jobb. CC implementerar ingen kod.
 
 ---
 
 ### SPEC: S7 — OPTIMISTIC-LOCKING
 **Konflikthantering i styr_global_todo**
 
-Problem: Om CA och CC uppdaterar samma rad i styr_global_todo samtidigt vinner sista skrivaren. Inga konflikter har setts än — men med fler agenter ökar risken.
-
-Lösning: Lägg till `updated_at` kolumn på styr_global_todo. Vid UPDATE: kontrollera att `updated_at` matchar värdet vi läste. Om inte — reload och rätta.
-
-```sql
-ALTER TABLE styr_global_todo ADD COLUMN updated_at timestamptz DEFAULT now();
-CREATE OR REPLACE FUNCTION update_updated_at()
-RETURNS TRIGGER AS $$ BEGIN NEW.updated_at = now(); RETURN NEW; END; $$ LANGUAGE plpgsql;
-CREATE TRIGGER styr_todo_updated_at BEFORE UPDATE ON styr_global_todo
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-```
-
-Prioritet: Låg. Bygg när vi ser faktiska konflikter. Spec är klar för att CC snabbt kan köra när det behövs.
+Prioritет: Låg. Bygg när vi ser faktiska konflikter. SQL klar för snabb deploy vid behov. Parkerad.
 
 ---
 
 ### SPEC: FUTURE-PERSONA-001 + ENGRAMS-PERSONA-001
 **Personlighetsagent via persistent memory**
 
-Idé: Engrams memory är en trojan horse för en djupare personlighetsmodell. Varje `remember`-anrop är ett beteendesample. Över tid byggs en psykologisk profil. Nästa lager: aktiv agent som ställer rätt frågor vid rätt tillfällen för att förstå varför, inte bara vad.
-
-Status: Idé-fas. Ingen implementation förrän Engrams V1 är validerad (5 betalande, Anna dagligen).
-
-CC: Inga synpunkter behövs ännu — detta är en strategisk idé, inte ett tekniskt item. Bekräfta bara att du sett det.
+Status: Parkerad tills Engrams V1 validerad (5 betalande, Anna dagligen).
 
 ---
 
@@ -105,79 +89,129 @@ CC: Inga synpunkter behövs ännu — detta är en strategisk idé, inte ett tek
 *CC-engrams. Datum: 2026-04-07*
 
 ### MASTER-CONFIG-001
-
 Feasibility: Enkel.
-
-Risker:
-- curl från privat repo kräver gh auth token. Acceptabelt eftersom styr-ai är privat.
-- Om master.yml går ner eller är otillgänglig vid sync måste vi ha fallback. Hårdkodade defaults i scriptet är OK.
-- yaml parsing i bash är fragil. Använd python eller jq-via-yq istället för grep+awk.
-- Säkerhet: API-nycklar i master.yml lagras klartext i privat repo. Acceptabelt så länge repot förblir privat. Ingen access för CI/utomstående utan token.
-
-Ordning:
-1. CA skapar config/master.yml i styr-ai med initial konfiguration
-2. CC-tradesys föreslog gh api istället för raw curl — bra förslag, jag stödjer
-3. CC uppdaterar sync.sh och deploy.sh i engrams att ladda master.yml med fallback
-4. Verifiering: kör sync.sh både med och utan internet — fallback ska kicka in vid fel
-
-CC-notering:
-Stödjer CC-tradesys förslag att använda gh api istället för raw curl. Det hanterar auth automatiskt och returnerar tydliga felmeddelanden.
-
-Två tillägg:
-1. master.yml bör versioneras — lägg till en "version" nyckel som CC kan kontrollera. Om master.yml uppgraderas till version som CC inte stödjer, faila tydligt istället för att gissa.
-2. Lägg en kommentarsrubrik högst upp i master.yml som varnar för att ändra utan att förstå konsekvenserna.
-
+Stödjer CC-tradesys förslag att använda `gh api` istället för raw curl.
+Tillägg: (1) lägg till `version`-nyckel i master.yml — CC kontrollerar vid load, faila tydligt om version ej stöds. (2) Lägg varningsrubrik överst i master.yml.
 Status: KLAR
 
 ### PROTO-REVIEW-001
-
-Feasibility: Medel. Det är dokumentationsarbete, ingen kod. Ingen risk för deploy-fel.
-
-Risker:
-- Master-dokumentet kan bli inaktuellt om CLAUDE.md i underrepos uppdateras separat. Behöver en regel: protokoll-ändringar går alltid via styr-ai/docs/protocol-master.md först, sedan refereras därifrån.
-- Risk att dokumentet blir för långt. Begränsa till protokollens definition (trigger, ägare, output) — INTE deras implementation.
-
-CC-notering:
-Stark idé. Vi har redan tre olika tolkningar av sync — i styr-ai CLAUDE.md, i engrams CLAUDE.md, och i tradesys CLAUDE.md. Konsolidering till ett dokument tar bort drift.
-
-Två tillägg:
-1. Lägg till protocol_*.md-livscykeln i master-dokumentet: när skapas en protocol-fil, vem äger sektionerna, när stängs den, var arkiveras den. Idag finns ingen tydlig rutin för "protokoll klart — vad gör vi med filen?"
-2. Inkludera en flowchart eller sekvensdiagram per protokoll — text räcker inte alltid för att beskriva CA→CC→Gustav-flödet.
-
+Feasibility: Medel (dokumentationsarbete, ingen kod).
+Risk: master-dokumentet kan drifa från CLAUDE.md i underrepos — regel behövs: protokoll-ändringar går alltid via protocol-master.md först.
+Tillägg: (1) Inkludera protocol_*.md-livscykel — när skapas, vem äger sektionerna, när stängs, var arkiveras. (2) Inkludera sekvensdiagram per protokoll.
 Status: KLAR
 
-### FUTURE-PERSONA-001 + ENGRAMS-PERSONA-001
-
-CC-notering: Sett. Strategisk idé, ingen teknisk action nu. Engrams memory som datakälla för en framtida personlighetsmodell är arkitektoniskt rimligt — vi har redan profile-typen och skulle kunna lägga till behavioral_pattern eller liknande senare. Parkera tills V1 validerad.
-
+### FUTURE-PERSONA-001
+Sett. Arkitektoniskt rimligt med profile-typen som grund. Parkera tills V1 validerad.
 Status: KLAR
 
 ---
 
 ## SEKTION 2 — CC tradesys feedback [scope: tradesys]
-*Status: KLAR*
-
-**CC: svara på MASTER-CONFIG-001 och S7.**
+*CC-tradesys. Datum: 2026-04-07*
 
 ### MASTER-CONFIG-001
-Feasibility: Enkel
-Risker: curl från privat repo kräver gh auth token i environment — acceptabelt så länge det är privat repo. Fallback om curl misslyckas: hårdkodade defaults (nuvarande beteende). Ingen breaking change.
-Ordning: 1) CA skapar master.yml i styr-ai, 2) CC uppdaterar sync.sh/deploy.sh att ladda den med fallback.
-CC-notering: Bra idé. sync.sh har redan haft tre syntaxbuggar i hårdkodad JSON — centralisering minskar den risken. Förslag: använd `gh api` istället för raw curl — det hanterar auth automatiskt: `gh api repos/gustavkall/styr-ai/contents/config/master.yml --jq '.content' | base64 -d`
-Status: KLAR
-
-### S7 — OPTIMISTIC-LOCKING
-Feasibility: Enkel (en migration + en trigger)
-Risker: Inga — additivt. Befintlig kod påverkas inte förrän vi aktivt kollar updated_at i scripts.
-CC-notering: Håller med om låg prio. Vi har aldrig sett en konflikt. SQL:en i specen är korrekt och kan köras direkt via Supabase MCP när det behövs. Parkera.
+Feasibility: Enkel. Förslag: `gh api` istället för raw curl — hanterar auth automatiskt.
+S7 (Optimistic locking): Håller med om låg prio. SQL i specen korrekt, kan köras direkt via Supabase MCP när det behövs. Parkera.
 Status: KLAR
 
 ---
 
 ## SEKTION 3 — Syntes [scope: alla]
-*Status: EJ PÅBÖRJAD*
+*CA-syntes. Datum: 2026-04-07*
+
+### MASTER-CONFIG-001 — tre CC-tillägg absorberade
+
+Båda CC-instanser stödjer förslaget. Tre konkreta förbättringar från CC:
+
+1. **`gh api` istället för raw curl.** CC-tradesys föreslog, CC-engrams stödjer. `gh api repos/.../config/master.yml --jq '.content' | base64 -d` hanterar auth automatiskt, ger tydliga felmeddelanden, inga token-hanteringsproblem. Absorberat i spec.
+
+2. **`version`-nyckel i master.yml.** CC-engrams tillägg: om master.yml uppgraderas ska CC faila tydligt istället för att gissa på inkompatibel config. Implementeras som: `if [ "$MASTER_VERSION" != "1" ]; then echo "ERROR: Unsupported master.yml version"; exit 1; fi`
+
+3. **Varningsrubrik i master.yml.** Förhindrar oavsiktliga ändringar. Absorberas i filen vid skapande.
+
+**Deployment-ordning för MASTER-CONFIG-001:**
+1. CA skapar `styr-ai/config/master.yml` med version-nyckel och varningsrubrik
+2. CC-engrams uppdaterar `sync.sh` + `deploy.sh` att ladda master.yml med `gh api`, med fallback till hårdkodade defaults
+3. CC-tradesys gör detsamma i tradesys-repos
+4. Verifiering: kör sync.sh med och utan nätverksåtkomst — fallback ska aktiveras vid fel
+
+### PROTO-REVIEW-001 — tre CC-tillägg absorberade
+
+CC bekräftar att tre olika tolkningar av "sync" existerar parallellt i CLAUDE.md-filerna. Det är ett faktiskt problem, inte en hypotetisk risk.
+
+Trе förbättringar från CC:
+
+1. **Explicit livscykel för protocol_*.md-filer.** CC saknar rutin för "protokoll klart — vad gör vi med filen?". Livscykeln ska definieras i master-dokumentet: skapad (CA) → sektion 2 (CC sync) → sektion 3 (CA engrams sync) → sektion 4 (CC deploy) → **DEPLOYED** (status uppdateras) → arkiveras till `state/archive/` efter 30 dagar.
+
+2. **Regel: protokoll-ändringar går alltid via protocol-master.md.** Förhindrar att CLAUDE.md i underrepos driftar ifrån master. Regel läggs in i protocol-master.md och i varje CLAUDE.md.
+
+3. **Sekvensdiagram per protokoll.** CA skriver dessa som en del av protokollfilen — text räcker inte för att kommunicera CA→CC→Gustav-flödet entydigt.
+
+**Deployment-ordning för PROTO-REVIEW-001:**
+1. CA skriver `styr-ai/docs/protocol-master.md` — komplett med livscykel, sekvensdiagram, ägarmatris
+2. CA uppdaterar CLAUDE.md i styr-ai att referera till master-dokumentet
+3. CC uppdaterar CLAUDE.md i engrams + tradesys-repos att hänvisa till protocol-master.md
+
+### S7 — Parkerad
+
+Båda CC-instanser bekräftar: ingen konflikt observerad, SQL korrekt, aktivera vid behov. Ingen action.
+
+### FUTURE-PERSONA-001 — Parkerad
+
+CC bekräftar. Aktivera när V1 validerad.
+
+### Prioriteringsordning
+
+| Prio | Task | Ägare | Blockerare |
+|------|------|-------|------------|
+| 1 | MASTER-CONFIG-001: CA skapar master.yml | [CA] | — |
+| 2 | MASTER-CONFIG-001: CC uppdaterar sync.sh/deploy.sh | [CC-eng] + [CC-tdy] | master.yml skapad |
+| 3 | PROTO-REVIEW-001: CA skriver protocol-master.md | [CA] | — |
+| 4 | PROTO-REVIEW-001: CC uppdaterar CLAUDE.md i underrepos | [CC-eng] + [CC-tdy] | protocol-master.md klar |
+| — | S7, PERSONA | Parkerade | — |
 
 ---
 
 ## SEKTION 4 — Deployment [scope: alla]
-*Status: EJ PÅBÖRJAD*
+*Status: VÄNTAR PÅ GUSTAVES GODKÄNNANDE*
+
+**Prio 1 — CA skapar master.yml (CA-jobb, ingen CC-deploy):**
+
+CA skapar `styr-ai/config/master.yml`:
+```yaml
+# WARNING: Ändra inte utan att förstå konsekvenserna.
+# Alla sync.sh/deploy.sh i alla repos läser denna fil.
+# Ändringar här påverkar HELA systemet.
+version: "1"
+
+projects:
+  engrams:
+    repo: gustavkall/engrams
+    protocol_scope: engrams
+  tradesys:
+    repo: gustavkall/tradesys-models
+    protocol_scope: tradesys
+
+global:
+  styr_repo: gustavkall/styr-ai
+  engrams_url: https://www.engrams.app/api
+```
+
+OBS: API-nycklar läggs INTE i master.yml — de hanteras som GitHub Secrets. master.yml innehåller bara strukturell konfiguration.
+
+**Prio 2 — CC uppdaterar sync.sh/deploy.sh:**
+
+CC-engrams och CC-tradesys uppdaterar sina respektive scripts att ladda master.yml via `gh api` med fallback:
+```bash
+if gh api repos/gustavkall/styr-ai/contents/config/master.yml --jq '.content' > /tmp/master_b64 2>/dev/null; then
+  MASTER=$(base64 -d /tmp/master_b64)
+  MASTER_VERSION=$(echo "$MASTER" | python3 -c "import sys,yaml; print(yaml.safe_load(sys.stdin)['version'])")
+  if [ "$MASTER_VERSION" != "1" ]; then echo "ERROR: Unsupported master.yml version $MASTER_VERSION"; exit 1; fi
+else
+  echo "WARNING: Could not load master.yml — using local defaults"
+fi
+```
+
+**Prio 3 — CA skriver protocol-master.md:** Separat CA-task, nästa session.
+
+**Godkännande-signal:** Gustav skriver "kör styr-specs deploy" → CC kör prio 2 (sync.sh/deploy.sh-uppdateringar). CA kör prio 1 och 3 utan deploy-gate.
