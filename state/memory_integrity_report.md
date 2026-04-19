@@ -1,32 +1,33 @@
 # Memory Integrity Report
-*2026-04-12T04:03:30.809Z*
+*2026-04-19T04:04:42.703Z*
 
 ## Sammanfattning
 - HIGH: 11
-- MEDIUM: 1
+- MEDIUM: 2
 
 ## Analys
-# Prioriterade åtgärder för minnesläckor
+# Analysresultat: Minnesläckor
 
-**KRITISK:** 11 saknade filer blockar kontextkontinuitet.
+## Kritisk situation
+11 HIGH-prioriterade filer saknas över två projekt (styr-ai, tradesys1337).
 
-## Prioritering:
+## Prioriterade åtgärder
 
-1. **OMEDELBAR (Fas 1):** Skapa state-filer för båda projekt
-   - session_handoff.md (styr-ai, tradesys1337)
-   - work_queue.md (styr-ai, tradesys1337)
-   
-2. **HÖGPRIORITERAD (Fas 2):** Project memory-filer
-   - project_context.md (båda projekt)
-   - goals.md (styr-ai)
-   - cross_project_learnings.md (styr-ai)
+**Fas 1 (Omedelbar):**
+1. Skapa **state/session_handoff.md** (båda projekten) - möjliggör sessionskontinuitet
+2. Skapa **state/work_queue.md** (båda projekten) - återställer arbetsflöde
 
-3. **VIKTIG (Fas 3):** Governance-filer
-   - system_rules.md
-   - approvals.md
-   - architecture_changelog.md
+**Fas 2 (Idag):**
+3. Skapa **project_memory/project_context.md** (båda projekten) - etablerar projektkontext
+4. Skapa **governance/system_rules.md** (styr-ai) - säkerställer styrning
 
-**Rekommendation:** Implementera automatisk mall-generering för framtida projekt för att förhindra återkomst.
+**Fas 3 (Denna vecka):**
+5. Skapa **project_memory/goals.md** (styr-ai)
+6. Skapa **governance/approvals.md** + **architecture_changelog.md** (styr-ai)
+7. Skapa **cross_project_learnings.md** (styr-ai)
+
+## Rekommendation
+Implementera automatisk validering av dessa filer vid projektstart för att förebygga framtida läckor.
 
 ## ⚠️ styr-ai
 - **[HIGH]** Saknad fil: state/session_handoff.md
@@ -47,7 +48,7 @@
   → *Skapa project_memory/cross_project_learnings.md*
 
 ## ⚠️ savage-roar-music
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 20 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 27 dagar
   → *Kör session close*
 
 ## ⚠️ tradesys1337
@@ -58,4 +59,6 @@
 - **[HIGH]** Saknad fil: project_memory/project_context.md
   → *Skapa project_memory/project_context.md*
 
-## ✅ adminassistent — inga issues
+## ⚠️ adminassistent
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 18 dagar
+  → *Kör session close*
