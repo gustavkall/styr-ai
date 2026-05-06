@@ -121,7 +121,12 @@ async function fetchFileSha(owner, repo, filePath, token) {
 }
 
 async function writeFileToGitHub(owner, repo, filePath, content, message) {
-  const token = (repo !== 'styr-ai') ? PAT_TOKEN : GITHUB_TOKEN;
+  const isCrossRepo = (repo !== 'styr-ai');
+  const token = isCrossRepo ? PAT_TOKEN : GITHUB_TOKEN;
+  if (!token) {
+    console.warn(`Skipping write to ${repo}/${filePath}: ${isCrossRepo ? 'PAT_TOKEN' : 'GITHUB_TOKEN'} not set`);
+    return;
+  }
   const sha = await fetchFileSha(owner, repo, filePath, token);
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
   const body = { message, content: Buffer.from(content).toString('base64'), branch: 'main' };
@@ -131,12 +136,20 @@ async function writeFileToGitHub(owner, repo, filePath, content, message) {
     headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(`writeFile failed ${filePath}: ${await res.text()}`);
+  if (!res.ok) {
+    const err = await res.text();
+    if (isCrossRepo) {
+      console.warn(`Cross-repo write failed ${repo}/${filePath} (PAT_TOKEN may lack permissions): ${err}`);
+      return;
+    }
+    throw new Error(`writeFile failed ${filePath}: ${err}`);
+  }
   console.log(`Written: ${filePath}`);
 }
 
 async function fetchFile(owner, repo, filePath) {
   const token = (repo !== 'styr-ai') ? PAT_TOKEN : GITHUB_TOKEN;
+  if (!token) { console.warn(`Skipping read ${repo}/${filePath}: token not set`); return null; }
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
   const res = await fetch(url, { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3.raw' } });
   if (!res.ok) return null;

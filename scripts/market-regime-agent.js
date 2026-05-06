@@ -32,7 +32,12 @@ async function fetchFileSha(owner, repo, filePath, token) {
 
 async function writeFileToGitHub(owner, repo, filePath, content, message) {
   // Använd PAT_TOKEN för cross-repo, GITHUB_TOKEN för eget repo
-  const token = (owner === 'gustavkall' && repo !== 'styr-ai') ? PAT_TOKEN : GITHUB_TOKEN;
+  const isCrossRepo = (owner === 'gustavkall' && repo !== 'styr-ai');
+  const token = isCrossRepo ? PAT_TOKEN : GITHUB_TOKEN;
+  if (!token) {
+    console.warn(`Skipping write to ${repo}/${filePath}: ${isCrossRepo ? 'PAT_TOKEN' : 'GITHUB_TOKEN'} not set`);
+    return;
+  }
   const sha = await fetchFileSha(owner, repo, filePath, token);
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
   const body = { message, content: Buffer.from(content).toString('base64'), branch: 'main' };
@@ -44,6 +49,10 @@ async function writeFileToGitHub(owner, repo, filePath, content, message) {
   });
   if (!res.ok) {
     const err = await res.text();
+    if (isCrossRepo) {
+      console.warn(`Cross-repo write failed ${repo}/${filePath} (PAT_TOKEN may lack permissions): ${err}`);
+      return;
+    }
     throw new Error(`writeFile failed ${filePath}: ${err}`);
   }
   console.log(`Written: ${filePath}`);
