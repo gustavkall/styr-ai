@@ -3,11 +3,11 @@
 **Spec-ID:** SPEC-S-CORE-PRINCIPLES-V1
 **Project:** styr-ai (meta-governance)
 **Type:** TYP 2 — TVÄRPROJEKT-PRINCIP (gäller engrams + tradesys + alla agenter)
-**Version:** v1.1-draft
+**Version:** v1.2-draft
 **Author:** CA (Claude.ai)
 **Status:** UTKAST — väntar Codex convergence review + Gustav-godkännande
 **Created:** 2026-05-19
-**Updated:** 2026-05-19 (v1.1: added S.5 Fulltext Artefact Persistence + Princip 6 extension)
+**Updated:** 2026-05-19 (v1.2: added S.6 Output Locus Contract + Princip 10 heuristic reference + HEURISTIC-CATALOG-V1 referens)
 **Supersedes:** Inget (första versionen)
 **Applies to:** Alla agenter (CA, CC-eng, CC-tdy, Codex, ChatGPT), alla projekt (engrams, tradesys, styr-ai, savage-roar, golf), alla pipelines, modeller, specer, deployments
 
@@ -362,6 +362,7 @@ Systemet är explicit med när det vet och när det inte vet. Det får inte ge f
 - UI som visar P(win) utan regime-confidence är blockerad
 - Recommendations utan reasoning är blockerade
 - Agent som claimar "stark signal" utan kvantifiering flaggas
+- Heuristiska slutsatser (mentala genvägar) ska flaggas explicit i agent-output med formuleringar som "heuristisk bedömning" eller "första gissning, ej verifierad". Se `HEURISTIC-CATALOG-V1.md` för katalog av kända heuristiker och drift-patterns.
 
 **Exceptions:**
 - Inga. Falsk precision är inte ett designval.
@@ -573,6 +574,78 @@ Sammanfattningar driftar från originaltext. Om CC-tdy producerar en 30-sidig au
 
 ---
 
+### S.6 — Output Locus Contract
+
+**Statement:**
+När agent A producerar en spec, audit eller review som ska reviewas eller utökas av flera andra agenter (multi-agent review), MÅSTE agent A specificera output-locus för all efterföljande feedback. Output-locus består av: target marker, target type, target project, och target disk path. Övriga agenter MÅSTE sedan spara sin feedback på den specificerade platsen, inte var de själva väljer. För 1-1-flöden (en agent reviewar en spec) är detta krav undantaget men rekommenderas fortfarande.
+
+**Rationale:**
+Utan output-locus contract sprider sig feedback över Engrams-markers, disk-filer och chat-meddelanden. För att bygga komplett bild av en review-cykel måste man manuellt leta. Med contract: allt feedback om SPEC-X finns under marker-pattern `*-REVIEW-X` eller `*-FEEDBACK-X` med konsistent type och project. En query räcker. Cross-agent discoverability ökar — agent B vet exakt var agent C lade sin parallella review.
+
+**När gäller S.6:**
+
+| Situation | Krav |
+|-----------|------|
+| Spec ska reviewas av ≥2 agenter | **OBLIGATORISKT** — Output Locus-tabell i spec + create_task() med output_contract per reviewer |
+| Spec ska reviewas av 1 agent | Rekommenderat men inte obligatoriskt |
+| Spec internt utkast utan formell review | Inte tillämpligt |
+| Audit/post-mortem som inte ska reviewas | Inte tillämpligt |
+
+**Marker-konvention per agent:**
+
+| Agent | Marker-prefix för reviews | Marker-prefix för feedback |
+|-------|--------------------------|---------------------------|
+| Codex | `CODEX-REVIEW-{spec-id}` | `CODEX-FEEDBACK-{spec-id}` |
+| CC-eng | `CC-ENG-REVIEW-{spec-id}` | `CC-ENG-FEEDBACK-{spec-id}` |
+| CC-tdy | `CC-TDY-REVIEW-{spec-id}` | `CC-TDY-FEEDBACK-{spec-id}` |
+| CA | `CA-REVIEW-{spec-id}` eller `CA-CONVERGENCE-REVIEW-{spec-id}` | `CA-FEEDBACK-{spec-id}` |
+| ChatGPT | `CHATGPT-FEEDBACK-{spec-id}` (sparas av CA på CHATGPTs vägnar) | samma |
+| Gustav | `GUSTAV-DECISION-{spec-id}` eller `GUSTAV-FEEDBACK-{spec-id}` | samma |
+
+**Format som spec-författare måste inkludera (multi-agent review):**
+
+```markdown
+## Feedback & Review Output Locus
+
+Alla reviewers ska spara sin feedback enligt följande:
+
+| Agent | Output marker | Type | Project | Disk path |
+|-------|--------------|------|---------|-----------|
+| Codex | CODEX-REVIEW-{spec-id} | context | styr-ai | docs/CODEX-REVIEW-{spec-id}.md |
+| CC-eng | CC-ENG-REVIEW-{spec-id} | context | styr-ai | docs/CC-ENG-REVIEW-{spec-id}.md |
+| CC-tdy | CC-TDY-REVIEW-{spec-id} | context | tradesys | docs/CC-TDY-REVIEW-{spec-id}.md |
+| ChatGPT | CHATGPT-FEEDBACK-{spec-id} | context | styr-ai | (paste till CA, CA sparar) |
+
+Spec-författaren ska skapa create_task() per reviewer med output_contract
+som matchar tabellen ovan.
+```
+
+**Discoverability efter S.6:**
+
+| Query | Hur |
+|-------|-----|
+| "Alla reviews av SPEC-X" | `recall("REVIEW-X")` eller `recall("FEEDBACK-X")` returnerar alla reviewers |
+| "Codex feedback på senaste spec" | `get_by_marker("CODEX-REVIEW-{latest-spec-id}")` deterministisk lookup |
+| "Vad har lämnats för feedback idag?" | `recent_chats` eller Engrams `check_freshness` med marker-filter |
+
+**Enforcement:**
+- Spec som ska reviewas av ≥2 agenter utan Output Locus-tabell → CA flaggar som NEEDS-REVISION
+- `create_task()` för review utan `output_contract` (när multi-agent flow) → CA flaggar
+- Reviewer som sparar på annan plats än specat → CA flaggar drift, retroaktiv supersede till korrekt marker
+- Output_contract i Engrams `create_task()` är canonical enforcement-mekanism — använd alltid när tillämpligt
+
+**Exceptions:**
+- 1-1-flöden (en spec, en reviewer): Output Locus rekommenderas men inte obligatoriskt
+- Ad-hoc feedback från Gustav i chat: kan sparas av CA till Gustav-prefixad marker retroaktivt
+- Akuta produktionsincidenter: agent får producera output snabbt, locus kan retroaktivt etableras
+
+**Related to:**
+- Princip 12 (Agent Authority Boundaries — cross-agent kommunikation via Engrams)
+- S.5 (Fulltext Artefact Persistence — feedback ska sparas fulltext, inte bara sammanfattning)
+- Engrams `create_task()` `output_contract`-parameter är canonical mekanism
+
+---
+
 ## ═══════════════════════════════════════
 ## ENFORCEMENT ARCHITECTURE
 ## ═══════════════════════════════════════
@@ -699,6 +772,7 @@ Gustav kan overrida vilken princip som helst för en specifik uppgift.
 - S.3 Replay-to-Live Integrity
 - S.4 Failure Analysis Mandatory
 - S.5 Fulltext Artefakt Persistens
+- S.6 Output Locus Contract
 
 ---
 
@@ -710,6 +784,7 @@ Gustav kan overrida vilken princip som helst för en specifik uppgift.
 - ChatGPT proposal 2026-05-19 (15 original principles)
 - CA feedback session 2026-05-19 (clustering, 4 additions, enforcement architecture)
 - Gustav addition 2026-05-19 (S.5 Fulltext Artefact Persistence, from parallel session incident)
+- Gustav addition 2026-05-19 (S.6 Output Locus Contract — addressing review traceability problem; heuristic flagging in Princip 10 + HEURISTIC-CATALOG-V1 reference)
 - Drift-patterns observed: CA-EXHAUSTIVE-ENUMERATION, RVOL-bug 2026-05-15, 7-docs-not-pushed 2026-05-18, audit-summary-only 2026-05-19
 
 **Related specs:**
@@ -717,6 +792,7 @@ Gustav kan overrida vilken princip som helst för en specifik uppgift.
 - SPEC-E-PRODUCT-VISIBILITY-CONTRACT-001 (supports Princip 1)
 - SPEC-E-FULLTEXT-PERSISTENCE-RULE-001 (Engrams-intern, promoted to cross-project via S.5)
 - SPEC-E-PRE-HANDOFF-CRITICAL-REVIEW-001 (supports S.1)
+- **HEURISTIC-CATALOG-V1.md** (parallel doc, referenced by Princip 10 — catalog of mental shortcuts and drift-patterns)
 
 **Pinned behavioral rules (per-project, complement these principles):**
 - Engrams project: existing pinned rules
@@ -725,13 +801,14 @@ Gustav kan overrida vilken princip som helst för en specifik uppgift.
 
 ---
 
-**Author:** CA (ca-2026-05-19-1015, updated ca-2026-05-19-1115)
+**Author:** CA (ca-2026-05-19-1015, updated ca-2026-05-19-1115, ca-2026-05-19-1300)
 **Version history:**
 - v1.0-draft: initial 12 principles + S.1-S.4
 - v1.1-draft: added S.5 (Fulltext Artefact Persistence), extended Princip 6
+- v1.2-draft: added S.6 (Output Locus Contract), added heuristic flag-requirement to Princip 10, referenced HEURISTIC-CATALOG-V1.md
 **Awaiting:** Codex convergence review + Gustav approval
 **Next steps after approval:**
-1. Push to all 3 GitHub repos
+1. Push to all 3 GitHub repos (already done for draft branch)
 2. Update CLAUDE.md per repo with reference
 3. Engrams pinned at type:instruction
 4. Quarterly review scheduled 2026-08-19
