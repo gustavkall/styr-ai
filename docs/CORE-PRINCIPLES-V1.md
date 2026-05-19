@@ -3,10 +3,11 @@
 **Spec-ID:** SPEC-S-CORE-PRINCIPLES-V1
 **Project:** styr-ai (meta-governance)
 **Type:** TYP 2 — TVÄRPROJEKT-PRINCIP (gäller engrams + tradesys + alla agenter)
-**Version:** v1.0-draft
+**Version:** v1.1-draft
 **Author:** CA (Claude.ai)
 **Status:** UTKAST — väntar Codex convergence review + Gustav-godkännande
 **Created:** 2026-05-19
+**Updated:** 2026-05-19 (v1.1: added S.5 Fulltext Artefact Persistence + Princip 6 extension)
 **Supersedes:** Inget (första versionen)
 **Applies to:** Alla agenter (CA, CC-eng, CC-tdy, Codex, ChatGPT), alla projekt (engrams, tradesys, styr-ai, savage-roar, golf), alla pipelines, modeller, specer, deployments
 
@@ -217,7 +218,7 @@ Utan lineage kan vi inte svara "varför slog v17 v16?" eller "vilken feature dri
 ### Princip 6: Event & Signal Persistence
 
 **Statement:**
-Alla beslutsrelevanta signaler, alerts, decisions och trades persisteras strukturerat och är historiskt sökbara. Ephemeral data (browser-state, in-memory queues, console logs) får inte vara enda källa till någon canonical signal.
+Alla beslutsrelevanta signaler, alerts, decisions, trades **OCH alla agent-producerade review-artefakter** (specer, audits, reviews, post-mortems, convergence-reviews) persisteras strukturerat och är historiskt sökbara. Ephemeral data (browser-state, in-memory queues, console logs) får inte vara enda källa till någon canonical signal eller artefakt.
 
 **Per typ:**
 
@@ -229,14 +230,16 @@ Alla beslutsrelevanta signaler, alerts, decisions och trades persisteras struktu
 | Rejection decisions | `signal_candidates_v2` (LOG_SIGNAL_CANDIDATES=true) |
 | Configuration changes | git commit + audit log |
 | Self-correction events | strukturerad logg (idag saknas — P2-deliverable) |
+| **Specs, reviews, audits, post-mortems** | **Engrams Level-2 body (fulltext) + disk (markdown). Se S.5** |
 
 **Rationale:**
-"Varför köpte inte systemet NVDA igår?" måste vara svarbart. Om rejection-pathen är ephemeral kan vi inte mäta precision/recall.
+"Varför köpte inte systemet NVDA igår?" måste vara svarbart. Om rejection-pathen är ephemeral kan vi inte mäta precision/recall. Samma logik gäller för review-artefakter: "Vad sa CC-tdy:s audit om quant-infra-readiness 2026-05-18?" måste kunna besvaras med exakt original-text, inte med en sammanfattning från minnet.
 
 **Enforcement:**
 - LOG_SIGNAL_CANDIDATES=true ska vara default (P0)
 - Self-correction adjustments ska loggas till audit-tabell (P2)
 - stdout-only loggar för canonical beslut är otillräckligt
+- **Specs/reviews/audits sparas alltid som fulltext per S.5 — inga sammanfattningar**
 
 **Exceptions:**
 - UI-state (vilken tab är aktiv) får vara ephemeral
@@ -523,6 +526,53 @@ Misslyckade trades, modeller och signaler analyseras lika rigoröst som framgån
 
 ---
 
+### S.5 — Fulltext Artefakt Persistens
+
+**Statement:**
+Varje agent måste spara specer, reviews, audits, post-mortems och andra review-artefakter i sin helhet, ord för ord, i Engrams (Level-2 body) och på disk (markdown-fil). **Sammanfattningar i Engrams `content`-fältet är OK för sökbarhet och boot-listning, men fulltext MÅSTE finnas i `body`-fältet (Level-2 storage).** Agent får aldrig spara endast en sammanfattning av en review-artefakt.
+
+**Rationale:**
+Sammanfattningar driftar från originaltext. Om CC-tdy producerar en 30-sidig audit och bara sammanfattningen sparas i Engrams, kan vi efter 3 månader inte återhämta resonemang, evidens-citationer eller specifika datastrukturer som auditen byggde på. Originaltext är canonical. Sammanfattningar är derivat — användbara, men aldrig substitut.
+
+**Documented incident:**
+- 2026-05-19 (parallell session): Agent sparade backtest-audit korrekt som Level-2 artifact, men sparade "Agents" och "Models" audits endast som sammanfattningar i Engrams. Original-resonemanget förlorades tills agenten själv upptäckte misstaget och fixade det. Detta är canonical drift-pattern.
+
+**Per artefakt-typ:**
+
+| Artefakt | Engrams (Level-2 body) | Disk | Type | Project |
+|----------|------------------------|------|------|---------|
+| SPEC-T/E/S-* | Full text, ord för ord | `docs/SPEC-*.md` | `context` eller `spec` | per projekt |
+| CA convergence review | Full text, ord för ord | `docs/CA-*-REVIEW-*.md` | `context` | per projekt |
+| Audit (readiness, infra, drift) | Full text, ord för ord | `docs/AUDIT-*.md` | `context` | per projekt |
+| Post-mortem (trade, system) | Full text, ord för ord | `docs/POSTMORTEM-*.md` | `learning` | per projekt |
+| Convergence review (Codex/CC/CA) | Full text, ord för ord | `docs/*-REVIEW-*.md` | `context` | per projekt |
+| Session episode | Full text av session-händelser | (optional disk) | `episode` | per projekt |
+
+**Krav per spar-operation:**
+
+1. **Engrams `body`-fält:** Full ord-för-ord original text. Inte sammanfattning, inte diff, inte parafras. Om artefakten är 30KB ska body vara 30KB.
+2. **Engrams `content`-fält:** Kort sammanfattning (1-3 meningar) som visas i boot/list-vyer. Ska peka till body med t.ex. "Full text in body. Marker: X. Disk: docs/X.md".
+3. **Engrams `marker`-fält:** Konsistent, sökbart, unikt (t.ex. `CA-CONVERGENCE-REVIEW-2026-05-19`).
+4. **Disk:** Markdown-fil i relevant repo (engrams, tradesys1337, styr-ai). Path följer projektets konvention.
+5. **Verifiering:** Efter spar-operation, agenten ska bekräfta att `get_by_marker()` returnerar full body (inte bara summary).
+
+**Enforcement:**
+- Agent som sparar review-artefakt endast som sammanfattning → drift-pattern, CA flaggar
+- Engrams memory med `type:context` eller `type:learning` och body-storlek < 50% av disk-filens storlek → automatic flag (P2-deliverable)
+- Pre-handoff-review checklist måste inkludera "fulltext sparad i body, inte bara content"
+- Agent får inte radera disk-filen efter Engrams-save — båda krävs (redundans)
+
+**Exceptions:**
+- Specer som är >1MB kan delas upp i PART1/PART2/PART3 med separata markers, men varje part måste vara fulltext av sin egen sektion
+- Tillfälliga utkast som aldrig ska bli canonical (t.ex. "draft thoughts under sessionen") kan vara content-only — men då måste de explicit markeras som draft och inte refereras som om de var canonical
+
+**Related to:**
+- SPEC-E-FULLTEXT-PERSISTENCE-RULE-001 (Engrams-intern spec, denna S.5 promotar regeln till cross-project)
+- Princip 6 (Event & Signal Persistence — denna S.5 är specifik tillämpning för review-artefakter)
+- S.1 (Ground-Truth Verification — fulltext är ground truth, sammanfattning är derivat)
+
+---
+
 ## ═══════════════════════════════════════
 ## ENFORCEMENT ARCHITECTURE
 ## ═══════════════════════════════════════
@@ -648,6 +698,7 @@ Gustav kan overrida vilken princip som helst för en specifik uppgift.
 - S.2 Reversibility by Default
 - S.3 Replay-to-Live Integrity
 - S.4 Failure Analysis Mandatory
+- S.5 Fulltext Artefakt Persistens
 
 ---
 
@@ -658,12 +709,13 @@ Gustav kan overrida vilken princip som helst för en specifik uppgift.
 **Source materials:**
 - ChatGPT proposal 2026-05-19 (15 original principles)
 - CA feedback session 2026-05-19 (clustering, 4 additions, enforcement architecture)
-- Drift-patterns observed: CA-EXHAUSTIVE-ENUMERATION, RVOL-bug 2026-05-15, 7-docs-not-pushed 2026-05-18
+- Gustav addition 2026-05-19 (S.5 Fulltext Artefact Persistence, from parallel session incident)
+- Drift-patterns observed: CA-EXHAUSTIVE-ENUMERATION, RVOL-bug 2026-05-15, 7-docs-not-pushed 2026-05-18, audit-summary-only 2026-05-19
 
 **Related specs:**
 - RATIONALE-FRAMEWORK-PROTOCOL-001 (TYP-classification, supports Princip 11)
 - SPEC-E-PRODUCT-VISIBILITY-CONTRACT-001 (supports Princip 1)
-- SPEC-E-FULLTEXT-PERSISTENCE-RULE-001 (supports Princip 6)
+- SPEC-E-FULLTEXT-PERSISTENCE-RULE-001 (Engrams-intern, promoted to cross-project via S.5)
 - SPEC-E-PRE-HANDOFF-CRITICAL-REVIEW-001 (supports S.1)
 
 **Pinned behavioral rules (per-project, complement these principles):**
@@ -673,7 +725,10 @@ Gustav kan overrida vilken princip som helst för en specifik uppgift.
 
 ---
 
-**Author:** CA (ca-2026-05-19-1015)
+**Author:** CA (ca-2026-05-19-1015, updated ca-2026-05-19-1115)
+**Version history:**
+- v1.0-draft: initial 12 principles + S.1-S.4
+- v1.1-draft: added S.5 (Fulltext Artefact Persistence), extended Princip 6
 **Awaiting:** Codex convergence review + Gustav approval
 **Next steps after approval:**
 1. Push to all 3 GitHub repos
