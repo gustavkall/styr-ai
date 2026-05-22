@@ -106,19 +106,112 @@ Värden som listas i denna konstitution är `candidate default v1` tills projekt
 
 ---
 
-> **Full v1.3 document continues with 12 principles + 6 supporting requirements + enforcement architecture + override protocol + summary tables + references.**
->
-> **Token-pragmatic note:** This commit contains the v1.3 headers + Governance Metadata section + critical structural updates per Codex review. The complete v1.3 document body (sections for Princip 1-12 with all modifications, S.1-S.6 with all updates, Enforcement Architecture, Override Protocol, Summary Tables, References) is preserved as canonical disk artifact at /home/claude/CORE-PRINCIPLES-V1.md (55KB) and will be pushed in next session via push_files batch operation when more context budget is available.
->
-> **Authoritative source:** Engrams marker `CORE-PRINCIPLES-V1` contains the structured v1.3 content. The previous v1.2 disk commit (905f5cb) is still accessible via git history. v1.3 strictly supersedes v1.2 per Governance Metadata Status Taxonomy.
+### Princip 1: Single Canonical Source of Truth
+
+**Statement:**
+För varje subsystem och varje kritisk entitet finns exakt en auktoritativ runtime-sanning. Frontend, cache, JSON-filer, git snapshots, localStorage, browser state och derived views får aldrig fungera som konkurrerande sanningar.
+
+**Canonical owners per entitet (current examples, not exhaustive canonical registry):**
+
+> **Notering:** Denna tabell är illustrativ för aktuella TradeSys/Engrams-entiteter. Att en entitet inte listas innebär INTE att den saknar canonical owner-krav. Vid introduktion av ny entitet i någon projekt-spec ska canonical owner deklareras explicit.
+
+| Entitet | Canonical owner | Anti-pattern |
+|---------|----------------|--------------|
+| Signals | `signal_evaluations` (Supabase) | Browser-computed P(win) |
+| Alerts | `alert_events` (Supabase) | live_cache ephemeral state |
+| Trades | `agent_trades_v2` (Supabase) | Git commit history alone |
+| Regimes | `regime_snapshots` (Supabase) | git `REGIME.json` dual-read |
+| Model versions | `model_versions` (Supabase) | Filnamn i `data/` |
+| Replay runs | `replay_runs` + `replay_trades` | CSV-export alone |
+| Experiment results | `experiments` table | Free text i `notes` |
+| Agent decisions | `agent_trades_v2.model_lineage` | stdout-logg |
+| Exits | `dynamic_exit_shadow_decisions` | Browser-computed P(drop) |
+| Memories (Engrams) | `memories` table (Engrams Supabase) | Lokala anteckningar |
+
+**Rationale:**
+Konkurrerande sanningar driftar oundvikligen. När browser-P(win) divergerar från backend-P(win) har vi ingen formell sanning — och inget agentbeslut kan auditeras.
+
+**Enforcement:**
+- Frontend som beräknar canonical state är ett P0-bugg-tillstånd
+- Spec som introducerar ny entitet måste deklarera canonical owner
+- Drift mellan canonical och derived view → automatic alert (P2-deliverable)
+
+**Exceptions:**
+- Cache och derived views är OK om de explicit deklareras som sekundära
+- Git snapshots/exports OK som backup/fallback men aldrig som primär källa
+- LLM-output får cachas i minne under en session men inte persisteras som sanning utan validering
 
 ---
 
-**Version history:**
-- v1.0-draft: initial 12 principles + S.1-S.4
-- v1.1-draft: added S.5 (Fulltext Artefact Persistence), extended Princip 6
-- v1.2-draft: added S.6 (Output Locus Contract), added heuristic flag-requirement to Princip 10, referenced HEURISTIC-CATALOG-V1.md
-- v1.3-draft: addresses Codex review (CODEX-REVIEW-CORE-PRINCIPLES-V1) — added Governance Metadata section (artifact status taxonomy + enforcement labels + threshold status), marked all thresholds as `candidate default v1` with TradeSys ownership, S.6 conflict resolution + round convention + disk commit clarification, principle modifications for 2/8/10/12, Skikt 1 multi-repo sync verification checklist, Skikt 2 Codex boot-loading wording fix, S.1 remote-branch verification, S.5 divergence precedence rule, S.2 rollback dry-run, S.4 trade-type scope clarification, null-lineage-better-than-false-lineage rule added to Princip 5
+## ═══════════════════════════════════════
+## KLUSTER B — EVIDENCE
+## ═══════════════════════════════════════
 
-**Awaiting:** Gustav approval
+### Princip 2: Empirical Evidence Required for Edge Claims
+
+**Statement:**
+Påståenden om edge, signal-kvalitet eller modellförbättring kräver empirisk evidens. Anekdotisk evidens, intuition eller "ser bra ut i backtesten" räknas inte.
+
+**Minimum evidence thresholds (candidate defaults v1 — owned by TradeSys spec, not constitution):**
+
+> **Notering:** Konstitutionen äger *kravet* att edge claims ska ha predeclared evidence thresholds. De faktiska numeriska värdena nedan är `candidate default v1` och ska flyttas till SPEC-T-EVIDENCE-FLOORS-001 (TBD) eller motsvarande TradeSys-spec där de kan kalibreras mot historisk replay-data.
+
+| Påstående | Candidate threshold | Status | Owner | Source / Rationale |
+|-----------|--------------------|---------|-------|----------------------|
+| "Denna signal har edge" | ≥100 replay-trades, p<0.05 vs baseline | candidate default v1 | TradeSys | Statistical convention; ej kalibrerad |
+| "Modell A slår modell B" | Replay-gate PASS (>0.5pp overall, >1pp per regime) | candidate default v1 | TradeSys | Inherited från befintlig replay-gate; ej re-kalibrerad |
+| "Denna feature drar conviction" | Stratification med ≥30 trades per bucket | candidate default v1 | TradeSys | Statistical floor för bucket-jämförelse |
+| "Threshold X är optimal" | Sensitivity-analys ±20%, stabilt resultat | candidate default v1 | TradeSys | Konvention för stabilitetsbedömning |
+| "Live performance matchar replay" | ≥30 live-trades, divergens <5pp | candidate default v1 | TradeSys | 30 är CLT-floor; 5pp ej empiriskt grundat |
+| "Edge har försämrats" | Rolling 50-trade WR < baseline -5pp | candidate default v1 | TradeSys | Window-size ej kalibrerad mot edge-decay-takt |
+
+**Rationale:**
+Utan threshold för "vad räknas som bevis" kan varje agent påstå vad som helst. Konkreta tröskelvärden gör claims auditbara.
+
+**Enforcement:**
+- Spec som föreslår ny edge/signal/threshold måste cite:a evidens
+- "Tror jag" / "ser ut som" / "borde fungera" är inte evidens
+- Agent som påstår edge utan stöd → CA flaggar som drift-pattern
+
+**Exceptions:**
+- Säkerhets-mekanismer (drawdown floors, position limits, kill switches) kräver inte edge-bevis — de motiveras av risk management
+- Research-experiment får producera hypoteser utan bevis; men hypotes ≠ deployment
+
+---
+
+### Princip 3: Deterministic & Auditable Pipelines
+
+**Statement:**
+För deterministiska pipelines: samma input + samma model/version/configuration ger samma output. Pipelines som inte kan vara deterministiska (LLM-anrop, externa API:er, marknadsdata) måste explicit deklarera det och persistera både input och output.
+
+**Per pipeline-typ:**
+
+| Pipeline | Determinism-krav | Persistens-krav |
+|----------|-----------------|----------------|
+| Replay/backtest | Fullt deterministisk | Input data hash + config + git SHA + output |
+| Model training | Deterministisk gd seed | training_data hash + hyperparams + weights hash |
+| Signal evaluation | Deterministisk per model_version | Input features + model_version_id + output |
+| LLM agent-analys | EJ deterministisk | Persistera input prompt + output + model_id + timestamp |
+| External API call | EJ deterministisk | Persistera request + response + timestamp |
+
+**Rationale:**
+Deterministiska pipelines kan reproduceras → kan auditeras → kan debuggas. LLM/API-anrop är icke-deterministiska men måste loggas så att vi kan rekonstruera *vad agenten såg* när den fattade ett beslut.
+
+**Enforcement:**
+- Replay/backtest som inte är reproducerbar är ett P0-bugg
+- LLM-anrop utan input/output-persistens är ett observability-brott (Princip 6)
+- Agent får inte fatta canonical state-beslut baserat på icke-loggat LLM-output
+
+**Exceptions:**
+- True randomness (UUID, random seeds för exploration) får icke-deterministisk vara men måste persisteras
+- Live market data är icke-deterministisk över tid; persisteras som timestamped snapshots
+
+---
+
+[NOTE: Due to length constraints, this commit contains v1.3 first half. Second half (Princip 4-12, S.1-S.6, Enforcement Architecture, Override Protocol, Summary, References) committed in immediate follow-up commit on same branch via continuation push. Full canonical fulltext exists at Engrams marker CORE-PRINCIPLES-V1 (Level-2 body) and at /home/claude/CORE-PRINCIPLES-V1.md (55KB) per S.5 redundancy requirement.]
+
+---
+
 **Author:** CA (ca-2026-05-21-0930)
+**Status:** v1.3-draft — partial commit due to push payload size, second half in next commit
+**Awaiting:** Gustav approval after both halves committed
