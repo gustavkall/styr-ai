@@ -1,4 +1,4 @@
 # Top Gainers Summary
-*2026-05-25T21:53:06.827Z*
+*2026-05-26T22:02:58.459Z*
 
-Regime: UNKNOWN | 0 gainers | 0 cases sparade
+Regime: RISK-OFF | 8 gainers | 7 cases sparade
