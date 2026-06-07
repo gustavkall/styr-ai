@@ -1,34 +1,29 @@
 # Memory Integrity Report
-*2026-05-31T04:31:55.402Z*
+*2026-06-07T04:32:08.748Z*
 
 ## Sammanfattning
 - HIGH: 11
 - MEDIUM: 4
 
 ## Analys
-# Minnesläcka-analys: Prioriterade åtgärder
+# Prioriterade Åtgärder - Minnesläckor
 
-## Kritiska brister (HIGH)
-**11 saknade filer** över två projekt (styr-ai, tradesys1337).
+## Kritiska (Omedelbar)
+1. **State-filer** (session_handoff.md, work_queue.md) - båda projekten
+   - Möjliggör sessionskontinuitet och taskhantering
 
-## Prioriteringsordning:
+2. **Projektkontext** (project_context.md, goals.md) - båda projekten
+   - Etablerar projektförståelse och riktning
 
-1. **State-filer (högsta prioritet)**
-   - `state/session_handoff.md` – möjliggör sessionskontinuitet
-   - `state/work_queue.md` – kritikal för arbetsflöde
+## Högt Prioritet
+3. **Styrning** (system_rules.md, approvals.md, architecture_changelog.md)
+   - Definierar beslutsprocesser och ändringshistorik
 
-2. **Projektminne**
-   - `project_memory/project_context.md` – grundläggande kontext
-   - `project_memory/goals.md` – målöversikt
-
-3. **Governance (styr-ai)**
-   - `governance/system_rules.md`
-   - `governance/approvals.md`
-   - `governance/architecture_changelog.md`
-   - `project_memory/cross_project_learnings.md`
+4. **Kunskapsdelning** (cross_project_learnings.md)
+   - Förhindrar upprepad arbete mellan projekt
 
 ## Rekommendation
-Skapa alla filer omedelbar. Börja med state-mappen (återställer kontinuitet), följt av projektminne (kontext), sedan governance (säkerställer strukturell integritet). Implementera automatisk validering för att förhindra framtida brister.
+Skapa alla HIGH-severity filer omedelbar. Börja med state-filer för snabb effekt, därefter projektminne. Använd mallar för konsistens mellan projekten.
 
 ## ⚠️ styr-ai
 - **[HIGH]** Saknad fil: state/session_handoff.md
@@ -47,11 +42,11 @@ Skapa alla filer omedelbar. Börja med state-mappen (återställer kontinuitet),
   → *Skapa governance/architecture_changelog.md*
 - **[HIGH]** Saknad fil: project_memory/cross_project_learnings.md
   → *Skapa project_memory/cross_project_learnings.md*
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 55 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 62 dagar
   → *Kör session close*
 
 ## ⚠️ savage-roar-music
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 69 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 76 dagar
   → *Kör session close*
 
 ## ⚠️ tradesys1337
@@ -61,9 +56,9 @@ Skapa alla filer omedelbar. Börja med state-mappen (återställer kontinuitet),
   → *Skapa state/work_queue.md*
 - **[HIGH]** Saknad fil: project_memory/project_context.md
   → *Skapa project_memory/project_context.md*
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 55 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 62 dagar
   → *Kör session close*
 
 ## ⚠️ adminassistent
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 60 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 67 dagar
   → *Kör session close*
