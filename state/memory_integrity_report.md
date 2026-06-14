@@ -1,29 +1,29 @@
 # Memory Integrity Report
-*2026-06-07T04:32:08.748Z*
+*2026-06-14T04:32:44.090Z*
 
 ## Sammanfattning
 - HIGH: 11
 - MEDIUM: 4
 
 ## Analys
-# Prioriterade Åtgärder - Minnesläckor
+# Prioriterade åtgärder för minnesläckor
 
-## Kritiska (Omedelbar)
+## Kritisk prioritet (omedelbar):
+
 1. **State-filer** (session_handoff.md, work_queue.md) - båda projekten
-   - Möjliggör sessionskontinuitet och taskhantering
+   - Möjliggör sessionsöverföring och taskhantering
 
-2. **Projektkontext** (project_context.md, goals.md) - båda projekten
-   - Etablerar projektförståelse och riktning
+2. **Projektkontext** (project_context.md, goals.md)
+   - Etablerar projektets syfte och riktning
 
-## Högt Prioritet
-3. **Styrning** (system_rules.md, approvals.md, architecture_changelog.md)
-   - Definierar beslutsprocesser och ändringshistorik
+3. **Governance** (system_rules.md, approvals.md, architecture_changelog.md)
+   - Säkerställer konsistens och spårbarhet
 
-4. **Kunskapsdelning** (cross_project_learnings.md)
-   - Förhindrar upprepad arbete mellan projekt
+4. **Cross-project learnings** (styr-ai)
+   - Förhindrar dubbelarbete
 
-## Rekommendation
-Skapa alla HIGH-severity filer omedelbar. Börja med state-filer för snabb effekt, därefter projektminne. Använd mallar för konsistens mellan projekten.
+## Implementering:
+Skapa mallar för varje filtyp, fyll med minimikrav först. Etablera återkommande uppdateringsrutiner för att förhindra framtida minnesläckor.
 
 ## ⚠️ styr-ai
 - **[HIGH]** Saknad fil: state/session_handoff.md
@@ -42,11 +42,11 @@ Skapa alla HIGH-severity filer omedelbar. Börja med state-filer för snabb effe
   → *Skapa governance/architecture_changelog.md*
 - **[HIGH]** Saknad fil: project_memory/cross_project_learnings.md
   → *Skapa project_memory/cross_project_learnings.md*
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 62 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 69 dagar
   → *Kör session close*
 
 ## ⚠️ savage-roar-music
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 76 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 83 dagar
   → *Kör session close*
 
 ## ⚠️ tradesys1337
@@ -56,9 +56,9 @@ Skapa alla HIGH-severity filer omedelbar. Börja med state-filer för snabb effe
   → *Skapa state/work_queue.md*
 - **[HIGH]** Saknad fil: project_memory/project_context.md
   → *Skapa project_memory/project_context.md*
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 62 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 69 dagar
   → *Kör session close*
 
 ## ⚠️ adminassistent
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 67 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 74 dagar
   → *Kör session close*
