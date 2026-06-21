@@ -1,5 +1,5 @@
 # Memory Integrity Report
-*2026-06-14T04:32:44.090Z*
+*2026-06-21T04:33:07.870Z*
 
 ## Sammanfattning
 - HIGH: 11
@@ -8,22 +8,20 @@
 ## Analys
 # Prioriterade åtgärder för minnesläckor
 
-## Kritisk prioritet (omedelbar):
+**OMEDELBAR ÅTGÄRD (Fas 1):**
+1. Skapa **state/session_handoff.md** för båda projekten – kritisk för kontinuitet mellan sessioner
+2. Skapa **project_memory/project_context.md** för båda projekten – essentiell projektkontext
 
-1. **State-filer** (session_handoff.md, work_queue.md) - båda projekten
-   - Möjliggör sessionsöverföring och taskhantering
+**HÖG PRIORITET (Fas 2):**
+3. Skapa **state/work_queue.md** båda projekten – behövs för taskhantering
+4. Skapa **governance/system_rules.md** (styr-ai) – styr systemets beteende
+5. Skapa **project_memory/goals.md** (styr-ai) – definierar projektmål
 
-2. **Projektkontext** (project_context.md, goals.md)
-   - Etablerar projektets syfte och riktning
+**MEDIUM PRIORITET (Fas 3):**
+6. Skapa governance-filer (approvals.md, architecture_changelog.md)
+7. Skapa cross_project_learnings.md
 
-3. **Governance** (system_rules.md, approvals.md, architecture_changelog.md)
-   - Säkerställer konsistens och spårbarhet
-
-4. **Cross-project learnings** (styr-ai)
-   - Förhindrar dubbelarbete
-
-## Implementering:
-Skapa mallar för varje filtyp, fyll med minimikrav först. Etablera återkommande uppdateringsrutiner för att förhindra framtida minnesläckor.
+**Rekommendation:** Implementera automatisk mallgenerering för att förhindra framtida luckor.
 
 ## ⚠️ styr-ai
 - **[HIGH]** Saknad fil: state/session_handoff.md
@@ -42,11 +40,11 @@ Skapa mallar för varje filtyp, fyll med minimikrav först. Etablera återkomman
   → *Skapa governance/architecture_changelog.md*
 - **[HIGH]** Saknad fil: project_memory/cross_project_learnings.md
   → *Skapa project_memory/cross_project_learnings.md*
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 69 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 76 dagar
   → *Kör session close*
 
 ## ⚠️ savage-roar-music
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 83 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 90 dagar
   → *Kör session close*
 
 ## ⚠️ tradesys1337
@@ -56,9 +54,9 @@ Skapa mallar för varje filtyp, fyll med minimikrav först. Etablera återkomman
   → *Skapa state/work_queue.md*
 - **[HIGH]** Saknad fil: project_memory/project_context.md
   → *Skapa project_memory/project_context.md*
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 69 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 76 dagar
   → *Kör session close*
 
 ## ⚠️ adminassistent
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 74 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 81 dagar
   → *Kör session close*
