@@ -1,4 +1,4 @@
 # Top Gainers Summary
-*2026-06-23T21:59:28.209Z*
+*2026-06-24T21:57:35.987Z*
 
-Regime: RISK-OFF | 8 gainers | 8 cases sparade
+Regime: RISK-OFF | 8 gainers | 4 cases sparade
