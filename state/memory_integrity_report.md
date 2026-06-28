@@ -1,27 +1,34 @@
 # Memory Integrity Report
-*2026-06-21T04:33:07.870Z*
+*2026-06-28T04:31:49.939Z*
 
 ## Sammanfattning
 - HIGH: 11
 - MEDIUM: 4
 
 ## Analys
-# Prioriterade åtgärder för minnesläckor
+# Analysi av minnesläckor - Prioriterade åtgärder
 
-**OMEDELBAR ÅTGÄRD (Fas 1):**
-1. Skapa **state/session_handoff.md** för båda projekten – kritisk för kontinuitet mellan sessioner
-2. Skapa **project_memory/project_context.md** för båda projekten – essentiell projektkontext
+## Kritisk situation
+**11 HIGH-prioriterade filer saknas** i två projekt (styr-ai, tradesys1337).
 
-**HÖG PRIORITET (Fas 2):**
-3. Skapa **state/work_queue.md** båda projekten – behövs för taskhantering
-4. Skapa **governance/system_rules.md** (styr-ai) – styr systemets beteende
-5. Skapa **project_memory/goals.md** (styr-ai) – definierar projektmål
+## Prioriteringsordning
 
-**MEDIUM PRIORITET (Fas 3):**
-6. Skapa governance-filer (approvals.md, architecture_changelog.md)
-7. Skapa cross_project_learnings.md
+**Fas 1 (Omedelbar)**
+1. `project_memory/project_context.md` - båda projekt
+2. `state/session_handoff.md` - båda projekt
+3. `governance/system_rules.md` - styr-ai
 
-**Rekommendation:** Implementera automatisk mallgenerering för att förhindra framtida luckor.
+**Fas 2 (Urgent)**
+4. `state/work_queue.md` - båda projekt
+5. `project_memory/goals.md` - styr-ai
+6. `governance/approvals.md` - styr-ai
+
+**Fas 3**
+7. Resterande governance-filer (styr-ai)
+8. `cross_project_learnings.md` - styr-ai
+
+## Rekommendation
+Skapa mall-struktur för båda projekt samtidigt för att säkerställa konsistens. Fokusera på kontextfiler först för att återställa projektminnet.
 
 ## ⚠️ styr-ai
 - **[HIGH]** Saknad fil: state/session_handoff.md
@@ -40,11 +47,11 @@
   → *Skapa governance/architecture_changelog.md*
 - **[HIGH]** Saknad fil: project_memory/cross_project_learnings.md
   → *Skapa project_memory/cross_project_learnings.md*
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 76 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 83 dagar
   → *Kör session close*
 
 ## ⚠️ savage-roar-music
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 90 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 97 dagar
   → *Kör session close*
 
 ## ⚠️ tradesys1337
@@ -54,9 +61,9 @@
   → *Skapa state/work_queue.md*
 - **[HIGH]** Saknad fil: project_memory/project_context.md
   → *Skapa project_memory/project_context.md*
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 76 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 83 dagar
   → *Kör session close*
 
 ## ⚠️ adminassistent
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 81 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 88 dagar
   → *Kör session close*
