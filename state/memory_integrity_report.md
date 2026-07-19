@@ -1,33 +1,32 @@
 # Memory Integrity Report
-*2026-07-12T04:12:14.405Z*
+*2026-07-19T04:09:33.009Z*
 
 ## Sammanfattning
 - HIGH: 11
 - MEDIUM: 4
 
 ## Analys
-# Analyis: Minneslächor - Prioriterade Åtgärder
+# Prioriterade Åtgärder - Minnesläckor
 
-**Kritisk Situation:** 11 HIGH-nivå filer saknas i två projekt (styr-ai, tradesys1337).
+## Kritisk prioritet (omedelbar):
 
-## Prioritering:
+1. **State-filer (session_handoff.md, work_queue.md)** - Båda projekt
+   - Möjliggör sessionsöverföringar och arbetskö-hantering
 
-**Fas 1 (Omedelbar):**
-1. **State-filer** (session_handoff.md, work_queue.md) - båda projekten
-   - Krävs för sessionskontinuitet och taskhantering
+2. **Project Context** - Båda projekt
+   - Grundläggande projektförståelse krävs
 
-**Fas 2 (Samma dag):**
-2. **project_memory-filer** (project_context.md, goals.md)
-   - Essentiellt för projektkunskap och riktning
+3. **Governance-filer** (styr-ai)
+   - system_rules.md, approvals.md, architecture_changelog.md
+   - Viktigt för styrning och beslutfattande
 
-**Fas 3 (Inom 24h):**
-3. **Governance-filer** (system_rules.md, approvals.md, architecture_changelog.md)
-   - Styr långsiktig arkitektur och beslut
+## Sekundär prioritet:
 
-**Fas 4:**
-4. **cross_project_learnings.md** - styr-ai projekt
+4. **Goals.md** (styr-ai)
+5. **Cross-project learnings** (styr-ai)
 
-**Rekommendation:** Använd template-struktur för båda projekten samtidigt för effektivitet. Prioritera styr-ai först (flest filer).
+## Genomförande:
+Skapa filerna i angiven ordning per projekt. Börja med state/ och project_memory/. Använd mall-struktur för konsistens.
 
 ## ⚠️ styr-ai
 - **[HIGH]** Saknad fil: state/session_handoff.md
@@ -46,11 +45,11 @@
   → *Skapa governance/architecture_changelog.md*
 - **[HIGH]** Saknad fil: project_memory/cross_project_learnings.md
   → *Skapa project_memory/cross_project_learnings.md*
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 97 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 104 dagar
   → *Kör session close*
 
 ## ⚠️ savage-roar-music
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 111 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 118 dagar
   → *Kör session close*
 
 ## ⚠️ tradesys1337
@@ -60,9 +59,9 @@
   → *Skapa state/work_queue.md*
 - **[HIGH]** Saknad fil: project_memory/project_context.md
   → *Skapa project_memory/project_context.md*
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 97 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 104 dagar
   → *Kör session close*
 
 ## ⚠️ adminassistent
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 102 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 109 dagar
   → *Kör session close*
