@@ -1,32 +1,34 @@
 # Memory Integrity Report
-*2026-07-19T04:09:33.009Z*
+*2026-07-26T04:12:17.869Z*
 
 ## Sammanfattning
 - HIGH: 11
 - MEDIUM: 4
 
 ## Analys
-# Prioriterade Åtgärder - Minnesläckor
+# Minnesläcka-Analys: Prioriterade Åtgärder
 
-## Kritisk prioritet (omedelbar):
+## Kritisk Status
+**11 HIGH-severity filer saknas** i två projekt (styr-ai, tradesys1337).
 
-1. **State-filer (session_handoff.md, work_queue.md)** - Båda projekt
-   - Möjliggör sessionsöverföringar och arbetskö-hantering
+## Åtgärdsprioritet
 
-2. **Project Context** - Båda projekt
-   - Grundläggande projektförståelse krävs
+### Fas 1 - OMEDELBAR (Sessionsöverföring)
+1. `state/session_handoff.md` - båda projekten
+2. `state/work_queue.md` - båda projekten
 
-3. **Governance-filer** (styr-ai)
-   - system_rules.md, approvals.md, architecture_changelog.md
-   - Viktigt för styrning och beslutfattande
+### Fas 2 - HÖGPRIO (Projektkontext)
+3. `project_memory/project_context.md` - båda projekten
+4. `project_memory/goals.md` - styr-ai
+5. `project_memory/cross_project_learnings.md` - styr-ai
 
-## Sekundär prioritet:
+### Fas 3 - STYRNING (Governance)
+6. `governance/system_rules.md` - styr-ai
+7. `governance/approvals.md` - styr-ai
+8. `governance/architecture_changelog.md` - styr-ai
 
-4. **Goals.md** (styr-ai)
-5. **Cross-project learnings** (styr-ai)
-
-## Genomförande:
-Skapa filerna i angiven ordning per projekt. Börja med state/ och project_memory/. Använd mall-struktur för konsistens.
+## Rekommendation
+Skapa **mallstruktur** för båda projekten samtidigt för effektivitet. Utan dessa filer förloras sessionskontext och projektminne mellan sessioner.
 
 ## ⚠️ styr-ai
 - **[HIGH]** Saknad fil: state/session_handoff.md
@@ -45,11 +47,11 @@ Skapa filerna i angiven ordning per projekt. Börja med state/ och project_memor
   → *Skapa governance/architecture_changelog.md*
 - **[HIGH]** Saknad fil: project_memory/cross_project_learnings.md
   → *Skapa project_memory/cross_project_learnings.md*
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 104 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 111 dagar
   → *Kör session close*
 
 ## ⚠️ savage-roar-music
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 118 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 125 dagar
   → *Kör session close*
 
 ## ⚠️ tradesys1337
@@ -59,9 +61,9 @@ Skapa filerna i angiven ordning per projekt. Börja med state/ och project_memor
   → *Skapa state/work_queue.md*
 - **[HIGH]** Saknad fil: project_memory/project_context.md
   → *Skapa project_memory/project_context.md*
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 104 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 111 dagar
   → *Kör session close*
 
 ## ⚠️ adminassistent
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 109 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 116 dagar
   → *Kör session close*
