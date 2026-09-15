@@ -1,4 +1,4 @@
 # Top Gainers Summary
-*2026-09-14T23:56:36.202Z*
+*2026-09-15T23:35:28.164Z*
 
-Regime: NEUTRAL | 8 gainers | 8 cases sparade
+Regime: NEUTRAL | 8 gainers | 6 cases sparade
