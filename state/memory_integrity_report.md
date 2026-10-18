@@ -1,5 +1,5 @@
 # Memory Integrity Report
-*2026-10-11T09:38:07.364Z*
+*2026-10-18T07:44:27.975Z*
 
 ## Sammanfattning
 - HIGH: 11
@@ -22,11 +22,11 @@
   → *Skapa governance/architecture_changelog.md*
 - **[HIGH]** Saknad fil: project_memory/cross_project_learnings.md
   → *Skapa project_memory/cross_project_learnings.md*
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 188 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 195 dagar
   → *Kör session close*
 
 ## ⚠️ savage-roar-music
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 202 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 209 dagar
   → *Kör session close*
 
 ## ⚠️ tradesys1337
@@ -36,9 +36,9 @@
   → *Skapa state/work_queue.md*
 - **[HIGH]** Saknad fil: project_memory/project_context.md
   → *Skapa project_memory/project_context.md*
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 188 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 195 dagar
   → *Kör session close*
 
 ## ⚠️ adminassistent
-- **[MEDIUM]** session_handoff.md ej uppdaterad på 193 dagar
+- **[MEDIUM]** session_handoff.md ej uppdaterad på 200 dagar
   → *Kör session close*
